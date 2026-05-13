@@ -67,19 +67,29 @@ state: dict[str, Any] = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import copy
     cfg = yaml.safe_load(Path(LITELLM_CONFIG).read_text())
+
+    # Build gateway metadata (cost + tier) from the raw config before stripping
+    # custom fields that LiteLLM's ModelInfo schema doesn't accept.
+    info_by_alias: dict[str, dict] = {}
+    for entry in cfg["model_list"]:
+        merged = {**entry.get("model_info", {}), **entry.get("gateway_info", {})}
+        info_by_alias.setdefault(entry["model_name"], merged)
+
+    # Strip gateway_info from model_list entries so LiteLLM validation passes.
+    clean_model_list = copy.deepcopy(cfg["model_list"])
+    for entry in clean_model_list:
+        entry.pop("gateway_info", None)
+
     router = Router(
-        model_list=cfg["model_list"],
+        model_list=clean_model_list,
         fallbacks=cfg.get("litellm_settings", {}).get("fallbacks", []),
         num_retries=cfg.get("litellm_settings", {}).get("num_retries", 2),
         timeout=cfg.get("litellm_settings", {}).get("request_timeout", 60),
         allowed_fails=cfg.get("router_settings", {}).get("allowed_fails", 3),
         cooldown_time=cfg.get("router_settings", {}).get("cooldown_time", 30),
     )
-    # model_name -> info dict (cost, tier) keyed for fast lookup
-    info_by_alias: dict[str, dict] = {}
-    for entry in cfg["model_list"]:
-        info_by_alias.setdefault(entry["model_name"], entry.get("model_info", {}))
 
     state["router"] = router
     state["model_info"] = info_by_alias
