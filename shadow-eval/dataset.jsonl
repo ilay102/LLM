@@ -1,0 +1,10 @@
+{"vars": {"prompt": "Classify the sentiment of this review as POSITIVE, NEGATIVE, or NEUTRAL. Respond with one word only: 'The delivery was on time but the package arrived damaged.'"}}
+{"vars": {"prompt": "Extract the company name and revenue from this sentence as JSON: 'Acme Corp reported Q3 revenue of $4.2B, beating analyst estimates.'"}}
+{"vars": {"prompt": "Summarise the following in two sentences: Customer onboarding for our SaaS averages 14 days. The biggest dropoff happens at the integration step where 38% of trial users abandon. We are testing a low-code connector to address this."}}
+{"vars": {"prompt": "Translate to Spanish, keeping the tone friendly: 'Welcome back! Your dashboard is ready.'"}}
+{"vars": {"prompt": "Write a Python function that returns the n-th Fibonacci number using memoization. Include type hints."}}
+{"vars": {"prompt": "Refactor this code to be async and explain the trade-offs:\n```python\nimport requests\ndef fetch_all(urls):\n    return [requests.get(u).json() for u in urls]\n```"}}
+{"vars": {"prompt": "Design the database schema (Postgres) for a multi-tenant SaaS that needs row-level security and supports both per-tenant DBs and shared-DB tenancy as a config switch. Discuss trade-offs."}}
+{"vars": {"prompt": "Prove step-by-step that for any prime p > 3, p^2 - 1 is divisible by 24."}}
+{"vars": {"prompt": "Plan and execute: I have 200 customer support emails I need to triage. Walk me through how to build a classifier that routes them into Billing, Technical, and Cancellation buckets, including evaluation strategy."}}
+{"vars": {"prompt": "What is the capital of France?"}}

@@ -1,0 +1,37 @@
+# Gateway stack — bring everything up with: docker compose up --build
+# Ports:
+#   8000  -> FastAPI gateway (OpenAI-compatible). Point client SDKs here.
+#   6379  -> Redis Stack (vector cache + exact cache)
+#   8001  -> RedisInsight UI (debug the cache visually)
+services:
+  redis:
+    image: redis/redis-stack:7.4.0-v0   # Includes RediSearch + vector module
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  gateway:
+    build: ./router
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379
+      LITELLM_CONFIG: /app/litellm_config.yaml
+    volumes:
+      - ./litellm_config.yaml:/app/litellm_config.yaml:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    # Reload on code changes during dev. Remove for prod.
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  redis-data:

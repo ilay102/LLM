@@ -1,0 +1,10 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+litellm==1.52.14
+redis==5.2.0
+sentence-transformers==3.3.1   # bge-small-en-v1.5 for cache + classifier embeddings
+numpy==1.26.4
+pydantic==2.10.2
+python-dotenv==1.0.1
+pyyaml==6.0.2
+tiktoken==0.8.0

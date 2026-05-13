@@ -1,0 +1,40 @@
+# Secrets — NEVER commit
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Logs / runtime data
+shadow_log.jsonl
+pairwise_results.jsonl
+results.json
+report.html
+*.log
+
+# Datasets that ARE source-of-truth stay tracked; runtime ones don't
+!shadow-eval/dataset.jsonl
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Docker
+docker-volume-data/
+
+# Model artifacts (keep weights versioned via DVC/LFS later, not raw)
+*.pkl
+*.bin
+*.safetensors

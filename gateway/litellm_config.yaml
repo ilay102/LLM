@@ -1,0 +1,65 @@
+# LiteLLM Router model_list. Loaded by router/main.py at startup.
+# Each entry is a "deployment". Aliases (model_name) are what clients ask for;
+# the gateway rewrites these to the right deployment based on the classifier.
+#
+# Pricing is sourced from LiteLLM's built-in price map; we override below for
+# anything that drifts. Costs in USD per 1M tokens.
+
+model_list:
+  # ---------- TIER: cheap & fast (classification, extraction, short Q&A) ----------
+  - model_name: tier-cheap
+    litellm_params:
+      model: anthropic/claude-haiku-4-5-20251001
+      api_key: os.environ/ANTHROPIC_API_KEY
+      # Anthropic prompt-cache breakpoints injected automatically by gateway
+    model_info:
+      input_cost_per_token: 0.0000008    # $0.80 / 1M
+      output_cost_per_token: 0.000004    # $4.00 / 1M
+      tier: cheap
+
+  - model_name: tier-cheap
+    litellm_params:
+      model: openai/gpt-4o-mini
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      input_cost_per_token: 0.00000015
+      output_cost_per_token: 0.0000006
+      tier: cheap
+
+  # ---------- TIER: balanced (default for unknown traffic) ----------
+  - model_name: tier-balanced
+    litellm_params:
+      model: anthropic/claude-sonnet-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+    model_info:
+      input_cost_per_token: 0.000003
+      output_cost_per_token: 0.000015
+      tier: balanced
+
+  # ---------- TIER: frontier (reasoning, agents, code-gen escalations) ----------
+  - model_name: tier-frontier
+    litellm_params:
+      model: anthropic/claude-opus-4-7
+      api_key: os.environ/ANTHROPIC_API_KEY
+    model_info:
+      input_cost_per_token: 0.000015
+      output_cost_per_token: 0.000075
+      tier: frontier
+
+# Fallback chain: if the chosen tier 5xx's or rate-limits, try the next.
+# This is LiteLLM-native; it kicks in BELOW our app-level cascade logic.
+litellm_settings:
+  fallbacks:
+    - tier-cheap: ["tier-balanced"]
+    - tier-balanced: ["tier-frontier"]
+  num_retries: 2
+  request_timeout: 60
+  drop_params: true   # silently drop unsupported params instead of erroring
+
+# Per-tier circuit breaker. If a deployment fails this many times in a row,
+# LiteLLM cools it down for cooldown_time seconds before retrying.
+router_settings:
+  routing_strategy: simple-shuffle
+  allowed_fails: 3
+  cooldown_time: 30
+  retry_after: 5
