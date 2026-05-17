@@ -2,9 +2,12 @@
 # Manual resilience test: verifies the gateway never 5xx when Redis is down.
 #
 # Prerequisites: docker compose up --build -d is already running.
-# Run from the gateway/ directory:  bash tests/test_resilience.sh
+# Run from anywhere:  bash gateway/tests/test_resilience.sh
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE_FILE="$SCRIPT_DIR/../docker-compose.yml"
 
 BASE_URL="http://localhost:8000/v1"
 KEY="${GATEWAY_MASTER_KEY:-dev-key-change-me}"
@@ -43,7 +46,7 @@ pass "Cache hit confirmed (id=$ID)"
 echo ""
 echo "=== Phase 2: kill Redis — all calls must still return 200 ==="
 
-docker compose stop redis
+docker compose -f "$COMPOSE_FILE" stop redis
 echo "Redis stopped."
 
 for i in $(seq 3 7); do
@@ -59,7 +62,7 @@ done
 echo ""
 echo "=== Phase 3: restore Redis — cache recovers within 35s ==="
 
-docker compose start redis
+docker compose -f "$COMPOSE_FILE" start redis
 echo "Redis restarted. Waiting 35s for probe loop to reconnect..."
 sleep 35
 
