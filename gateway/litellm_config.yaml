@@ -15,6 +15,7 @@ model_list:
     model_info:
       input_cost_per_token: 0.0000008    # $0.80 / 1M
       output_cost_per_token: 0.000004    # $4.00 / 1M
+    gateway_info:
       tier: cheap
 
   - model_name: tier-cheap
@@ -24,6 +25,7 @@ model_list:
     model_info:
       input_cost_per_token: 0.00000015
       output_cost_per_token: 0.0000006
+    gateway_info:
       tier: cheap
 
   # ---------- TIER: balanced (default for unknown traffic) ----------
@@ -34,6 +36,7 @@ model_list:
     model_info:
       input_cost_per_token: 0.000003
       output_cost_per_token: 0.000015
+    gateway_info:
       tier: balanced
 
   # ---------- TIER: frontier (reasoning, agents, code-gen escalations) ----------
@@ -44,6 +47,7 @@ model_list:
     model_info:
       input_cost_per_token: 0.000015
       output_cost_per_token: 0.000075
+    gateway_info:
       tier: frontier
 
 # Fallback chain: if the chosen tier 5xx's or rate-limits, try the next.

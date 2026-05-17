@@ -1,11 +1,11 @@
 {
   "name": "LLM Gateway Dev",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/node:1": {}
   },
-  "postCreateCommand": "pip install --user -r gateway/router/requirements.txt && pip install --user -r shadow-eval/requirements.txt && npm install -g promptfoo",
+  "postCreateCommand": "sudo curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && echo \"deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main\" | sudo tee /etc/apt/sources.list.d/redis.list && sudo apt-get update && sudo apt-get install -y redis-stack-server && pip install --user -r gateway/router/requirements.txt && pip install --user -r shadow-eval/requirements.txt && npm install -g promptfoo",
   "forwardPorts": [8000, 6379, 8001],
   "portsAttributes": {
     "8000": { "label": "Gateway API" },
