@@ -96,7 +96,23 @@ async def lifespan(app: FastAPI):
     state["cache"] = SemanticCache(REDIS_URL, ttl_seconds=CACHE_TTL, threshold=CACHE_THRESHOLD) if ENABLE_CACHE else None
     LOG.info("Gateway up. tiers=%s cache=%s classifier=%s",
              list(info_by_alias.keys()), ENABLE_CACHE, ENABLE_CLASSIFIER)
-    yield
+
+    async def _redis_probe_loop() -> None:
+        while True:
+            await asyncio.sleep(30)
+            c = state.get("cache")
+            if c is not None:
+                c.probe()
+
+    probe_task = asyncio.create_task(_redis_probe_loop())
+    try:
+        yield
+    finally:
+        probe_task.cancel()
+        try:
+            await probe_task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(lifespan=lifespan, title="MSP LLM Gateway", version="0.1.0")
@@ -227,14 +243,17 @@ async def chat_completions(
         sys_hash = SemanticCache.hash_messages_system(messages)
         tool_hash = SemanticCache.hash_tools(tools)
         prompt_text = SemanticCache.prompt_text(messages)
-        cache_hit = cache.lookup(
-            prompt_text=prompt_text,
-            tenant=tenant,
-            model_class=chosen_alias,
-            system_hash=sys_hash,
-            tool_hash=tool_hash,
-            temperature=temperature,
-        )
+        try:
+            cache_hit = cache.lookup(
+                prompt_text=prompt_text,
+                tenant=tenant,
+                model_class=chosen_alias,
+                system_hash=sys_hash,
+                tool_hash=tool_hash,
+                temperature=temperature,
+            )
+        except Exception:
+            LOG.warning("cache lookup error (non-fatal) — serving without cache", exc_info=True)
 
     if cache_hit is not None:
         resp = dict(cache_hit.response)
@@ -294,7 +313,7 @@ async def chat_completions(
                 temperature=temperature,
             )
         except Exception:
-            LOG.exception("cache write failed (non-fatal)")
+            LOG.warning("cache store error (non-fatal) — serving without cache write", exc_info=True)
 
     await _post_hook(
         tenant=tenant, body=body, decision=decision, response=response_dict,

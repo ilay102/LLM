@@ -14,6 +14,7 @@ Critical safety rules (see blueprint section 3):
 from __future__ import annotations
 import hashlib
 import json
+import logging
 import time
 from dataclasses import dataclass
 from typing import Any
@@ -25,6 +26,8 @@ from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 
 from embeddings import embed, EMBED_DIM
+
+LOG = logging.getLogger("gateway.cache")
 
 INDEX_NAME = "semcache_idx"
 KEY_PREFIX = "semcache:"
@@ -61,7 +64,14 @@ class SemanticCache:
         self.r = redis.Redis.from_url(url, decode_responses=False)
         self.ttl = ttl_seconds
         self.threshold = threshold
-        self._ensure_index()
+        self.degraded = False
+        self.error_count = 0
+        try:
+            self.r.ping()
+            self._ensure_index()
+        except Exception:
+            LOG.warning("Redis unavailable at startup — cache running in degraded (fail-open) mode")
+            self.degraded = True
 
     def _ensure_index(self) -> None:
         try:
@@ -82,9 +92,45 @@ class SemanticCache:
         defn = IndexDefinition(prefix=[KEY_PREFIX], index_type=IndexType.HASH)
         self.r.ft(INDEX_NAME).create_index(schema, definition=defn)
 
+    def probe(self) -> bool:
+        """Ping Redis; clears degraded flag and restores the index on recovery."""
+        try:
+            self.r.ping()
+            if self.degraded:
+                self._ensure_index()
+                self.degraded = False
+                LOG.info("Redis reconnected — cache restored (errors so far: %d)", self.error_count)
+            return True
+        except Exception:
+            if not self.degraded:
+                self.degraded = True
+                self.error_count += 1
+                LOG.warning("Redis probe failed — cache degraded (fail-open)")
+            return False
+
     # --- public API --------------------------------------------------------
 
     def lookup(
+        self,
+        prompt_text: str,
+        tenant: str,
+        model_class: str,
+        system_hash: str,
+        tool_hash: str,
+        temperature: float | None,
+        threshold_override: float | None = None,
+    ) -> CacheHit | None:
+        if self.degraded:
+            return None
+        try:
+            return self._lookup(prompt_text, tenant, model_class, system_hash, tool_hash, temperature, threshold_override)
+        except Exception:
+            LOG.warning("cache lookup error — switching to degraded mode", exc_info=True)
+            self.degraded = True
+            self.error_count += 1
+            return None
+
+    def _lookup(
         self,
         prompt_text: str,
         tenant: str,
@@ -148,13 +194,32 @@ class SemanticCache:
         temperature: float | None,
         ttl_override: int | None = None,
     ) -> None:
+        if self.degraded:
+            return
         # Hard skips — never poison the cache.
         if temperature is not None and temperature > 0.3:
             return
         choice = (response.get("choices") or [{}])[0]
         if (choice.get("message") or {}).get("tool_calls"):
             return
+        try:
+            self._store(prompt_text, response, tenant, model_class, system_hash, tool_hash, temperature, ttl_override)
+        except Exception:
+            LOG.warning("cache store error — switching to degraded mode", exc_info=True)
+            self.degraded = True
+            self.error_count += 1
 
+    def _store(
+        self,
+        prompt_text: str,
+        response: dict,
+        tenant: str,
+        model_class: str,
+        system_hash: str,
+        tool_hash: str,
+        temperature: float | None,
+        ttl_override: int | None = None,
+    ) -> None:
         ns = _ns_key(tenant, model_class, system_hash, tool_hash, _temperature_bucket(temperature))
         ttl = ttl_override if ttl_override is not None else self.ttl
         now = time.time()
