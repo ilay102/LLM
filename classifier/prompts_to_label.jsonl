@@ -1,0 +1,200 @@
+{"id": 1, "prompt": "Classify the sentiment of this review as POSITIVE, NEGATIVE, or NEUTRAL: 'The shipping was fast but the product broke on day 2.'"}
+{"id": 2, "prompt": "Is the following tweet positive or negative? 'Just renewed my subscription, love the new dashboard.'"}
+{"id": 3, "prompt": "Rate the sentiment from 1 (very negative) to 5 (very positive): 'Support never replied to my ticket.'"}
+{"id": 4, "prompt": "Tag this customer feedback as 'happy', 'frustrated', or 'neutral': 'I figured it out eventually but the docs are terrible.'"}
+{"id": 5, "prompt": "Is this review more positive or more negative? 'Product is fine but pricing feels predatory.'"}
+{"id": 6, "prompt": "Classify: 'Best onboarding flow I've ever used' → positive / negative / neutral?"}
+{"id": 7, "prompt": "Customer email starts with 'I want to cancel'. Classify intent as: CHURN / SUPPORT / BILLING / OTHER."}
+{"id": 8, "prompt": "Label the emotion in this message: 'I waited 3 weeks for a response.'"}
+{"id": 9, "prompt": "Tag this PR description as 'feature', 'bugfix', or 'refactor': 'Memoize expensive recomputation in dashboard.'"}
+{"id": 10, "prompt": "Sentiment of: 'works as advertised, no complaints.' Answer in one word."}
+{"id": 11, "prompt": "Extract the company name and revenue as JSON: 'Acme Corp reported Q3 revenue of $4.2B, beating estimates.'"}
+{"id": 12, "prompt": "Extract email and phone from: 'Reach me at sarah.k@example.org or 555-0142.'"}
+{"id": 13, "prompt": "Pull the date and total amount from: 'Invoice #4421, dated March 12, total $2,499.50.'"}
+{"id": 14, "prompt": "Extract product SKU from: 'Order shipped: SKU-A7-2231 (qty 3).'"}
+{"id": 15, "prompt": "Find all person names in: 'Alice and Bob met with Carlos to discuss the proposal.'"}
+{"id": 16, "prompt": "Extract city and country: 'Our office is in Lisbon, Portugal.'"}
+{"id": 17, "prompt": "Pull the version number from: 'Upgraded to v3.14.2 last Tuesday.'"}
+{"id": 18, "prompt": "Get the IP address from: 'Login attempt from 192.168.1.55 at 03:42 UTC.'"}
+{"id": 19, "prompt": "Extract the meeting time: 'Let us catch up Tuesday at 2pm PT.'"}
+{"id": 20, "prompt": "Get the order number and status from: 'Order #88172 has been delivered.'"}
+{"id": 21, "prompt": "Translate to French: 'Welcome back, your dashboard is ready.'"}
+{"id": 22, "prompt": "Translate to Spanish: 'Your free trial expires in 3 days.'"}
+{"id": 23, "prompt": "Translate to German: 'Click the button below to verify your email.'"}
+{"id": 24, "prompt": "Translate to Brazilian Portuguese: 'Thank you for your purchase.'"}
+{"id": 25, "prompt": "Translate to Italian: 'Forgot password? Reset it here.'"}
+{"id": 26, "prompt": "Translate this UI string to Japanese: 'Save changes'"}
+{"id": 27, "prompt": "Translate to Hebrew: 'Settings'"}
+{"id": 28, "prompt": "Translate to Dutch: 'Sign out'"}
+{"id": 29, "prompt": "Is Lisbon the capital of Portugal? Answer yes or no."}
+{"id": 30, "prompt": "Does JavaScript have built-in support for tuples? Yes or no."}
+{"id": 31, "prompt": "Is PostgreSQL open source? Yes or no."}
+{"id": 32, "prompt": "Is HTTP/3 built on TCP? Yes or no."}
+{"id": 33, "prompt": "Can AWS S3 be used to host a static website? Yes or no."}
+{"id": 34, "prompt": "Is the Eiffel Tower in Berlin? Yes or no."}
+{"id": 35, "prompt": "Does Kubernetes require Docker as the container runtime? Yes or no."}
+{"id": 36, "prompt": "Is GPT-4 an open-source model? Yes or no."}
+{"id": 37, "prompt": "Format as JSON: name=Alice, age=30, role=admin"}
+{"id": 38, "prompt": "Convert this CSV row to JSON: 'id,name,email\\n42,Bob,bob@x.com'"}
+{"id": 39, "prompt": "Return a JSON object with keys 'status' and 'timestamp' for a successful operation right now."}
+{"id": 40, "prompt": "Output a JSON object: {\"items\": [...]} containing apple, banana, cherry as strings."}
+{"id": 41, "prompt": "Wrap this in JSON with key 'message': Hello world."}
+{"id": 42, "prompt": "Return an empty JSON array."}
+{"id": 43, "prompt": "Make a JSON object representing an HTTP 404 error response."}
+{"id": 44, "prompt": "Convert key=value pairs to JSON: theme=dark, lang=en, beta=true"}
+{"id": 45, "prompt": "Write a one-liner in Python to reverse a string."}
+{"id": 46, "prompt": "Bash one-liner to count files in the current directory."}
+{"id": 47, "prompt": "JS one-liner to remove duplicates from an array."}
+{"id": 48, "prompt": "SQL: select all rows from users where active = true."}
+{"id": 49, "prompt": "Write a regex to match a US zip code."}
+{"id": 50, "prompt": "Python one-liner to compute factorial of n (no imports)."}
+{"id": 51, "prompt": "Fix the grammar: 'Me and him went to store yesterday.'"}
+{"id": 52, "prompt": "Correct any typos: 'The recieve button is on the right.'"}
+{"id": 53, "prompt": "Capitalize properly: 'john works at google in mountain view.'"}
+{"id": 54, "prompt": "Fix punctuation: 'wow that was crazy where did you find it'"}
+{"id": 55, "prompt": "Rewrite in past tense: 'I am going to the store.'"}
+{"id": 56, "prompt": "Make this title case: 'the lord of the rings'"}
+{"id": 57, "prompt": "Is Stripe a payment provider, CRM, or hosting service?"}
+{"id": 58, "prompt": "Categorize Twilio: comms / billing / analytics / storage."}
+{"id": 59, "prompt": "Categorize Datadog: observability / chat / CDN / database."}
+{"id": 60, "prompt": "Is React a backend framework, frontend framework, or database?"}
+{"id": 61, "prompt": "Categorize Slack: productivity / e-commerce / gaming."}
+{"id": 62, "prompt": "Is PostgreSQL relational or NoSQL?"}
+{"id": 63, "prompt": "Categorize AWS Lambda: compute / storage / networking."}
+{"id": 64, "prompt": "Is Figma a design tool, an IDE, or a browser?"}
+{"id": 65, "prompt": "Who wrote 'The Great Gatsby'?"}
+{"id": 66, "prompt": "What year was OpenAI founded?"}
+{"id": 67, "prompt": "What is the speed of light in km/s (rough)?"}
+{"id": 68, "prompt": "What does HTTP stand for?"}
+{"id": 69, "prompt": "What is the largest country by area?"}
+{"id": 70, "prompt": "What is the chemical symbol for gold?"}
+{"id": 71, "prompt": "What is the boiling point of water in Celsius?"}
+{"id": 72, "prompt": "What is the currency of Japan?"}
+{"id": 73, "prompt": "Should this support ticket be marked URGENT? 'Production database is down, all users affected.' Yes or no."}
+{"id": 74, "prompt": "Is this URL safe to display in our app? 'http://example.com/dashboard' — yes/no."}
+{"id": 75, "prompt": "Is this commit a security risk? 'Updated README.md typo.' yes/no."}
+{"id": 76, "prompt": "Tag as spam or not spam: 'CLICK NOW to claim your prize!!!'"}
+{"id": 77, "prompt": "Is this customer eligible for the free plan if they have 12 employees and the threshold is <10? Yes/no."}
+{"id": 78, "prompt": "Is the following a valid email format: 'foo@bar'? Yes or no."}
+{"id": 79, "prompt": "Should this be auto-routed to BILLING or TECHNICAL? 'My card was charged twice.'"}
+{"id": 80, "prompt": "Classify as personal or business email subject: 'q3-budget-review.xlsx attached'"}
+{"id": 81, "prompt": "Summarize in 2 sentences: 'Customer onboarding for our SaaS averages 14 days. The biggest dropoff is at the integration step where 38% of trial users abandon. We are piloting a low-code connector to address this.'"}
+{"id": 82, "prompt": "Summarize the key points in 3 bullets: 'Q3 revenue was $4.2M, up 22% YoY but down 4% QoQ. Net revenue retention slipped to 108% from 115% last quarter due to two large enterprise downgrades. New logo ACV grew to $14k. Pipeline coverage for Q4 stands at 3.1x.'"}
+{"id": 83, "prompt": "Write a 1-line summary of: 'After 6 months of beta, we are launching the new AI search feature publicly today. Pricing is included in all paid plans. Initial users report finding documents 40% faster.'"}
+{"id": 84, "prompt": "Give me the 3 most important takeaways from this retro: 'The sprint went mostly well — we shipped 8 of 10 planned items. The two we missed were both blocked on the auth team. Deploys were faster thanks to the new CI pipeline. Engineers reported feeling overloaded by review burden. We had two production incidents, both caused by missing feature flags.'"}
+{"id": 85, "prompt": "Summarize the technical decision: 'We are moving from MongoDB to Postgres. The main drivers are: better support for relational queries our analytics team relies on, mature tooling, and lower operational cost for our team size. Trade-off is migrating 4TB of existing data — we plan a 6-week dual-write window followed by cutover.'"}
+{"id": 86, "prompt": "TLDR in 2 sentences: 'Churn analysis Q3 — 4.2% gross churn, up from 3.1%. Primary driver is SMB tier (2-9 seats), where churn jumped to 7.8%. Enterprise tier churn stayed flat at 0.4%. Top stated reason: pricing changes.'"}
+{"id": 87, "prompt": "Summarize for a busy executive: 'Engineering hiring plan for next year — we want to grow from 22 to 38 engineers, focusing on platform (4), AI/ML (5), customer-facing (5), and infra (2). Total budget impact: $4.8M. Onboarding capacity is our main constraint; we plan to hire in waves of 4.'"}
+{"id": 88, "prompt": "Condense this Slack thread into 3 bullets: 'Alice: Deploy at 14:02 broke /api/orders. Bob: Confirmed, 500s spiking. Carol: Rolled back at 14:09. Alice: Root cause is a bad migration. Bob: We need to add a smoke test for this. Carol: Postmortem tomorrow at 10.'"}
+{"id": 89, "prompt": "Write a 1-line meeting summary: 'Product strategy meeting — decided to deprecate the v1 API by Q2 next year, with email warnings starting Q4. Engineering will publish a migration guide by Nov 15.'"}
+{"id": 90, "prompt": "Summarize the customer's complaint in one sentence: 'I have been waiting 11 days for support to respond to ticket #44192. I have followed up three times. The original issue is that I cannot export my data, which I need for an audit by Friday. This is a paid Enterprise account.'"}
+{"id": 91, "prompt": "Write a polite email rejecting a vendor's proposal. Brief, friendly, leaves the door open for the future."}
+{"id": 92, "prompt": "Draft an email to a customer apologizing for a 2-hour outage. Professional, accountable, no excuses."}
+{"id": 93, "prompt": "Write a follow-up email to a prospect who went dark after a demo 3 weeks ago. Light touch, give them an easy out."}
+{"id": 94, "prompt": "Draft a kickoff email to a new customer's engineering team for a 2-week pilot."}
+{"id": 95, "prompt": "Write an email asking the procurement team for a status update on a contract — friendly tone."}
+{"id": 96, "prompt": "Compose a brief LinkedIn message asking for a 15-min intro call with someone you met at a conference."}
+{"id": 97, "prompt": "Draft a Slack DM to your manager explaining you will miss tomorrow's deadline. Take ownership."}
+{"id": 98, "prompt": "Write a professional resignation email — 4 sentences, no drama, thankful."}
+{"id": 99, "prompt": "Refactor this Python loop to a list comprehension: 'result = []\\nfor x in data:\\n    if x > 0:\\n        result.append(x*2)'"}
+{"id": 100, "prompt": "Rewrite this JS to use async/await: 'function getUser(id) { return fetch(\"/api/users/\" + id).then(r => r.json()); }'"}
+{"id": 101, "prompt": "Convert this for-loop to a map/filter chain in JS: 'let out = []; for (let u of users) { if (u.active) out.push(u.email); }'"}
+{"id": 102, "prompt": "Refactor this nested if/else into a lookup table: 'if t == \"a\": return 1\\nelif t == \"b\": return 2\\nelif t == \"c\": return 3\\nelse: return 0'"}
+{"id": 103, "prompt": "Extract duplicated logic into a function: two places in this snippet both do: 'data = json.loads(r.text); validate(data); return data[\"value\"]'"}
+{"id": 104, "prompt": "Rewrite this raw SQL using SQLAlchemy ORM: 'SELECT * FROM users WHERE active = true AND created_at > now() - interval 7 day'"}
+{"id": 105, "prompt": "Refactor this callback-style code to async/await: 'getUser(id, function(err, u) { if (err) cb(err); else getOrders(u.id, function(err, o) { cb(err, o); }); });'"}
+{"id": 106, "prompt": "Simplify this boolean condition: 'if (x == true && y == false) || (z == true && y == false) { ... }'"}
+{"id": 107, "prompt": "Convert this CSV to a JSON array: 'name,age,role\\nAlice,30,admin\\nBob,25,user\\nCarol,40,admin'"}
+{"id": 108, "prompt": "Turn this JSON into a Markdown table: '[{\"name\":\"Alice\",\"plan\":\"Pro\"},{\"name\":\"Bob\",\"plan\":\"Free\"},{\"name\":\"Carol\",\"plan\":\"Enterprise\"}]'"}
+{"id": 109, "prompt": "Convert YAML to JSON: 'app:\\n  name: web\\n  port: 8080\\n  debug: false'"}
+{"id": 110, "prompt": "Convert this XML to JSON: '<order><id>42</id><total>99.50</total></order>'"}
+{"id": 111, "prompt": "Format this list as a numbered Markdown list: apples, oranges, pears, bananas, kiwis, mangoes, grapes, melons, plums, peaches"}
+{"id": 112, "prompt": "Convert these to .env format: API_KEY=abc, DEBUG=true, PORT=8000, DATABASE_URL=postgres://localhost/db"}
+{"id": 113, "prompt": "Generate a JSON product card with fields: name, price, sku, in_stock, tags. Use realistic example values for a coffee mug."}
+{"id": 114, "prompt": "Create a JSON schema for a 'user' object with id (int), email (string), role (enum: admin/user), created_at (ISO datetime)."}
+{"id": 115, "prompt": "Generate a TypeScript interface for a 'Subscription' entity with plan, status, current_period_end, cancel_at_period_end, and trial_end fields."}
+{"id": 116, "prompt": "Write a Postgres CREATE TABLE statement for a 'comments' table with reasonable columns and constraints."}
+{"id": 117, "prompt": "Generate an OpenAPI 3 snippet for a GET /users/{id} endpoint returning a User object or 404."}
+{"id": 118, "prompt": "Produce a Python dataclass representing an HTTP request log entry: method, path, status, latency_ms, user_id, ts."}
+{"id": 119, "prompt": "Generate a sample CSV with 5 rows for testing a CRM import (columns: name, email, company, plan, signup_date)."}
+{"id": 120, "prompt": "Write a small YAML GitHub Actions workflow that runs pytest on every PR to main."}
+{"id": 121, "prompt": "Generate a JSON test fixture for an order with 3 line items, taxes, and shipping."}
+{"id": 122, "prompt": "Produce a Markdown changelog entry for: 3 bugs fixed (login redirect, csv export, dark mode), 1 feature added (CSV bulk import)."}
+{"id": 123, "prompt": "Write 3 hero headline options for a SaaS analytics product targeted at early-stage startups."}
+{"id": 124, "prompt": "Draft a tweet announcing a new feature: AI-powered search across all your documents."}
+{"id": 125, "prompt": "Write a 50-word product description for a Google Calendar integration that auto-syncs meetings."}
+{"id": 126, "prompt": "Compose 3 subject lines for a webinar invite email about cutting cloud costs."}
+{"id": 127, "prompt": "Write the CTA button copy options (5 variants) for a free trial signup."}
+{"id": 128, "prompt": "Draft a one-paragraph LinkedIn post about closing a $5M Series A. Confident but not arrogant."}
+{"id": 129, "prompt": "Write a customer testimonial template with placeholders for name, company, role, and 2 specific outcomes."}
+{"id": 130, "prompt": "Compose a 100-word press release boilerplate paragraph describing a B2B SaaS company."}
+{"id": 131, "prompt": "Write a SQL query: users who signed up in the last 30 days but haven't logged in this week."}
+{"id": 132, "prompt": "SQL: top 10 customers by total order value in the last quarter."}
+{"id": 133, "prompt": "Write a SQL query to find duplicate email addresses in the users table."}
+{"id": 134, "prompt": "SQL to compute month-over-month signup growth for the past 6 months."}
+{"id": 135, "prompt": "Write a query for customers who churned (no orders in 90 days) but were active before."}
+{"id": 136, "prompt": "SQL: average ticket resolution time per support agent in the last 30 days."}
+{"id": 137, "prompt": "Write a window-function query ranking products by sales within each category."}
+{"id": 138, "prompt": "SQL to find any orders where the order total doesn't match the sum of line items."}
+{"id": 139, "prompt": "Explain to a non-technical PM what a database index is and when to use one. 3-4 sentences."}
+{"id": 140, "prompt": "Explain in 3 sentences how JWT auth works."}
+{"id": 141, "prompt": "Explain the difference between TCP and UDP casually, like to a friend."}
+{"id": 142, "prompt": "What's the difference between SQL and NoSQL? Keep under 100 words."}
+{"id": 143, "prompt": "Explain to a designer what a CDN does and why it matters."}
+{"id": 144, "prompt": "Explain caching to a junior engineer in plain language."}
+{"id": 145, "prompt": "What is a webhook and when should I use one?"}
+{"id": 146, "prompt": "Explain rate limiting and why APIs do it."}
+{"id": 147, "prompt": "Review this Python function for improvements: 'def get_user(id):\\n    for u in users:\\n        if u.id == id:\\n            return u\\n    return None'"}
+{"id": 148, "prompt": "Spot the bug: 'for (let i = 0; i <= arr.length; i++) { console.log(arr[i]); }'"}
+{"id": 149, "prompt": "Review this SQL for correctness and performance: 'SELECT * FROM orders WHERE customer_id IN (SELECT id FROM customers WHERE active = true)'"}
+{"id": 150, "prompt": "What edge cases does this function not handle? 'def divide(a, b): return a / b'"}
+{"id": 151, "prompt": "Suggest a better variable name and explain: 'const x = users.filter(u => u.active && u.lastLogin > thirtyDaysAgo);'"}
+{"id": 152, "prompt": "What's wrong with using == here in JS: 'if (userInput == 0) { showZeroState(); }'"}
+{"id": 153, "prompt": "Extract all fields you can from this customer email: 'Hi, I am Sarah from Acme Co (acme.com). Our team of 12 wants to upgrade from the Pro plan ($49/mo) to Enterprise. Reach me at sarah@acme.co.'"}
+{"id": 154, "prompt": "Parse this support ticket into a JSON object with priority, category, customer_tier, summary: 'URGENT — Enterprise customer Globex (paid plan) reports that their SSO login is failing for all users since this morning. They have 200 seats. Need immediate help.'"}
+{"id": 155, "prompt": "Extract product info as JSON (name, version, license, key_dependencies): 'fastapi 0.115 (MIT license). Built on Starlette and Pydantic v2. Requires Python 3.8+.'"}
+{"id": 156, "prompt": "Parse this calendar invite into structured fields (subject, time, attendees, location): 'Subject: Q4 Planning Meeting. When: Friday Nov 22, 10:00-11:30 PT. Attendees: alice@co.com, bob@co.com, carol@co.com. Location: Zoom.'"}
+{"id": 157, "prompt": "Extract billing info as JSON from: 'Invoice 4421 dated 2025-03-12. Subtotal $2,400; tax $99.50; total $2,499.50. Due 2025-03-26. Method: ACH.'"}
+{"id": 158, "prompt": "Parse this job posting into role, company, location, salary_range, requirements: 'Senior Backend Engineer at Globex Co. Remote (US). $160-200k base + equity. Python, Postgres, AWS, 5+ years experience.'"}
+{"id": 159, "prompt": "Extract structured data from this resume excerpt: 'Sarah Kim. Senior Software Engineer at Acme (2020-present). Previously at Globex (2018-2020). MS Computer Science, Stanford 2018.'"}
+{"id": 160, "prompt": "Parse this flight confirmation into structured travel data: 'Confirmation ABC123. United UA456. SFO -> JFK. Dec 15, dep 09:30, arr 17:45. Seat 14C. Economy.'"}
+{"id": 161, "prompt": "Design the database schema (Postgres) for a multi-tenant SaaS that supports row-level security AND optionally per-tenant databases as a config switch. Discuss the trade-offs of each approach, performance implications, and migration story between modes."}
+{"id": 162, "prompt": "Design a system to handle 1M webhook deliveries per day reliably. Cover retries, deduplication, ordering, customer-visible status, and backpressure. Specify each component and its failure modes."}
+{"id": 163, "prompt": "Architect a real-time leaderboard for 10M daily active users with sub-100ms read latency. Discuss data structures (sorted sets vs others), caching, consistency model, and how to handle hot ranges."}
+{"id": 164, "prompt": "Design a feature-flag system with audience targeting, gradual rollout, offline-safe SDK clients, and per-customer overrides. Walk through trade-offs of polling vs streaming for SDK updates."}
+{"id": 165, "prompt": "Propose an architecture for storing and querying 100B time-series events with sub-second p95 query latency on common aggregations. Cover ingestion, storage tier choices, query path, and cost model."}
+{"id": 166, "prompt": "Design a job queue that supports priority lanes, retries with backoff, dead-letter queues, per-tenant rate limits, and at-least-once delivery. Discuss correctness vs throughput trade-offs."}
+{"id": 167, "prompt": "Architect a multi-region active-active SaaS write path. How do you handle conflict resolution, monotonic reads for the same user, and a regional failover? Discuss CRDTs vs leader-per-record."}
+{"id": 168, "prompt": "Design a tamper-evident audit log system that retains 7 years of records cost-effectively, supports complex compliance queries, and can prove that no record has been modified or deleted."}
+{"id": 169, "prompt": "Prove step-by-step that for any prime p > 3, p^2 - 1 is divisible by 24."}
+{"id": 170, "prompt": "Three machines produce widgets at rates of 1, 2, and 3 per minute. They share one packaging station that takes 30 seconds per widget. Walk through what happens in the first 5 minutes and identify whether there is a bottleneck and where."}
+{"id": 171, "prompt": "A startup has runway for 14 months at current burn. Hiring 3 engineers cuts runway to 9 months but accelerates closing a deal expected in month 6. Walk through the full decision logic, including risks and what data would tip the choice either way."}
+{"id": 172, "prompt": "Given a function that fails 2% of the time independently, derive the effective failure rate when you retry up to 3 times. Then derive it for 5 retries, and discuss what assumption could break this analysis."}
+{"id": 173, "prompt": "Reason through whether to migrate a monolith to microservices for a 50-engineer team at $20M ARR. Cover team topology, operational maturity, deployment risk, and the realistic 18-month cost of the migration."}
+{"id": 174, "prompt": "A system has p50=100ms, p95=400ms, p99=2000ms. Walk through three likely root causes for the long tail and how you'd diagnose each."}
+{"id": 175, "prompt": "Derive the cost-benefit math for adding a CDN if origin requests cost $0.0001 each and CDN requests cost $0.00001 each, at 50M requests/month. Then calculate breakeven if CDN setup cost is $5k and ongoing $200/month."}
+{"id": 176, "prompt": "Prove or disprove: a hash table with N items and capacity 2N has expected O(1) lookup. Discuss what assumptions about the hash function are required."}
+{"id": 177, "prompt": "Implement a thread-safe LRU cache in Python with TTL support. Include type hints, docstrings, and handle the case where the same key is set concurrently from multiple threads."}
+{"id": 178, "prompt": "Write a Python class that does exponential backoff with jitter for HTTP requests, handles 429 vs 5xx differently, respects Retry-After headers, and exposes circuit-breaker stats via a public method."}
+{"id": 179, "prompt": "Implement a function that streams a large CSV from S3 in chunks, transforms each row with a user-provided function, and writes batches to Postgres efficiently with backpressure. Handle partial failure."}
+{"id": 180, "prompt": "Write a Rust function to parallel-process a stream of records with bounded concurrency, propagate errors correctly, and gracefully shut down on Ctrl+C without dropping in-flight work."}
+{"id": 181, "prompt": "Implement a small Redux-style state manager in ~50 lines of TypeScript with middleware support, typed actions, and a subscribe API."}
+{"id": 182, "prompt": "Write a Python implementation of HyperLogLog from scratch (no external libraries). Include comments explaining each step of the math, the choice of register count, and the bias correction."}
+{"id": 183, "prompt": "We spent $200k on LLM APIs last quarter, growing 30% QoQ, with 70% on GPT-4o and 30% on Sonnet. Propose a strategy to cut spend 40% while preserving quality. Walk through what data you'd need to collect first, the experiments you'd run, and the decision tree for routing."}
+{"id": 184, "prompt": "Our top customer (15% of ARR) is renegotiating. They want a 30% discount or they will churn. Walk through the full analysis: customer-level data to gather, alternative offers to consider, the precedent risk, and your recommendation."}
+{"id": 185, "prompt": "Should we build a feature internally or buy a vendor? Internal build: 4 engineer-months at $30k/eng-month. Vendor: $24k/year for 3 years. Reason through it including indirect costs, switching costs, and strategic factors."}
+{"id": 186, "prompt": "We're seeing a 3% weekly churn rate on a new SMB plan. Walk through the diagnostic plan: what data to look at, in what order, what hypotheses to test, and how you'd know which hypothesis is correct."}
+{"id": 187, "prompt": "Compare the trade-offs of three pricing models for an AI product: per-seat, per-token, per-outcome. Discuss buyer psychology, gross margin implications, and customer-side adoption risk. Then recommend one for a customer-support SaaS."}
+{"id": 188, "prompt": "Our LLM gateway product needs to choose between (a) routing as a managed service or (b) on-prem deployment. Reason through which fits a 2-person team better in months 1-12 and how the choice evolves at $1M and $5M ARR."}
+{"id": 189, "prompt": "Plan a step-by-step automated workflow that monitors a Stripe webhook, classifies subscription events, updates a Hubspot record, posts to a Slack channel, and handles rate limits gracefully. Specify each tool call, retry policy, and the four most likely failure modes."}
+{"id": 190, "prompt": "Design an agent loop that, given a customer support email, decides between: auto-reply, route to billing, route to engineering, escalate to human. Include the tools it would call, the safety checks before each action, and how it learns from corrections."}
+{"id": 191, "prompt": "Plan an agentic workflow to onboard a new customer: collect data via form, validate the domain, provision a tenant, send a welcome email, schedule a day-7 check-in. Handle four specific failure modes (invalid domain, provisioning timeout, email bounce, calendar conflict)."}
+{"id": 192, "prompt": "Design a multi-tool plan for an AI sales assistant: take a list of 100 prospects, enrich each via Apollo, draft a personalized cold email referencing one specific thing about their company, save drafts to a CRM, and pause for human approval before sending. Include the prompt for the drafting step."}
+{"id": 193, "prompt": "Design an agent that can debug a CI failure: parse logs, identify the failing test, check recent commits for likely culprits, propose a fix, open a PR. Walk through each tool call, the failure recovery path, and how it avoids making things worse."}
+{"id": 194, "prompt": "Plan an agentic workflow to renew SSL certs across 100 microservices using certbot, with rollback on any service health check failure. Cover ordering, parallelism, observability, and what 'done' looks like."}
+{"id": 195, "prompt": "A user reports our API returns a 200 with an empty body 'sometimes'. Walk through every layer you would check (load balancer, ingress, app, downstream services, serialization), what you'd look for in each, and the order of investigation."}
+{"id": 196, "prompt": "Our Postgres CPU spikes to 100% every Tuesday at 03:14 UTC. Walk through the investigation: what data to pull, what hypotheses to test, and what fix you'd implement for each likely cause."}
+{"id": 197, "prompt": "Background workers occasionally process the same job twice. What are the 5 most likely causes and how do you diagnose each? Discuss whether the right fix is at the queue, the worker, or the consumer side."}
+{"id": 198, "prompt": "After deploying a Kubernetes update, p99 latency increased 4x for one endpoint only. Walk through the diagnostic plan: what changed, what to look at first, and how to bisect to the root cause."}
+{"id": 199, "prompt": "Memory in our Node.js service grows steadily over 24 hours then crashes. What are the likely causes and how would you systematically narrow them down? Include the specific tools you'd use at each step."}
+{"id": 200, "prompt": "Customers in eu-west see correct prices, customers in us-east see prices off by exactly 12 hours. Walk through what's likely happening, the order in which you'd verify each hypothesis, and what the fix probably looks like."}
