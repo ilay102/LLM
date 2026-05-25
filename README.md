@@ -1,93 +1,102 @@
-# Managed LLM Inference Cost Optimization — Reference Implementation
+# VIREN — LLM Cost Optimization Gateway
 
-Two artifacts that together form the technical foundation of the MSP service:
+OpenAI-compatible gateway that routes, caches, and proves quality —
+designed for 2-week shadow pilots that close design partners.
 
 ```
-optomizatsion/
-├── gateway/        # OpenAI-compatible gateway: classify, cache, route, fallback
-└── shadow-eval/    # Pairwise judge harness → CTO-ready quality + cost report
+                    Your app (OpenAI / Anthropic SDK)
+                              │
+                  ▼ — mirror — ▼
+         prod path        VIREN gateway
+              │              │  classify → cache → route → fallback
+              ▼              ▼
+     Anthropic / OpenAI    same providers, but smart
+              │              │
+              └──► response  └──► shadow log → pairwise eval → report.html
 ```
 
-## End-to-end local test (today)
+## Repo layout
 
-```bash
-# 1) Bring up the gateway
-cd gateway
-cp .env.example .env       # fill OPENAI_API_KEY, ANTHROPIC_API_KEY
-docker compose up --build  # ~60s first run
-
-# 2) Smoke-test it
-pip install openai
-python tests/smoke.py
-
-# 3) Run the shadow evaluation (separate terminal)
-cd ../shadow-eval
-cp .env.example .env       # fill ANTHROPIC_API_KEY, GATEWAY_KEY
-pip install -r requirements.txt
-python run_pairwise.py --dataset dataset.jsonl --out pairwise_results.jsonl
-
-# 4) Generate the CTO report
-python generate_report.py --in pairwise_results.jsonl --out report.html
-open report.html
+```
+.
+├── gateway/                # The product itself
+│   ├── router/             # FastAPI app + LiteLLM Router
+│   ├── tests/              # Smoke + resilience tests
+│   ├── docker-compose.yml
+│   └── litellm_config.yaml
+│
+├── shadow-eval/            # Pairwise quality eval → HTML report
+│   ├── run_pairwise.py
+│   ├── generate_report.py
+│   └── judge_prompt.txt
+│
+├── classifier/             # Training corpus + seed labels (v1)
+│   ├── prompts_to_label.jsonl       # 200 prompts
+│   ├── labels_claude.jsonl          # Claude seed labels
+│   └── README.md                    # Rubric
+│
+├── deploy/                 # What we run at customer sites
+│   ├── pilot.sh            # One-command deployer
+│   ├── teardown.sh         # End-of-pilot cleanup
+│   ├── daily_summary.py    # Mid-pilot snapshot
+│   ├── PILOT_RUNBOOK.md    # 30-min setup call script
+│   ├── pilot_agreement.md  # 1-page agreement template
+│   ├── README.md
+│   └── integration_samples/
+│       ├── mirror_python.py
+│       ├── mirror_node.js
+│       └── README.md
+│
+├── marketing/              # Sales artifacts
+│   ├── one_pager.html      # PDF leave-behind
+│   ├── pricing_calculator.html
+│   ├── demo_script.md      # 4-min Loom script
+│   ├── outreach_templates.md
+│   └── README.md
+│
+├── .devcontainer/          # Codespaces config
+├── CONTRIBUTING.md         # Dev modes (Docker / native)
+└── README.md
 ```
 
-Within ~5 minutes you'll have an HTML page showing:
-- **Shadow win-or-tie %** vs baseline (Sonnet 4.6 direct)
-- **$ saved** + projected monthly at 1M calls
-- **Routing distribution** (which tiers the gateway chose)
-- **p50/p95/p99 latency** comparison
-- **Audit table** of every prompt/decision
+## Quick links
 
-## What's in each piece
+- **Trying it locally?** → `gateway/README.md`
+- **Running a pilot?** → `deploy/README.md` + `deploy/PILOT_RUNBOOK.md`
+- **Doing outreach?** → `marketing/outreach_templates.md`
+- **Recording the demo?** → `marketing/demo_script.md`
 
-### `gateway/` — production-shaped, single-tenant
+## Status
 
-| File | Purpose |
+| Component | Status |
 |---|---|
-| `docker-compose.yml` | Redis Stack + FastAPI gateway |
-| `litellm_config.yaml` | Model deployments, prices, fallbacks |
-| `router/main.py` | Request lifecycle: auth → cache → classify → route → cascade → log |
-| `router/classifier.py` | Rules + lightweight learned head, returns tier |
-| `router/semantic_cache.py` | 2-layer cache (exact + HNSW) on Redis Stack |
-| `router/pricing.py` | Server-side cost computation including prompt-cache discount |
-| `tests/smoke.py` | 5-call smoke test exercising every tier |
+| Gateway: routing, caching, fallbacks | ✅ Live |
+| Shadow eval: pairwise judge + report | ✅ Live |
+| Codespace dev environment | ✅ |
+| 200-prompt classifier corpus | ✅ Seed labels by Claude |
+| Redis fail-open | ✅ Merged |
+| `deploy/pilot.sh` | ✅ |
+| Mirror samples (Python + Node) | ✅ |
+| Demo script for Loom | ✅ |
+| Pricing calculator | ✅ |
+| Outreach templates | ✅ |
+| 4-min Loom demo recording | ⏳ Person A records |
+| Real customer pilot | ⏳ Person B closes |
 
-### `shadow-eval/` — proves quality is preserved
+## Team split
 
-| File | Purpose |
+- **Person A — Builder.** Owns gateway, deploy, demo recording.
+- **Person B — Hustler.** Owns outreach, calls, pilots, customer relationship.
+
+## Next 14 days
+
+| Person A | Person B |
 |---|---|
-| `promptfooconfig.yaml` | Promptfoo config for per-row rubric eval (UI-friendly) |
-| `judge_prompt.txt` | Pairwise rubric — 5 axes, strict tie rules |
-| `run_pairwise.py` | Concurrent baseline+shadow calls, randomized-order judge |
-| `generate_report.py` | Renders `report.html` — the CTO deliverable |
-| `capture_traffic.py` | Stratified sampler from gateway's `shadow_log.jsonl` |
-| `dataset.jsonl` | 10-prompt seed; replace with real captured traffic for clients |
+| Test `pilot.sh` end-to-end | Polish LinkedIn profile, set up Calendly |
+| Record the 4-min Loom | Send 15 LinkedIn requests/day |
+| Export `one_pager.html` to PDF | Run discovery calls (target 5-8) |
+| Be ready to deploy pilot in <2 hours | Sign first pilot agreement by Day 14 |
 
-## How the pieces fit at a client
+## License
 
-1. **Pilot week 1** — deploy gateway in passthrough mode (set `ENABLE_CLASSIFIER=false`, all traffic to baseline tier, but cache + log on). Capture `shadow_log.jsonl`.
-2. **Week 2** — `capture_traffic.py` → `dataset.jsonl`. Run `run_pairwise.py` to baseline the data.
-3. **Week 2** — turn on classifier + cascade. Re-run pairwise. Generate `report.html`.
-4. **Week 3** — present report. Promote to canary (1% → 10% → 50% → 100%).
-5. **Ongoing** — weekly auto-generated report; alert on win-or-tie rate < 98%.
-
-## Hardening before client #1
-
-The skeletons here are deliberately compact. Before you charge anyone:
-
-- Multi-tenant key store (Postgres or Vault), not env-file master key
-- Per-tenant Helm chart, not docker-compose
-- Prometheus exporter (`prometheus-fastapi-instrumentator`)
-- Trace export to Langfuse (a few lines in `_post_hook`)
-- Circuit breaker on Redis (don't let cache outage kill traffic)
-- PII scrubber (Microsoft Presidio) before cache write
-- Re-train classifier on per-client data (the seeded one is generic)
-- Streaming cascade — current skeleton bypasses cascade for streams
-- SOC2 runway
-
-## Pricing model
-
-Recommended: **% of verified savings**, capped, with a floor.
-- "Verified" = pairwise-judged win-or-tie ≥ 98% on rolling 5k-call sample
-- Baseline locked to Month 0 cost-per-task
-- Floor (e.g. $5k/mo) covers the work even when savings dip
+Internal. Not open-source. Not for redistribution.

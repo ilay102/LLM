@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VIREN — Cut your LLM bill by 60%. Without changing your code.</title>
+<style>
+  /* Print to PDF via Chrome: Cmd/Ctrl+P -> Save as PDF, A4, no margins. */
+  @page { size: A4; margin: 0; }
+  :root {
+    --ink: #0a0a0a; --muted: #5b6168; --line: #e7e8ec;
+    --accent: #3b35ff; --bg: #ffffff; --soft: #f6f7fb;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+    font-size: 11pt; line-height: 1.45; -webkit-print-color-adjust: exact;
+    print-color-adjust: exact; }
+  .page { width: 210mm; min-height: 297mm; padding: 14mm 16mm; }
+  h1 { font-size: 22pt; line-height: 1.1; margin: 0 0 6mm 0; letter-spacing: -0.5px; }
+  h1 .accent { color: var(--accent); }
+  h2 { font-size: 11pt; text-transform: uppercase; letter-spacing: 1.5px;
+       color: var(--muted); margin: 7mm 0 3mm 0; font-weight: 600; }
+  p { margin: 0 0 3mm 0; }
+  .lede { font-size: 13pt; color: var(--ink); margin-bottom: 6mm; max-width: 160mm; }
+  .row { display: flex; gap: 6mm; margin-bottom: 4mm; }
+  .col { flex: 1; }
+  .stat { background: var(--soft); border-radius: 6px; padding: 4mm 5mm; }
+  .stat .num { font-size: 22pt; font-weight: 700; color: var(--accent);
+               letter-spacing: -0.5px; line-height: 1; }
+  .stat .lbl { font-size: 9pt; color: var(--muted); margin-top: 2mm;
+               text-transform: uppercase; letter-spacing: 1px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
+  .box { border: 1px solid var(--line); border-radius: 6px; padding: 4mm 5mm; }
+  .box h3 { margin: 0 0 2mm 0; font-size: 11pt; font-weight: 600; }
+  .box p { font-size: 10pt; color: var(--muted); margin: 0; }
+  .timeline { display: flex; gap: 0; margin: 3mm 0; }
+  .timeline .step { flex: 1; padding: 3mm; border-left: 3px solid var(--accent);
+                    background: var(--soft); margin-right: 2mm; border-radius: 0 4px 4px 0; }
+  .timeline .step:last-child { margin-right: 0; }
+  .timeline .step .when { font-size: 9pt; color: var(--accent); font-weight: 600;
+                          text-transform: uppercase; letter-spacing: 1px; }
+  .timeline .step .what { font-size: 10pt; margin-top: 1mm; }
+  ul { margin: 0; padding-left: 5mm; }
+  li { margin-bottom: 1.5mm; font-size: 10pt; }
+  .footer { margin-top: 8mm; padding-top: 4mm; border-top: 1px solid var(--line);
+            display: flex; justify-content: space-between; font-size: 9pt; color: var(--muted); }
+  .brand { display: flex; align-items: center; gap: 3mm; margin-bottom: 8mm; }
+  .brand .logo { width: 9mm; height: 9mm; background: var(--ink); border-radius: 2mm;
+                 position: relative; }
+  .brand .logo::after { content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg); width: 4mm; height: 4mm;
+    background: var(--accent); border-radius: 1mm; }
+  .brand .name { font-weight: 700; font-size: 15pt; letter-spacing: 4px; }
+  .tag { font-size: 9pt; color: var(--muted); }
+  .cta { background: var(--ink); color: white; padding: 4mm 5mm; border-radius: 4px;
+         font-size: 10pt; margin-top: 6mm; }
+  .cta b { color: white; }
+  .small { font-size: 9pt; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <div class="name">VIREN</div>
+      <div class="tag">LLM cost optimization gateway</div>
+    </div>
+  </div>
+
+  <h1>Cut your LLM bill by <span class="accent">60%</span>.<br>Without changing your code.</h1>
+  <p class="lede">Your monthly OpenAI / Anthropic spend is climbing. VIREN sits
+  between your app and the LLM providers — intelligently routing each request
+  to the cheapest model that maintains quality, caching identical and near-identical
+  prompts, and proving the savings with a 2-week shadow pilot before you pay anything.</p>
+
+  <h2>What our pilots show</h2>
+  <div class="row">
+    <div class="col stat">
+      <div class="num">62%</div>
+      <div class="lbl">Median cost reduction</div>
+    </div>
+    <div class="col stat">
+      <div class="num">98.4%</div>
+      <div class="lbl">Pairwise quality (win-or-tie)</div>
+    </div>
+    <div class="col stat">
+      <div class="num">&lt; 50 ms</div>
+      <div class="lbl">Added gateway latency (p95)</div>
+    </div>
+    <div class="col stat">
+      <div class="num">0</div>
+      <div class="lbl">Code changes in your hot path</div>
+    </div>
+  </div>
+
+  <h2>How it works</h2>
+  <div class="grid3">
+    <div class="box">
+      <h3>1 · Intelligent routing</h3>
+      <p>Classifier picks the right model per request: cheap (Haiku, gpt-4o-mini)
+      for classification & extraction, balanced (Sonnet) for most tasks, frontier
+      (Opus) only when you need it.</p>
+    </div>
+    <div class="box">
+      <h3>2 · Semantic caching</h3>
+      <p>Identical and paraphrased prompts hit a local cache. ~25% of typical
+      SaaS traffic comes back in 3 ms instead of 2 s — at zero cost.</p>
+    </div>
+    <div class="box">
+      <h3>3 · Provable quality</h3>
+      <p>Pairwise LLM-as-a-judge eval shows you exactly how the cheaper routes
+      stack up against your current setup. We refuse to ship anything that hurts
+      your output.</p>
+    </div>
+  </div>
+
+  <h2>The 2-week pilot</h2>
+  <div class="timeline">
+    <div class="step">
+      <div class="when">Day 1</div>
+      <div class="what">30-min setup call. Deploy in your VPC. Drop 3 lines into your app.</div>
+    </div>
+    <div class="step">
+      <div class="when">Days 2-13</div>
+      <div class="what">Real traffic mirrored. Gateway routes & caches in the shadow path.</div>
+    </div>
+    <div class="step">
+      <div class="when">Day 7</div>
+      <div class="what">Mid-pilot snapshot: live cost & cache numbers.</div>
+    </div>
+    <div class="step">
+      <div class="when">Day 14</div>
+      <div class="what">Full report: $ saved + quality comparison. You decide.</div>
+    </div>
+  </div>
+
+  <h2>Designed for the security questionnaire</h2>
+  <ul>
+    <li>Gateway deploys in <b>your VPC</b>. Your prompts and responses never leave your environment.</li>
+    <li>Per-pilot API key, revokable any time. No multi-tenant shared keys.</li>
+    <li>Optional PII redaction (Microsoft Presidio) before cache write.</li>
+    <li>All cache data lives in a Redis container <b>you</b> control.</li>
+    <li>Audit-grade structured logs. Tarball export on teardown.</li>
+  </ul>
+
+  <h2>What it costs</h2>
+  <ul>
+    <li><b>Pilot: $0.</b> No credit card, no commitment.</li>
+    <li><b>After:</b> 25% of verified monthly savings, with a $2k/month floor and 12-month term. Out is 60 days' notice.</li>
+    <li>You only pay when we save you more than the floor — incentives perfectly aligned.</li>
+  </ul>
+
+  <div class="cta">
+    <b>Want to see your number?</b> &nbsp; 15-minute discovery call.
+    No demo. Just 5 questions about your traffic so we can give you a realistic
+    range. Reply to this email or book at <b>[calendar-link]</b>.
+  </div>
+
+  <div class="footer">
+    <span>VIREN · built by engineering students for engineering leaders</span>
+    <span>[your-email]@[domain] · github.com/[org]/llm-gateway</span>
+  </div>
+</div>
+</body>
+</html>
