@@ -1,3 +1,11 @@
+import sys
+from unittest.mock import MagicMock
+
+# litellm is not installed in the lightweight CI environment; stub it before
+# importing main so only the pure looks_low_quality function is exercised.
+if "litellm" not in sys.modules:
+    sys.modules["litellm"] = MagicMock()
+
 import pytest
 from main import looks_low_quality
 
