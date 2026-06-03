@@ -10,6 +10,9 @@ Everything Person B needs to sell the pilot.
 | `pricing_calculator.html` | Interactive savings calculator | Person B shares with prospects | After they share rough $ spend |
 | `outreach_templates.md` | 11 pre-drafted messages | Person B copy-pastes daily | Throughout the 14-day sprint |
 | `demo_script.md` | Script for the 4-min Loom | Person A records once | Week 1 (one-time) |
+| `demo_dashboard.html` | **Live interactive demo** for in-person events | Person A on a laptop at events | At career fairs, hackathons, conferences |
+| `landing_page.html` | Public landing page | Hosted on GitHub Pages / Vercel | Linked from QR codes, emails, LinkedIn |
+| `EVENT_PLAYBOOK.md` | **7-day prep + on-the-day script** for live events | Person A | Before any in-person event |
 
 ## How to use the one-pager
 

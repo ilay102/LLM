@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VIREN — Cut your LLM bill by 60%</title>
+<meta name="description" content="LLM cost optimization gateway. Cut your AI bill 50-70% without changing your code. Free 2-week pilot.">
+<style>
+  :root {
+    --bg: #fcfcfd; --ink: #0a0a0a; --muted: #5b6168;
+    --line: #e7e8ec; --accent: #6d63ff;
+    --soft: #f4f4f8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+    font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Header ---------- */
+  header { padding: 28px 0; border-bottom: 1px solid var(--line); }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo { width: 36px; height: 36px; background: var(--ink); border-radius: 8px; position: relative; }
+  .logo::after { content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg); width: 16px; height: 16px;
+    background: var(--accent); border-radius: 3px; }
+  .brand .name { font-weight: 700; font-size: 22px; letter-spacing: 5px; }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 80px 0 56px; }
+  h1 { font-size: 56px; line-height: 1.04; letter-spacing: -1.5px; margin: 0 0 24px;
+    font-weight: 800; max-width: 800px; }
+  h1 .accent { color: var(--accent); }
+  .lede { font-size: 19px; color: var(--muted); max-width: 640px; margin: 0 0 36px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 14px 24px; border-radius: 8px;
+    font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer;
+    border: 1px solid transparent; transition: all 0.15s; }
+  .btn-primary { background: var(--ink); color: white; }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .btn-ghost:hover { border-color: var(--ink); }
+
+  /* ---------- Stats ---------- */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    padding: 56px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat .v { font-size: 36px; font-weight: 800; color: var(--accent);
+    line-height: 1; letter-spacing: -1px; }
+  .stat .l { font-size: 13px; color: var(--muted); margin-top: 8px;
+    text-transform: uppercase; letter-spacing: 1px; }
+  @media (max-width: 700px) { .stats { grid-template-columns: 1fr 1fr; } }
+
+  /* ---------- Sections ---------- */
+  section { padding: 72px 0; }
+  h2 { font-size: 32px; margin: 0 0 12px; letter-spacing: -0.5px; font-weight: 700; }
+  .section-sub { color: var(--muted); margin: 0 0 40px; max-width: 580px; }
+
+  /* ---------- How it works ---------- */
+  .how-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .how-card { background: var(--soft); border-radius: 12px; padding: 28px; }
+  .how-card .num { color: var(--accent); font-weight: 700; font-size: 13px;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .how-card h3 { margin: 0 0 8px; font-size: 18px; font-weight: 600; }
+  .how-card p { margin: 0; color: var(--muted); font-size: 14px; }
+  @media (max-width: 700px) { .how-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Pilot timeline ---------- */
+  .timeline { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;
+    margin-top: 20px; }
+  .tl-step { background: var(--soft); padding: 20px; border-radius: 12px;
+    border-top: 3px solid var(--accent); }
+  .tl-step .when { font-size: 12px; color: var(--accent); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .tl-step .what { font-size: 14px; }
+  @media (max-width: 700px) { .timeline { grid-template-columns: 1fr 1fr; } }
+
+  /* ---------- Code sample ---------- */
+  pre { background: var(--ink); color: #e4e6eb; padding: 22px; border-radius: 12px;
+    font-family: "JetBrains Mono", "SF Mono", Menlo, monospace; font-size: 13px;
+    line-height: 1.6; overflow-x: auto; margin: 0; }
+  pre .c { color: #7b8194; }
+  pre .k { color: #ff7eb6; }
+  pre .s { color: #95e8b3; }
+
+  /* ---------- CTA bottom ---------- */
+  .cta-block { background: var(--ink); color: white; border-radius: 16px;
+    padding: 48px; margin: 24px 0; text-align: center; }
+  .cta-block h2 { color: white; }
+  .cta-block .sub { color: rgba(255,255,255,0.7); margin: 12px 0 28px; }
+  .cta-block .btn-primary { background: var(--accent); color: white; }
+
+  /* ---------- Footer ---------- */
+  footer { padding: 32px 0; border-top: 1px solid var(--line); color: var(--muted);
+    font-size: 13px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  footer a { color: var(--muted); margin-left: 16px; text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo"></div>
+      <div class="name">VIREN</div>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Cut your LLM bill by <span class="accent">60%</span>.<br>Without changing your code.</h1>
+    <p class="lede">VIREN sits between your app and OpenAI / Anthropic. Routes each request
+    to the right model. Caches identical and similar prompts. Proves the savings
+    with a free 2-week shadow pilot before you ever pay.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="[CALENDLY]">Book a 15-min discovery call →</a>
+      <a class="btn btn-ghost" href="[LOOM]">Watch 4-min demo</a>
+    </div>
+  </div>
+</section>
+
+<section style="padding: 0;">
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="v">62%</div><div class="l">Median cost reduction</div></div>
+      <div class="stat"><div class="v">98.4%</div><div class="l">Pairwise quality win-or-tie</div></div>
+      <div class="stat"><div class="v">&lt; 50ms</div><div class="l">Added gateway latency</div></div>
+      <div class="stat"><div class="v">3 lines</div><div class="l">Code change in your app</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="section-sub">Three things that compound together. None of them require changing your application code.</p>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="num">01 · Routing</div>
+        <h3>Right model per request</h3>
+        <p>Classifier picks cheap (Haiku / gpt-4o-mini) for easy stuff, balanced (Sonnet) for most things, frontier (Opus) when you actually need it. Tuned on your traffic during the pilot.</p>
+      </div>
+      <div class="how-card">
+        <div class="num">02 · Caching</div>
+        <h3>Pay for the same answer twice? No.</h3>
+        <p>Local semantic cache catches identical and paraphrased prompts. Typical SaaS sees 25% cache hit rate. Cached responses cost $0 and return in 3 milliseconds.</p>
+      </div>
+      <div class="how-card">
+        <div class="num">03 · Quality proof</div>
+        <h3>Show, don't tell</h3>
+        <p>Pairwise LLM-as-judge eval runs over real traffic. You get an HTML report showing win-or-tie rate against your current setup. We refuse to ship routes that hurt quality.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background: var(--soft);">
+  <div class="wrap">
+    <h2>The free 2-week pilot</h2>
+    <p class="section-sub">No commitment. No code change in your hot path. Zero cost on your side. Just data.</p>
+    <div class="timeline">
+      <div class="tl-step">
+        <div class="when">Day 1</div>
+        <div class="what">30-min setup. Deploy in your VPC. Drop 3 lines into your app for traffic mirroring.</div>
+      </div>
+      <div class="tl-step">
+        <div class="when">Days 2-13</div>
+        <div class="what">Real traffic mirrored. Gateway routes & caches. Your prod path is untouched.</div>
+      </div>
+      <div class="tl-step">
+        <div class="when">Day 7</div>
+        <div class="what">Mid-pilot snapshot: live cost & cache numbers. No decisions yet.</div>
+      </div>
+      <div class="tl-step">
+        <div class="when">Day 14</div>
+        <div class="what">Final report. $ saved, quality comparison, every routing decision. You decide.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The integration</h2>
+    <p class="section-sub">Drop this into your app on a dev branch. Mirror runs fire-and-forget. Your prod calls return first, every time.</p>
+    <pre><span class="c"># Python — with the official OpenAI SDK</span>
+<span class="k">from</span> openai <span class="k">import</span> OpenAI
+<span class="k">from</span> mirror_python <span class="k">import</span> attach_mirror
+
+client = OpenAI(api_key=<span class="s">"sk-..."</span>)
+attach_mirror(
+    client,
+    gateway_url=<span class="s">"https://gw.your-vpc:8000/v1"</span>,
+    gateway_key=<span class="s">"pilot-xxxxxxxx"</span>,
+    pilot_id=<span class="s">"acme-pilot-1"</span>,
+)
+
+<span class="c"># Now use client as usual — every call is mirrored.</span>
+resp = client.chat.completions.create(model=<span class="s">"gpt-4o"</span>, messages=[...])</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Security</h2>
+    <p class="section-sub">Designed for the questionnaire phase.</p>
+    <ul style="color: var(--muted); padding-left: 20px; line-height: 2;">
+      <li>Gateway deploys in your VPC. Prompts and responses never leave your environment.</li>
+      <li>Per-pilot API key, revokable any time. No multi-tenant shared keys.</li>
+      <li>Optional PII redaction (Microsoft Presidio) before cache write.</li>
+      <li>All cache data lives in a Redis container you control.</li>
+      <li>Audit-grade structured logs. Tarball export on teardown.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cta-block">
+      <h2>See your number.</h2>
+      <p class="sub">15-minute discovery call. No demo, no pitch. 5 questions about your traffic so we can give you a realistic savings range.</p>
+      <a class="btn btn-primary" href="[CALENDLY]">Book the call →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display: flex; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 12px;">
+    <span>VIREN — engineered by [your-name] &amp; [partner-name]</span>
+    <span>
+      <a href="mailto:[your-email]">[your-email]</a>
+      <a href="[github-url]">GitHub</a>
+      <a href="[CALENDLY]">Book a call</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>
