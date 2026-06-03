@@ -1,32 +1,37 @@
 """
 Complexity classifier — picks a tier (cheap / balanced / frontier).
 
-Strategy: rules first, then a learned head. The learned head is a logistic
-regression on the bge-small embedding of the last user message + a few hand
-features. We ship a tiny default trained on a synthetic-but-realistic seed
-corpus; clients re-train on their own shadow traffic in week 1 (see
-shadow-eval/ for the harness).
+Two-layer design:
+  1. RULE layer (fast, deterministic) — fires on obvious cases.
+  2. LEARNED layer — nearest-centroid in bge-small embedding space.
+     Trained from `classifier/labels.jsonl` via `classifier/train.py`.
+     Weights live at `classifier/weights.npz` and load at startup.
 
-Why not call an LLM to classify? Because that costs money and adds latency
-on EVERY request. A 5-15ms CPU classifier is the right move.
+If the trained weights aren't found, the learned layer falls back to a
+length+code heuristic and logs a warning. Never silently degrades into
+zero-vector classification (we used to; that was a bug).
 """
 from __future__ import annotations
+import logging
+import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
 import numpy as np
 
 from embeddings import embed
 
+LOG = logging.getLogger("gateway.classifier")
 Tier = Literal["cheap", "balanced", "frontier"]
 
 
 @dataclass
 class RouteDecision:
     tier: Tier
-    reason: str          # human-readable, logged for the client report
-    confidence: float    # 0..1; used by the cascade to decide if we need a verifier
+    reason: str
+    confidence: float
 
 
 # --- Rule layer -------------------------------------------------------------
@@ -34,7 +39,7 @@ class RouteDecision:
 REASONING_KEYWORDS = re.compile(
     r"\b(prove|derive|step[- ]by[- ]step|reason|chain[- ]of[- ]thought|"
     r"plan and execute|multi[- ]step|complex algorithm|optimi[sz]e|"
-    r"refactor|architecture|design pattern)\b",
+    r"refactor|architecture|design pattern|trade[- ]offs?)\b",
     re.IGNORECASE,
 )
 SIMPLE_KEYWORDS = re.compile(
@@ -46,64 +51,98 @@ CODE_BLOCK = re.compile(r"```")
 
 
 def rule_decision(messages: list[dict], requested_max_tokens: int | None) -> RouteDecision | None:
-    """Returns a decision if a hard rule fires, else None."""
     last_user = next((m["content"] for m in reversed(messages) if m.get("role") == "user"), "")
     if not isinstance(last_user, str):
-        # Multimodal content -> safer default to balanced
         return RouteDecision("balanced", "non-text content", 0.6)
 
     n_chars = len(last_user)
     n_code_blocks = len(CODE_BLOCK.findall(last_user))
 
-    # 1. Reasoning markers -> never downgrade
     if REASONING_KEYWORDS.search(last_user):
         return RouteDecision("frontier", "reasoning keywords matched", 0.9)
 
-    # 2. Heavy code with long output expectation -> balanced or up
     if n_code_blocks >= 2 and (requested_max_tokens or 0) > 1500:
         return RouteDecision("balanced", "multi-block code with large output", 0.85)
 
-    # 3. Tiny prompts that look like classification/extraction -> cheap
     if n_chars < 800 and SIMPLE_KEYWORDS.search(last_user):
         return RouteDecision("cheap", "short + simple-task keywords", 0.9)
 
-    # 4. Very short prompt, no special signal -> cheap
     if n_chars < 250 and n_code_blocks == 0:
         return RouteDecision("cheap", "very short prompt", 0.8)
 
     return None
 
 
-# --- Learned layer ----------------------------------------------------------
-# Tiny zero-dependency logistic-regression head. Weights below are seeded from
-# a small synthetic dataset. The retrain script lives in shadow-eval/.
-# Order: [cheap, balanced, frontier]
+# --- Learned layer: nearest-centroid in bge space ---------------------------
 
-# A real deployment loads these from disk per-tenant; we inline a default.
-_W = np.array([
-    # 384 dims for embedding + 3 hand features (len, n_code, has_url)
-    # We collapse to a 3-class head over a 4-feature reduction for brevity.
-], dtype=np.float32)
+_CENTROIDS: np.ndarray | None = None      # shape (n_classes, dim)
+_CLASSES: list[str] | None = None         # parallel to centroid rows
 
-# For the open-source skeleton we use a simple heuristic head. Replace with
-# the real model after you've collected ~5k labeled shadow samples.
+
+def _find_weights() -> Path | None:
+    """Search common locations the weights file might live at runtime."""
+    candidates = [
+        Path(os.environ.get("CLASSIFIER_WEIGHTS", "")),
+        Path("/app/classifier/weights.npz"),
+        Path(__file__).resolve().parent.parent.parent / "classifier" / "weights.npz",
+        Path.cwd() / "classifier" / "weights.npz",
+    ]
+    for p in candidates:
+        if p and p.exists():
+            return p
+    return None
+
+
+def load_weights() -> bool:
+    """Load trained centroids into module state. Returns True on success."""
+    global _CENTROIDS, _CLASSES
+    path = _find_weights()
+    if path is None:
+        LOG.warning("classifier weights.npz not found — learned layer will use heuristic. "
+                    "Run `python classifier/train.py` to fix.")
+        return False
+    try:
+        data = np.load(path, allow_pickle=False)
+        _CENTROIDS = np.asarray(data["centroids"], dtype=np.float32)
+        _CLASSES = [str(c) for c in data["classes"]]
+        LOG.info("classifier loaded: %d centroids dim=%d classes=%s",
+                 _CENTROIDS.shape[0], _CENTROIDS.shape[1], _CLASSES)
+        return True
+    except Exception as e:
+        LOG.exception("failed to load classifier weights from %s: %s", path, e)
+        return False
+
+
 def learned_decision(messages: list[dict]) -> RouteDecision:
     last_user = next((m["content"] for m in reversed(messages) if m.get("role") == "user"), "")
     if not isinstance(last_user, str):
         return RouteDecision("balanced", "fallback non-text", 0.5)
 
-    # Embedding-based proxy: long, dense, technical text -> harder.
-    vec = embed(last_user[:4000])
-    norm_signal = float(np.linalg.norm(vec))   # ~1.0 (normalised)
-    length_signal = min(len(last_user) / 4000, 1.0)
-    code_signal = min(last_user.count("```") / 4, 1.0)
+    # If trained weights are loaded, use nearest centroid.
+    if _CENTROIDS is not None and _CLASSES is not None:
+        vec = embed(last_user[:4000])  # cap input so embedding stays fast
+        sims = _CENTROIDS @ vec  # cosine sim because vectors are L2-normalised
+        order = np.argsort(-sims)
+        top, second = int(order[0]), int(order[1]) if len(order) > 1 else int(order[0])
+        margin = float(sims[top] - sims[second])
+        tier = _CLASSES[top]
+        # Confidence = margin to next class (0..1+), clipped
+        conf = max(0.0, min(1.0, 0.5 + margin * 5))
+        return RouteDecision(
+            tier=tier,                                        # type: ignore[arg-type]
+            reason=f"learned: sim_top={sims[top]:.2f} margin={margin:.2f}",
+            confidence=conf,
+        )
 
-    score_hard = 0.55 * length_signal + 0.35 * code_signal + 0.10 * norm_signal
+    # Heuristic fallback (only when no trained weights)
+    n = len(last_user)
+    code = last_user.count("```")
+    score_hard = min(n / 4000, 1.0) * 0.55 + min(code / 4, 1.0) * 0.45
     if score_hard > 0.7:
-        return RouteDecision("frontier", f"learned-hard score={score_hard:.2f}", score_hard)
+        return RouteDecision("frontier", f"heuristic score={score_hard:.2f}", score_hard)
     if score_hard > 0.35:
-        return RouteDecision("balanced", f"learned-mid score={score_hard:.2f}", 1 - abs(score_hard - 0.5))
-    return RouteDecision("cheap", f"learned-easy score={score_hard:.2f}", 1 - score_hard)
+        return RouteDecision("balanced", f"heuristic score={score_hard:.2f}", 1 - abs(score_hard - 0.5))
+    return RouteDecision("cheap", f"heuristic score={score_hard:.2f}", 1 - score_hard)
 
 
 def classify(messages: list[dict], requested_max_tokens: int | None = None) -> RouteDecision:

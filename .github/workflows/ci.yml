@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install runtime deps
+        working-directory: gateway/router
+        run: |
+          pip install --upgrade pip
+          # Skip heavy ML deps in unit-test CI; only what tests need
+          pip install fastapi==0.115.5 pydantic==2.10.2 numpy==1.26.4 \
+                      pyyaml==6.0.2 redis==5.2.0 pytest==8.3.4 httpx==0.28.1
+
+      - name: Run unit tests
+        working-directory: gateway
+        env:
+          GATEWAY_MASTER_KEY: test-master-key
+          ENABLE_SEMANTIC_CACHE: 'false'
+          ENABLE_PII_REDACTION: 'true'
+        run: |
+          pytest -m unit -v
+
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ruff
+        run: pip install ruff==0.7.4
+      - name: Lint
+        working-directory: gateway
+        run: |
+          # Permissive ruleset for now; tighten over time.
+          ruff check router/ tests/ --select=E9,F63,F7,F82 --exit-zero
+          ruff check router/ tests/ --select=E,F --exit-zero
+
+  security-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install scanners
+        run: pip install bandit pip-audit
+      - name: Bandit (high-severity only)
+        run: bandit -r gateway/router/ -lll || true
+      - name: pip-audit (warn-only)
+        working-directory: gateway/router
+        run: pip-audit -r requirements.txt --strict || true
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
