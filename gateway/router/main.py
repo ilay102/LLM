@@ -217,7 +217,9 @@ def looks_low_quality(response: dict, expects_json: bool = False) -> bool:
         if expects_json:
             stripped = text.strip()
             if stripped.startswith("```"):
-                stripped = stripped.split("```", 2)[-1].rsplit("```", 1)[0].strip()
+                parts = stripped.split("```", 2)
+                # parts[0]="" parts[1]="json\n{...}\n" parts[2]="" — use middle
+                stripped = parts[1].strip() if len(parts) > 1 else stripped
                 if stripped.startswith("json"):
                     stripped = stripped[4:].strip()
             try:

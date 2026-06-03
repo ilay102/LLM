@@ -42,7 +42,7 @@ model_list:
   # ---------- TIER: frontier (reasoning, agents, code-gen escalations) ----------
   - model_name: tier-frontier
     litellm_params:
-      model: anthropic/claude-opus-4-7
+      model: anthropic/claude-opus-4-8
       api_key: os.environ/ANTHROPIC_API_KEY
     model_info:
       input_cost_per_token: 0.000015

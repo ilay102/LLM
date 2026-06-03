@@ -1,0 +1,16 @@
+{
+  "trained_at": "2026-06-03T12:22:22Z",
+  "labels_source": "labels_claude.jsonl",
+  "n_train": 160,
+  "n_test": 40,
+  "held_out_accuracy": 0.725,
+  "per_class_accuracy": {
+    "cheap": 0.75,
+    "balanced": 0.625,
+    "frontier": 0.875
+  },
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "embedding_dim": 384,
+  "approach": "nearest centroid in normalised embedding space",
+  "note": "If accuracy < 0.85, re-label disagreements and re-train. Rule layer still runs first; learned layer is fallback for unmatched."
+}

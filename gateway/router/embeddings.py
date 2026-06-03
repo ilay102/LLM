@@ -12,19 +12,19 @@ not musl). See CONTRIBUTING.md.
 from __future__ import annotations
 import threading
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 EMBED_DIM = 384
 
-_MODEL: SentenceTransformer | None = None
+_MODEL = None
 _LOCK = threading.Lock()
 
 
-def get_model() -> SentenceTransformer:
+def get_model():
     global _MODEL
     if _MODEL is None:
         with _LOCK:
             if _MODEL is None:
+                from sentence_transformers import SentenceTransformer  # lazy — avoids torch at import time
                 _MODEL = SentenceTransformer("BAAI/bge-small-en-v1.5")
     return _MODEL
 

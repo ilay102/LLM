@@ -81,14 +81,15 @@ _CLASSES: list[str] | None = None         # parallel to centroid rows
 
 def _find_weights() -> Path | None:
     """Search common locations the weights file might live at runtime."""
+    env_val = os.environ.get("CLASSIFIER_WEIGHTS", "")
     candidates = [
-        Path(os.environ.get("CLASSIFIER_WEIGHTS", "")),
+        Path(env_val) if env_val else None,
         Path("/app/classifier/weights.npz"),
         Path(__file__).resolve().parent.parent.parent / "classifier" / "weights.npz",
         Path.cwd() / "classifier" / "weights.npz",
     ]
     for p in candidates:
-        if p and p.exists():
+        if p and p.exists() and p.is_file():
             return p
     return None
 

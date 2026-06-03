@@ -30,7 +30,7 @@ from typing import Any
 DB_PATH = Path(os.environ.get("TENANT_DB", "/app/data/tenants.db"))
 DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-_LOCK = threading.Lock()
+_LOCK = threading.RLock()  # reentrant: create_tenant holds lock while calling conn()
 
 
 def _hash_key(api_key: str) -> str:

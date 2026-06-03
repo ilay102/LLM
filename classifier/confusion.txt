@@ -1,0 +1,8 @@
+
+Confusion matrix (rows=true, cols=pred):
+             cheap   balanced   frontier
+  cheap           12          3          1
+  balanced          3         10          3
+  frontier          1          0          7
+
+Held-out accuracy: 72.5% (29/40)

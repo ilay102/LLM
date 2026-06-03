@@ -47,9 +47,34 @@ def _try_load_presidio() -> None:
             return
         _LOAD_TRIED = True
         try:
-            from presidio_analyzer import AnalyzerEngine
+            from presidio_analyzer import AnalyzerEngine, PatternRecognizer, Pattern
+            from presidio_analyzer.nlp_engine import NlpEngineProvider
             from presidio_anonymizer import AnonymizerEngine
-            _ANALYZER = AnalyzerEngine()
+            provider = NlpEngineProvider(nlp_configuration={
+                "nlp_engine_name": "spacy",
+                "models": [{"lang_code": "en", "model_name": "en_core_web_sm"}],
+            })
+            engine = AnalyzerEngine(nlp_engine=provider.create_engine())
+            # en_core_web_sm misses SSNs; add a direct regex recognizer
+            engine.registry.add_recognizer(PatternRecognizer(
+                supported_entity="US_SSN",
+                patterns=[Pattern("ssn", r"\b\d{3}-\d{2}-\d{4}\b", 0.9)],
+            ))
+            # Supplement built-in CC recognizer for spaced/dashed formats
+            engine.registry.add_recognizer(PatternRecognizer(
+                supported_entity="CREDIT_CARD",
+                patterns=[Pattern("cc_spaced", r"\b(?:\d[ -]?){13,19}\b", 0.65)],
+            ))
+            # Presidio has no built-in API key recognizer
+            engine.registry.add_recognizer(PatternRecognizer(
+                supported_entity="API_KEY",
+                patterns=[
+                    Pattern("sk_key", r"\bsk-[a-zA-Z0-9_-]{20,}\b", 0.9),
+                    Pattern("viren_key", r"\bviren_[a-zA-Z0-9_-]{20,}\b", 0.9),
+                    Pattern("ghp_key", r"\bghp_[a-zA-Z0-9]{20,}\b", 0.9),
+                ],
+            ))
+            _ANALYZER = engine
             _ANONYMIZER = AnonymizerEngine()
             LOG.info("Presidio loaded — PII redaction is active.")
         except ImportError:
@@ -70,10 +95,22 @@ def redact(text: str) -> tuple[str, list[dict]]:
 
     _try_load_presidio()
 
+    # Entity types that are too noisy / not real PII in most contexts
+    # Skip entity types that are too noisy or not real privacy-sensitive PII.
+    # Note: Presidio uses its own type names (LOCATION, PERSON), not spaCy names
+    # (GPE, LOC, PERSON) — we must filter on Presidio types here.
+    _SKIP_ENTITIES = {
+        "DATE_TIME", "ORDINAL", "QUANTITY", "MONEY", "PERCENT",
+        "LANGUAGE", "WORK_OF_ART", "EVENT", "FAC", "NORP",
+        "LOC", "GPE", "LAW", "PRODUCT", "TIME",           # spaCy names (kept for safety)
+        "LOCATION", "ORGANIZATION", "NRP",                 # Presidio names that are not PII
+    }
+
     # --- Presidio path ------------------------------------------------------
     if _ANALYZER is not None and _ANONYMIZER is not None:
         try:
             results = _ANALYZER.analyze(text=text, language="en")
+            results = [r for r in results if r.entity_type not in _SKIP_ENTITIES]
             if not results:
                 return text, []
             anon = _ANONYMIZER.anonymize(text=text, analyzer_results=results)
