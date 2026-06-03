@@ -58,9 +58,15 @@ SIMPLE_KEYWORDS = re.compile(
 # Captures the quoted/apostrophe-delimited source text inside a translate request
 _TRANSLATE_SRC = re.compile(r"['‘’\"](.*?)['’\"]", re.DOTALL)
 CODE_BLOCK = re.compile(r"```")
+TRANSLATION_PATTERN = re.compile(r"\btranslate\b.*\bto\b", re.IGNORECASE)
+JSON_MULTIFIELD = re.compile(
+    r"\b(?:as|into) (?:a )?json\b.*\b(?:with|fields?|keys?)\b",
+    re.IGNORECASE,
+)
+FIELD_LIST_PATTERN = re.compile(r"\b(?:fields?|keys?)\b[:\s].*?[,;]", re.IGNORECASE)
 
 
-def rule_decision(messages: list[dict], requested_max_tokens: int | None) -> RouteDecision | None:
+def rule_decision(messages, requested_max_tokens):
     last_user = next((m["content"] for m in reversed(messages) if m.get("role") == "user"), "")
     if not isinstance(last_user, str):
         return RouteDecision("balanced", "non-text content", 0.6)
@@ -68,25 +74,36 @@ def rule_decision(messages: list[dict], requested_max_tokens: int | None) -> Rou
     n_chars = len(last_user)
     n_code_blocks = len(CODE_BLOCK.findall(last_user))
 
+    # 1. Reasoning markers -> frontier (unchanged)
     if REASONING_KEYWORDS.search(last_user):
         return RouteDecision("frontier", "reasoning keywords matched", 0.9)
 
+    # 2. NEW: translations of full sentences/phrases need fluency -> balanced
+    if TRANSLATION_PATTERN.search(last_user):
+        # Find the content after "translate to X:" to measure length
+        m = re.search(r"translate.*?to\s+\w+\s*[:.]?\s*['\"]?(.+?)['\"]?$",
+                      last_user, re.IGNORECASE | re.DOTALL)
+        content = (m.group(1) if m else last_user).strip()
+        if len(content) > 25:
+            return RouteDecision("balanced", "translation of multi-word phrase needs fluency", 0.8)
+        # short translation (e.g. "Save changes") -> cheap is fine
+
+    # 3. NEW: multi-field JSON extraction -> balanced
+    if JSON_MULTIFIELD.search(last_user):
+        # Count comma-separated field-like tokens
+        comma_count = last_user.count(",")
+        if comma_count >= 3:
+            return RouteDecision("balanced", "multi-field JSON extraction needs precision", 0.85)
+
+    # 4. Heavy code with long output -> balanced (unchanged)
     if n_code_blocks >= 2 and (requested_max_tokens or 0) > 1500:
         return RouteDecision("balanced", "multi-block code with large output", 0.85)
 
-    # Structured extraction needs faithfulness — cheap models miss fields/formats
-    if EXTRACTION_KEYWORDS.search(last_user):
-        return RouteDecision("balanced", "structured extraction needs precision", 0.85)
-
-    # Long translation (>50 chars of source text) needs fluency from a stronger model
-    if re.search(r"\btranslate\b", last_user, re.IGNORECASE):
-        src_texts = _TRANSLATE_SRC.findall(last_user)
-        if src_texts and max(len(t) for t in src_texts) > 50:
-            return RouteDecision("balanced", "translation of long source text", 0.80)
-
+    # 5. Short + simple-task keywords -> cheap (unchanged)
     if n_chars < 800 and SIMPLE_KEYWORDS.search(last_user):
         return RouteDecision("cheap", "short + simple-task keywords", 0.9)
 
+    # 6. Very short -> cheap (unchanged)
     if n_chars < 250 and n_code_blocks == 0:
         return RouteDecision("cheap", "very short prompt", 0.8)
 
