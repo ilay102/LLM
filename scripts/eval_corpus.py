@@ -63,6 +63,8 @@ def percentile(xs, q):
 PRICE = {
     "haiku": (0.8 / 1e6, 4.0 / 1e6),
     "gpt-4o-mini": (0.15 / 1e6, 0.6 / 1e6),
+    "deepseek-chat": (0.27 / 1e6, 1.10 / 1e6),       # V3 — cheap tier
+    "deepseek-reasoner": (0.55 / 1e6, 2.19 / 1e6),   # R1 — frontier reasoning
     "sonnet": (3.0 / 1e6, 15.0 / 1e6),
     "opus": (15.0 / 1e6, 75.0 / 1e6),
 }
