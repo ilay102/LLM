@@ -1,0 +1,512 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>VIREN Quality Report — Pairwise Judge</title>
+<style>
+body{font-family:-apple-system,Inter,system-ui;max-width:1100px;margin:30px auto;color:#111;padding:0 20px}
+h1{font-size:28px;margin:0 0 6px}
+.sub{color:#666;margin-bottom:28px;font-size:15px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}
+.kpi{background:#f6f7fb;border-radius:10px;padding:18px}
+.kpi .v{font-size:36px;font-weight:700;line-height:1}
+.kpi .l{font-size:13px;color:#666;margin-top:4px}
+table{width:100%;border-collapse:collapse;margin:16px 0}
+th{text-align:left;padding:10px 8px;background:#f1f5f9;font-size:13px;color:#555;border-bottom:2px solid #e2e8f0}
+</style>
+</head><body>
+<h1>VIREN — Quality Report</h1>
+<div class="sub">Pairwise judge: claude-sonnet-4-6 · 30 prompts · A/B order randomised</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="v" style="color:#16a34a">73.3%</div><div class="l">Win-or-Tie (headline)</div></div>
+  <div class="kpi"><div class="v" style="color:#22c55e">5</div><div class="l">Wins (gateway better)</div></div>
+  <div class="kpi"><div class="v" style="color:#64748b">17</div><div class="l">Ties (equivalent)</div></div>
+  <div class="kpi"><div class="v" style="color:#ef4444">8</div><div class="l">Regressions (baseline better)</div></div>
+</div>
+
+<h2>Per-Prompt Audit</h2>
+<table>
+<thead><tr>
+  <th>#</th><th>Prompt</th><th>GW Model</th><th>Result</th><th>Axis</th><th>Reason</th>
+</tr></thead>
+<tbody>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">1</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Classify the sentiment of this review as POSITIVE, NEGATIVE, or NEUTRAL: 'The shipping was fast but the product broke on…</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#22c55e;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">WIN</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">FORMAT ADHERENCE</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses are correct and complete, but Response B is more appropriately concise and professional without unnecessary decorative elements like emojis and elaborate tables for a simple sentiment classification task.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">2</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Is the following tweet positive or negative? 'Just renewed my subscription, love the new dashboard.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#22c55e;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">WIN</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">FORMAT ADHERENCE</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">The question is simple and conversational; Response B gives a clean, appropriately concise answer, while Response A uses excessive markdown headers and formatting for what is a trivial sentiment classification task.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">3</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Rate the sentiment from 1 (very negative) to 5 (very positive): 'Support never replied to my ticket.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly identify the sentiment as 1 (very negative); they differ only in verbosity and formatting, with neither being materially more correct or complete for this simple sentiment rating task.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">4</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Tag this customer feedback as 'happy', 'frustrated', or 'neutral': 'I figured it out eventually but the docs are terribl…</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly identify the sentiment as 'frustrated'; the difference is only in verbosity and explanation detail, not correctness or completeness.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">5</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Is this review more positive or more negative? 'Product is fine but pricing feels predatory.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly identify the review as leaning negative due to the strong negative connotation of 'predatory' outweighing the lukewarm 'fine,' differing only in depth and formatting style.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">6</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Classify: 'Best onboarding flow I've ever used' → positive / negative / neutral?</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly classify the sentiment as positive with accurate reasoning; differences are purely stylistic.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">7</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Customer email starts with 'I want to cancel'. Classify intent as: CHURN / SUPPORT / BILLING / OTHER.</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly classify the intent as CHURN; they differ only in verbosity and formatting, not in correctness or completeness.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">8</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Label the emotion in this message: 'I waited 3 weeks for a response.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly identify frustration as the primary emotion and provide similar reasoning about the implied dissatisfaction from the long wait time, differing only in minor stylistic choices (A adds 'disappointment', B adds 'impatience').</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">9</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Tag this PR description as 'feature', 'bugfix', or 'refactor': 'Memoize expensive recomputation in dashboard.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">?</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">n/a</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">missing answer</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">10</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Sentiment of: 'works as advertised, no complaints.' Answer in one word.</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">FORMAT ADHERENCE</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly identify the sentiment as positive in one word, differing only in the presence of a trailing period which is a negligible stylistic difference.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">11</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Extract the company name and revenue as JSON: 'Acme Corp reported Q3 revenue of $4.2B, beating estimates.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">REGRESSION</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response A hallucinated a note about a '&lt;US_DRIVER_LICENSE&gt;' placeholder token that does not exist in the input, which is a factual error; Response B correctly extracts only what is present.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">12</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Extract email and phone from: 'Reach me at sarah.k@example.org or 555-0142.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">REGRESSION</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response B replaces the actual email address with a placeholder '&lt;EMAIL_ADDRESS&gt;' instead of extracting the real value 'sarah.k@example.org', making it factually incomplete and incorrect.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">13</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Pull the date and total amount from: 'Invoice #4421, dated March 12, total $2,499.50.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#22c55e;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">WIN</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">FORMAT ADHERENCE</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">The user asked a simple extraction question and Response B delivers a clean, direct answer without unnecessary tables, headers, and parsing breakdowns that add no value to a straightforward request.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">14</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Extract product SKU from: 'Order shipped: SKU-A7-2231 (qty 3).'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">REGRESSION</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response A incorrectly redacts 'A7' as a US driver's license placeholder, hallucinating a PII concern where none exists, while Response B correctly extracts the full SKU 'SKU-A7-2231'.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">15</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Find all person names in: 'Alice and Bob met with Carlos to discuss the proposal.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">REGRESSION</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response A incorrectly claims the text contains placeholder tags rather than actual names, when the sentence clearly contains the real names Alice, Bob, and Carlos.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">16</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Extract city and country: 'Our office is in Lisbon, Portugal.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly extract Lisbon as the city and Portugal as the country; differences are purely stylistic.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">17</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Pull the version number from: 'Upgraded to v3.14.2 last Tuesday.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">REGRESSION</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response A incorrectly redacted part of the version number (replacing '3' with a PII placeholder) and returned an incomplete version '14.2', while Response B correctly extracts the full version '3.14.2'.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Get the IP address from: 'Login attempt from 192.168.1.55 at 03:42 UTC.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">REGRESSION</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response B incorrectly claims there is no IP address in the input and hallucinates a placeholder, while Response A correctly identifies and extracts 192.168.1.55 from the provided string.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">19</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Extract the meeting time: 'Let us catch up Tuesday at 2pm PT.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">FORMAT ADHERENCE</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly extract the same information (Tuesday, 2:00 PM PT) with only minor stylistic differences in formatting.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">20</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Get the order number and status from: 'Order #88172 has been delivered.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly extract the order number (#88172) and status (Delivered) from the input text, differing only in minor formatting style.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">21</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Translate to French: 'Welcome back, your dashboard is ready.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both translations are correct and natural French renderings of the original sentence, with only a minor stylistic difference between 'de retour' and 'à nouveau' for 'back/again'.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">22</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Translate to Spanish: 'Your free trial expires in 3 days.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses provide the same correct Spanish translation; the only difference is formatting verbosity.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">23</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Translate to German: 'Click the button below to verify your email.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both translations are correct and accurate; Response A uses 'bestätigen' (confirm) and 'E-Mail-Adresse' while Response B uses 'verifizieren' (verify) and 'E-Mail', both being valid and natural German renderings of the original.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">24</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Translate to Brazilian Portuguese: 'Thank you for your purchase.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">REGRESSION</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">FORMAT ADHERENCE</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response B provides a clean, direct translation without unnecessary markdown headers or unsolicited variations that clutter a simple translation request.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">25</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Translate to Italian: 'Forgot password? Reset it here.'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">REGRESSION</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response A incorrectly replaces 'Forgot' with a '&lt;PERSON&gt;' placeholder, producing nonsensical output, while Response B correctly translates the full phrase as 'Password dimenticata? Reimpostala qui.'</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">26</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Translate this UI string to Japanese: 'Save changes'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#22c55e;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">WIN</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">COMPLETENESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response B provides an alternative translation and clarifies which form is more appropriate for UI buttons, giving more actionable guidance for a UI localization context.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">27</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Translate to Hebrew: 'Settings'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly translate 'Settings' as 'הגדרות'; the differences are only stylistic, with B adding a transliteration and context note.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">28</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Translate to Dutch: 'Sign out'</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#22c55e;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">WIN</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">COMPLETENESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Response B provides both common Dutch translations ('Afmelden' and 'Uitloggen') with context, while Response A only gives one option, making B more complete and useful.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">29</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Is Lisbon the capital of Portugal? Answer yes or no.</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">claude-haiku-4-5-20251001</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses are factually correct and equally complete, differing in no meaningful way.</td>
+</tr>
+<tr>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#555;font-size:13px">30</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Does JavaScript have built-in support for tuples? Yes or no.</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">gpt-4o-mini-2024-07-18</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0"><span style="background:#64748b;color:#fff;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700">TIE</span></td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:12px;color:#555">CORRECTNESS</td>
+  <td style="padding:8px;border-bottom:1px solid #e2e8f0;font-size:13px">Both responses correctly answer 'No' and both are accurate; they differ only in the additional context provided (A mentions the TC39 proposal, B keeps it brief), which is a stylistic difference rather than a material one.</td>
+</tr></tbody>
+</table>
+
+<h2>Regressions (8)</h2>
+
+<div style="border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff5f5">
+  <div style="font-weight:600;margin-bottom:6px">Prompt #11: Extract the company name and revenue as JSON: 'Acme Corp reported Q3 revenue of $4.2B, beating estimates.'</div>
+  <div style="font-size:13px;color:#555;margin-bottom:8px"><b>Judge reason:</b> Response A hallucinated a note about a '&lt;US_DRIVER_LICENSE&gt;' placeholder token that does not exist in the input, which is a factual error; Response B correctly extracts only what is present.</div>
+  <details><summary style="cursor:pointer;font-size:12px;color:#888">Show answers</summary>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+    <div><b>Gateway (claude-haiku-4-5-202):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">```json
+{
+  &quot;company_name&quot;: &quot;Acme Corp&quot;,
+  &quot;revenue&quot;: &quot;$4.2B&quot;,
+  &quot;note&quot;: &quot;Input contains a placeholder token '&lt;US_DRIVER_LICENSE&gt;' which appears to be invalid or corrupted data&quot;
+}
+```</pre></div>
+    <div><b>Baseline (claude-sonnet-4-6):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">Here is the extracted information as JSON:
+
+```json
+{
+  &quot;company_name&quot;: &quot;Acme Corp&quot;,
+  &quot;revenue&quot;: &quot;$4.2B&quot;
+}
+```
+
+**Extraction notes:**
+- **Company name**: `&quot;Acme Corp&quot;` — taken directly from the text
+- **Revenue**: `&quot;$4.2B&quot;` — Q3 revenue figure as stated (string format preserving original notation)
+
+If you'd prefer the revenue as a numeric value, I can also represent it as:
+```json
+{
+  &quot;company_name&quot;: &quot;Acme Corp&quot;,
+  &quot;revenue_usd&quot;: 4200000000
+}
+```</pre></div>
+  </div></details>
+</div>
+<div style="border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff5f5">
+  <div style="font-weight:600;margin-bottom:6px">Prompt #12: Extract email and phone from: 'Reach me at sarah.k@example.org or 555-0142.'</div>
+  <div style="font-size:13px;color:#555;margin-bottom:8px"><b>Judge reason:</b> Response B replaces the actual email address with a placeholder '&lt;EMAIL_ADDRESS&gt;' instead of extracting the real value 'sarah.k@example.org', making it factually incomplete and incorrect.</div>
+  <details><summary style="cursor:pointer;font-size:12px;color:#888">Show answers</summary>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+    <div><b>Gateway (claude-haiku-4-5-202):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap"># Extracted Information
+
+**Email:** &lt;EMAIL_ADDRESS&gt;
+
+**Phone:** 555-0142</pre></div>
+    <div><b>Baseline (claude-sonnet-4-6):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">Here are the extracted contact details from the text:
+
+| Type | Value |
+|------|-------|
+| 📧 **Email** | `sarah.k@example.org` |
+| 📞 **Phone** | `555-0142` |
+
+**Source text:** *&quot;Reach me at sarah.k@example.org or 555-0142.&quot;*</pre></div>
+  </div></details>
+</div>
+<div style="border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff5f5">
+  <div style="font-weight:600;margin-bottom:6px">Prompt #14: Extract product SKU from: 'Order shipped: SKU-A7-2231 (qty 3).'</div>
+  <div style="font-size:13px;color:#555;margin-bottom:8px"><b>Judge reason:</b> Response A incorrectly redacts 'A7' as a US driver's license placeholder, hallucinating a PII concern where none exists, while Response B correctly extracts the full SKU 'SKU-A7-2231'.</div>
+  <details><summary style="cursor:pointer;font-size:12px;color:#888">Show answers</summary>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+    <div><b>Gateway (claude-haiku-4-5-202):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap"># Product SKU Extraction
+
+**SKU:** `SKU-&lt;US_DRIVER_LICENSE&gt;-2231`
+
+**Note:** The SKU contains a placeholder `&lt;US_DRIVER_LICENSE&gt;` rather than an actual license number. If you need the complete SKU with the actual driver's license number, please provide the unredacted information.</pre></div>
+    <div><b>Baseline (claude-sonnet-4-6):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">## Extracting Product SKU
+
+From the text: *'Order shipped: SKU-A7-2231 (qty 3).'*
+
+| Field | Value |
+|-------|-------|
+| **Product SKU** | `SKU-A7-2231` |
+| **Quantity** | `3` |
+
+### How it was identified:
+The SKU follows the pattern **`SKU-`** prefix + alphanumeric characters (`A7-2231`), which is a standard SKU format. It appears directly after the label *&quot;Order shipped:&quot;*.</pre></div>
+  </div></details>
+</div>
+<div style="border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff5f5">
+  <div style="font-weight:600;margin-bottom:6px">Prompt #15: Find all person names in: 'Alice and Bob met with Carlos to discuss the proposal.'</div>
+  <div style="font-size:13px;color:#555;margin-bottom:8px"><b>Judge reason:</b> Response A incorrectly claims the text contains placeholder tags rather than actual names, when the sentence clearly contains the real names Alice, Bob, and Carlos.</div>
+  <details><summary style="cursor:pointer;font-size:12px;color:#888">Show answers</summary>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+    <div><b>Gateway (claude-haiku-4-5-202):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap"># Person Names Found
+
+The text contains **3 person placeholders**, but no actual person names:
+
+1. `&lt;PERSON&gt;` (first occurrence)
+2. `&lt;PERSON&gt;` (second occurrence)
+3. `&lt;PERSON&gt;` (third occurrence)
+
+These are placeholder tags rather than actual names. To identify real person names, the placeholders would need to be replaced with actual names (e.g., &quot;John and Sarah met with Michael to discuss the proposal.&quot;).</pre></div>
+    <div><b>Baseline (claude-sonnet-4-6):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">Here are the person names found in the sentence:
+
+1. **Alice**
+2. **Bob**
+3. **Carlos**</pre></div>
+  </div></details>
+</div>
+<div style="border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff5f5">
+  <div style="font-weight:600;margin-bottom:6px">Prompt #17: Pull the version number from: 'Upgraded to v3.14.2 last Tuesday.'</div>
+  <div style="font-size:13px;color:#555;margin-bottom:8px"><b>Judge reason:</b> Response A incorrectly redacted part of the version number (replacing '3' with a PII placeholder) and returned an incomplete version '14.2', while Response B correctly extracts the full version '3.14.2'.</div>
+  <details><summary style="cursor:pointer;font-size:12px;color:#888">Show answers</summary>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+    <div><b>Gateway (gpt-4o-mini-2024-07-):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">The version number from the text 'Upgraded to &lt;US_DRIVER_LICENSE&gt;.14.2 last Tuesday.' is **14.2**.</pre></div>
+    <div><b>Baseline (claude-sonnet-4-6):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">Using a simple regex pattern to extract the version number:
+
+```python
+import re
+
+text = 'Upgraded to v3.14.2 last Tuesday.'
+
+match = re.search(r'v(\d+\.\d+\.\d+)', text)
+if match:
+    version = match.group(1)
+    print(version)
+```
+
+**Output:**
+```
+3.14.2
+```
+
+**How it works:**
+| Pattern Part | Meaning |
+|---|---|
+| `v` | Matches the literal &quot;v&quot; prefix |
+| `(\d+\.\d+\.\d+)` | Captures group of digits separated by dots |
+| `\d+` | One or more digits |
+| `\.` | Escaped literal dot |
+
+The result `match.group(1)` returns just the captured group **without** the `v` prefix. Use `match.group(0)` if you want to include the `v` → `v3.14.2`.</pre></div>
+  </div></details>
+</div>
+<div style="border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff5f5">
+  <div style="font-weight:600;margin-bottom:6px">Prompt #18: Get the IP address from: 'Login attempt from 192.168.1.55 at 03:42 UTC.'</div>
+  <div style="font-size:13px;color:#555;margin-bottom:8px"><b>Judge reason:</b> Response B incorrectly claims there is no IP address in the input and hallucinates a placeholder, while Response A correctly identifies and extracts 192.168.1.55 from the provided string.</div>
+  <details><summary style="cursor:pointer;font-size:12px;color:#888">Show answers</summary>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+    <div><b>Gateway (claude-haiku-4-5-202):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap"># IP Address Extraction
+
+I can see the template format, but there's no actual IP address provided in your example. The placeholder `&lt;IP_ADDRESS&gt;` is just a variable marker.
+
+To extract an IP address from a real log entry, it would look like this:
+
+**Example:**
+```
+'John Smith attempt from 192.168.1.100 at 03:42 UTC.'
+```
+
+**Extracted IP:** `192.168.1.100`
+
+If you have an actual log entry with a real IP address, please share it and I'll extract it for you!</pre></div>
+    <div><b>Baseline (claude-sonnet-4-6):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">Here's a simple way to extract the IP address using Python with **regex**:
+
+---
+
+## Python Solution
+
+```python
+import re
+
+text = 'Login attempt from 192.168.1.55 at 03:42 UTC.'
+
+# Regex pattern to match an IPv4 address
+pattern = r'\b(\d{1,3}\.){3}\d{1,3}\b'
+
+match = re.search(pattern, text)
+
+if match:
+    ip_address = match.group()
+    print(f&quot;IP Address: {ip_address}&quot;)
+else:
+    print(&quot;No IP address found.&quot;)
+```
+
+---
+
+## Output
+
+```
+IP Address: 192.168.1.55
+```
+
+---
+
+## How the Regex Works
+
+| Pattern Part | Meaning |
+|---|---|
+| `\b` | Word boundary (ensures clean match) |
+| `\d{1,3}` | Matches 1–3 digits |
+| `\.` | Matches a literal dot |
+| `(\d{1,3}\.){3}` | Repeats the digit+dot group **3 times** |
+| `\d{1,3}` | Matches the final octet |
+| `\b` | Closing word boundary |
+
+---
+
+The extra</pre></div>
+  </div></details>
+</div>
+<div style="border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff5f5">
+  <div style="font-weight:600;margin-bottom:6px">Prompt #24: Translate to Brazilian Portuguese: 'Thank you for your purchase.'</div>
+  <div style="font-size:13px;color:#555;margin-bottom:8px"><b>Judge reason:</b> Response B provides a clean, direct translation without unnecessary markdown headers or unsolicited variations that clutter a simple translation request.</div>
+  <details><summary style="cursor:pointer;font-size:12px;color:#888">Show answers</summary>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+    <div><b>Gateway (claude-haiku-4-5-202):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap"># Obrigado pela sua compra.
+
+Or, if addressing multiple people or in a more formal context:
+
+**Obrigada pela sua compra.** (if the speaker is female)
+
+**Muito obrigado pela sua compra.** (more emphatic)</pre></div>
+    <div><b>Baseline (claude-sonnet-4-6):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">&quot;Obrigado pela sua compra.&quot;</pre></div>
+  </div></details>
+</div>
+<div style="border:1px solid #fecaca;border-radius:8px;padding:16px;margin-bottom:12px;background:#fff5f5">
+  <div style="font-weight:600;margin-bottom:6px">Prompt #25: Translate to Italian: 'Forgot password? Reset it here.'</div>
+  <div style="font-size:13px;color:#555;margin-bottom:8px"><b>Judge reason:</b> Response A incorrectly replaces 'Forgot' with a '&lt;PERSON&gt;' placeholder, producing nonsensical output, while Response B correctly translates the full phrase as 'Password dimenticata? Reimpostala qui.'</div>
+  <details><summary style="cursor:pointer;font-size:12px;color:#888">Show answers</summary>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+    <div><b>Gateway (claude-haiku-4-5-202):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap"># Translation to Italian
+
+&quot;&lt;PERSON&gt; password? Reset it here.&quot;
+
+**Italian:**
+&quot;Password di &lt;PERSON&gt;? Reimpostala qui.&quot;
+
+Or alternatively:
+- &quot;Password di &lt;PERSON&gt;? Reimposta la password qui.&quot;
+- &quot;Password di &lt;PERSON&gt;? Ripristinala qui.&quot;</pre></div>
+    <div><b>Baseline (claude-sonnet-4-6):</b><pre style="font-size:11px;background:#f8f8f8;padding:8px;border-radius:4px;white-space:pre-wrap">Here is the translation in Italian:
+
+**'Password dimenticata? Reimpostala qui.'**</pre></div>
+  </div></details>
+</div>
+</body></html>
