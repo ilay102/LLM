@@ -3,7 +3,7 @@
 Pairwise quality judge for VIREN gateway vs baseline.
 
 Loads scripts/eval_results.jsonl (produced by eval_corpus.py), runs
-the shadow-eval/judge_prompt.txt judge via claude-sonnet-4-6 on each row,
+the shadow-eval/judge_prompt.txt judge via gpt-4o on each row,
 randomises A/B order to remove position bias, then writes
 scripts/quality_report.html.
 """
@@ -17,9 +17,9 @@ import time
 from pathlib import Path
 
 try:
-    from anthropic import AsyncAnthropic
+    from openai import AsyncOpenAI
 except ImportError:
-    print("pip install anthropic", file=sys.stderr)
+    print("pip install openai", file=sys.stderr)
     sys.exit(1)
 
 HERE = Path(__file__).parent
@@ -30,7 +30,7 @@ JUDGE_PROMPT  = REPO / "shadow-eval" / "judge_prompt.txt"
 REPORT_PATH   = HERE / "quality_report.html"
 LOG_PATH      = HERE / "judge_output.log"
 
-JUDGE_MODEL   = "claude-sonnet-4-6"
+JUDGE_MODEL   = "gpt-4o"
 CONCURRENCY   = 4
 
 
@@ -41,7 +41,7 @@ def fill_judge_prompt(template: str, user_prompt: str, resp_a: str, resp_b: str)
             .replace("<<<RESPONSE_B>>>", resp_b))
 
 
-async def judge_one(sem: asyncio.Semaphore, client: AsyncAnthropic,
+async def judge_one(sem: asyncio.Semaphore, client: AsyncOpenAI,
                     template: str, row: dict) -> dict:
     prompt_text = row["prompt"]
     gw_answer   = (row.get("gateway") or {}).get("answer", "")
@@ -63,14 +63,14 @@ async def judge_one(sem: asyncio.Semaphore, client: AsyncAnthropic,
     async with sem:
         t0 = time.perf_counter()
         try:
-            resp = await client.messages.create(
+            resp = await client.chat.completions.create(
                 model=JUDGE_MODEL,
                 max_tokens=256,
                 temperature=0.0,
                 messages=[{"role": "user", "content": filled}],
             )
             latency_ms = (time.perf_counter() - t0) * 1000
-            raw = resp.content[0].text.strip()
+            raw = resp.choices[0].message.content.strip()
             # Strip markdown fences if present
             if raw.startswith("```"):
                 raw = raw.split("```")[1].lstrip("json").strip()
@@ -192,9 +192,9 @@ th{{text-align:left;padding:10px 8px;background:#f1f5f9;font-size:13px;color:#55
 
 
 async def amain() -> int:
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    api_key = os.environ.get("OPENAI_API_KEY", "")
     if not api_key:
-        print("ERROR: set ANTHROPIC_API_KEY", file=sys.stderr)
+        print("ERROR: set OPENAI_API_KEY", file=sys.stderr)
         return 1
 
     template = JUDGE_PROMPT.read_text()
@@ -204,7 +204,7 @@ async def amain() -> int:
     print(f"  A/B order randomised per-row to eliminate position bias")
     print()
 
-    client = AsyncAnthropic(api_key=api_key)
+    client = AsyncOpenAI(api_key=api_key)
     sem    = asyncio.Semaphore(CONCURRENCY)
     tasks  = [judge_one(sem, client, template, row) for row in rows]
 
