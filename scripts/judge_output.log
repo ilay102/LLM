@@ -1,0 +1,44 @@
+Judging 30 prompt pairs with claude-sonnet-4-6
+  A/B order randomised per-row to eliminate position bias
+
+  [ 1/30] ~ tie   n/a                 Tag this PR description as 'feature', 'bugfix', or 'refactor
+  [ 2/30] ✗ loss  CORRECTNESS         Find all person names in: 'Alice and Bob met with Carlos to 
+  [ 3/30] ✗ loss  CORRECTNESS         Extract the company name and revenue as JSON: 'Acme Corp rep
+  [ 4/30] ~ tie   CORRECTNESS         Does JavaScript have built-in support for tuples? Yes or no.
+  [ 5/30] ✗ loss  CORRECTNESS         Translate to Italian: 'Forgot password? Reset it here.'
+  [ 6/30] ~ tie   CORRECTNESS         Translate to French: 'Welcome back, your dashboard is ready.
+  [ 7/30] ✓ win   FORMAT ADHERENCE    Classify the sentiment of this review as POSITIVE, NEGATIVE,
+  [ 8/30] ~ tie   CORRECTNESS         Tag this customer feedback as 'happy', 'frustrated', or 'neu
+  [ 9/30] ✗ loss  CORRECTNESS         Pull the version number from: 'Upgraded to v3.14.2 last Tues
+  [10/30] ~ tie   CORRECTNESS         Translate to Spanish: 'Your free trial expires in 3 days.'
+  [11/30] ✓ win   FORMAT ADHERENCE    Is the following tweet positive or negative? 'Just renewed m
+  [12/30] ✗ loss  CORRECTNESS         Extract product SKU from: 'Order shipped: SKU-A7-2231 (qty 3
+  [13/30] ~ tie   FORMAT ADHERENCE    Extract the meeting time: 'Let us catch up Tuesday at 2pm PT
+  [14/30] ✓ win   FORMAT ADHERENCE    Pull the date and total amount from: 'Invoice #4421, dated M
+  [15/30] ~ tie   CORRECTNESS         Is Lisbon the capital of Portugal? Answer yes or no.
+  [16/30] ✗ loss  FORMAT ADHERENCE    Translate to Brazilian Portuguese: 'Thank you for your purch
+  [17/30] ~ tie   CORRECTNESS         Customer email starts with 'I want to cancel'. Classify inte
+  [18/30] ~ tie   CORRECTNESS         Get the order number and status from: 'Order #88172 has been
+  [19/30] ✗ loss  CORRECTNESS         Get the IP address from: 'Login attempt from 192.168.1.55 at
+  [20/30] ~ tie   CORRECTNESS         Rate the sentiment from 1 (very negative) to 5 (very positiv
+  [21/30] ~ tie   FORMAT ADHERENCE    Sentiment of: 'works as advertised, no complaints.' Answer i
+  [22/30] ~ tie   CORRECTNESS         Translate to German: 'Click the button below to verify your 
+  [23/30] ~ tie   CORRECTNESS         Label the emotion in this message: 'I waited 3 weeks for a r
+  [24/30] ~ tie   CORRECTNESS         Is this review more positive or more negative? 'Product is f
+  [25/30] ✓ win   COMPLETENESS        Translate this UI string to Japanese: 'Save changes'
+  [26/30] ✗ loss  CORRECTNESS         Extract email and phone from: 'Reach me at sarah.k@example.o
+  [27/30] ~ tie   CORRECTNESS         Extract city and country: 'Our office is in Lisbon, Portugal
+  [28/30] ✓ win   COMPLETENESS        Translate to Dutch: 'Sign out'
+  [29/30] ~ tie   CORRECTNESS         Classify: 'Best onboarding flow I've ever used' → positive /
+  [30/30] ~ tie   CORRECTNESS         Translate to Hebrew: 'Settings'
+
+==========================================
+VIREN — Quality Verdict on 30 prompts
+==========================================
+Win-or-Tie:    22 / 30  (73.3%)
+  Wins  (gw better):     5
+  Ties  (equivalent):   17
+  Loss  (regression):    8
+==========================================
+
+Report: /workspaces/LLM/scripts/quality_report.html
