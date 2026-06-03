@@ -37,8 +37,10 @@ REPORT_PATH       = HERE / "quality_ensemble_report.html"
 JUDGES = [
     ("sonnet", "claude-sonnet-4-6",  "anthropic"),
     ("gpt4o",  "gpt-4o",             "openai"),
-    ("opus",   "claude-opus-4-7",    "anthropic"),
+    ("opus",   "claude-opus-4-8",    "anthropic"),
 ]
+# Extended thinking models (Opus 4+) don't accept the temperature param
+_NO_TEMP_MODELS = {"claude-opus-4-8", "claude-opus-4-7"}
 CONCURRENCY = 3   # per-judge semaphore
 
 
@@ -56,10 +58,11 @@ async def call_judge(sem: asyncio.Semaphore, provider: str, model: str,
         t0 = time.perf_counter()
         try:
             if provider == "anthropic":
-                resp = await anth.messages.create(
-                    model=model, max_tokens=256, temperature=0.0,
-                    messages=[{"role": "user", "content": filled}],
-                )
+                kwargs: dict = {"model": model, "max_tokens": 256,
+                                "messages": [{"role": "user", "content": filled}]}
+                if model not in _NO_TEMP_MODELS:
+                    kwargs["temperature"] = 0.0
+                resp = await anth.messages.create(**kwargs)
                 raw = resp.content[0].text.strip()
             else:
                 resp = await oai.chat.completions.create(
