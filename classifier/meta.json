@@ -1,12 +1,12 @@
 {
-  "trained_at": "2026-06-03T12:22:22Z",
-  "labels_source": "labels_claude.jsonl",
-  "n_train": 160,
-  "n_test": 40,
-  "held_out_accuracy": 0.725,
+  "trained_at": "2026-06-03T16:13:40Z",
+  "labels_source": "labels.jsonl",
+  "n_train": 161,
+  "n_test": 39,
+  "held_out_accuracy": 0.6410256410256411,
   "per_class_accuracy": {
-    "cheap": 0.75,
-    "balanced": 0.625,
+    "cheap": 0.5,
+    "balanced": 0.6470588235294118,
     "frontier": 0.875
   },
   "embedding_model": "BAAI/bge-small-en-v1.5",

@@ -42,11 +42,21 @@ REASONING_KEYWORDS = re.compile(
     r"refactor|architecture|design pattern|trade[- ]offs?)\b",
     re.IGNORECASE,
 )
-SIMPLE_KEYWORDS = re.compile(
-    r"\b(classify|extract|label|tag|summari[sz]e|translate|rewrite|"
-    r"format|json|yes/no|true/false)\b",
+# Structured extraction needs precision — route to balanced even when short
+EXTRACTION_KEYWORDS = re.compile(
+    r"\b(extract|parse|pull (?:out|the)|find all|get the|"
+    r"convert (?:to|into) (?:json|yaml|csv|xml)|"
+    r"into structured|with fields?|as a json object|"
+    r"named entities?|entit(?:y|ies))\b",
     re.IGNORECASE,
 )
+SIMPLE_KEYWORDS = re.compile(
+    r"\b(classify|label|tag|summari[sz]e|translate|rewrite|"
+    r"format|yes/no|true/false)\b",
+    re.IGNORECASE,
+)
+# Captures the quoted/apostrophe-delimited source text inside a translate request
+_TRANSLATE_SRC = re.compile(r"['‘’\"](.*?)['’\"]", re.DOTALL)
 CODE_BLOCK = re.compile(r"```")
 
 
@@ -63,6 +73,16 @@ def rule_decision(messages: list[dict], requested_max_tokens: int | None) -> Rou
 
     if n_code_blocks >= 2 and (requested_max_tokens or 0) > 1500:
         return RouteDecision("balanced", "multi-block code with large output", 0.85)
+
+    # Structured extraction needs faithfulness — cheap models miss fields/formats
+    if EXTRACTION_KEYWORDS.search(last_user):
+        return RouteDecision("balanced", "structured extraction needs precision", 0.85)
+
+    # Long translation (>50 chars of source text) needs fluency from a stronger model
+    if re.search(r"\btranslate\b", last_user, re.IGNORECASE):
+        src_texts = _TRANSLATE_SRC.findall(last_user)
+        if src_texts and max(len(t) for t in src_texts) > 50:
+            return RouteDecision("balanced", "translation of long source text", 0.80)
 
     if n_chars < 800 and SIMPLE_KEYWORDS.search(last_user):
         return RouteDecision("cheap", "short + simple-task keywords", 0.9)
