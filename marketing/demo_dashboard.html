@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VIREN — Live Demo</title>
+<style>
+  :root {
+    --bg: #0a0b0f; --panel: #14161d; --line: #23262f;
+    --ink: #f4f5f8; --muted: #8b919c;
+    --accent: #6d63ff; --good: #2ecc71; --warn: #f39c12;
+    --cheap: #2ecc71; --balanced: #6d63ff; --frontier: #ff6b6b;
+    --cached: #ffd23f;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+    overflow-x: hidden; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 28px 32px; }
+  header { display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 36px; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo { width: 36px; height: 36px; background: var(--ink); border-radius: 8px;
+    position: relative; }
+  .logo::after { content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg); width: 16px; height: 16px;
+    background: var(--accent); border-radius: 3px; }
+  .brand .name { font-weight: 700; font-size: 22px; letter-spacing: 5px; }
+  .brand .tag { font-size: 11px; color: var(--muted); margin-top: 2px;
+    letter-spacing: 1px; text-transform: uppercase; }
+  .status { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good);
+    animation: pulse 2s infinite; }
+  .dot.bad { background: #ff4444; animation: none; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 { font-size: 38px; margin: 0 0 10px 0; letter-spacing: -1px; line-height: 1.1; }
+  h1 .accent { color: var(--accent); }
+  .sub { color: var(--muted); margin-bottom: 32px; font-size: 16px; max-width: 680px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px; }
+  .panel h2 { margin: 0 0 16px 0; font-size: 13px; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--muted); font-weight: 600; }
+
+  .prompt-list { display: flex; flex-direction: column; gap: 8px; }
+  .prompt-btn { background: transparent; border: 1px solid var(--line); color: var(--ink);
+    padding: 14px 16px; border-radius: 10px; font-size: 14px; cursor: pointer;
+    text-align: left; transition: all 0.15s; font-family: inherit;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .prompt-btn:hover { border-color: var(--accent); background: rgba(109,99,255,0.06); }
+  .prompt-btn .label { flex: 1; }
+  .prompt-btn .expected { font-size: 11px; padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 600; flex-shrink: 0; }
+  .prompt-btn .expected.cheap { background: rgba(46,204,113,0.15); color: var(--cheap); }
+  .prompt-btn .expected.balanced { background: rgba(109,99,255,0.15); color: var(--balanced); }
+  .prompt-btn .expected.frontier { background: rgba(255,107,107,0.15); color: var(--frontier); }
+  .prompt-btn:disabled { opacity: 0.5; cursor: wait; }
+
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+    margin-bottom: 20px; }
+  .stat { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 16px; }
+  .stat .v { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+  .stat .v.accent { color: var(--accent); }
+  .stat .v.good { color: var(--good); }
+  .stat .l { font-size: 11px; color: var(--muted); margin-top: 6px;
+    text-transform: uppercase; letter-spacing: 1px; }
+
+  .history { max-height: 460px; overflow-y: auto; }
+  .call { padding: 12px 14px; border-radius: 10px; margin-bottom: 10px;
+    background: rgba(255,255,255,0.03); border-left: 4px solid var(--line);
+    animation: slideIn 0.3s ease-out; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .call.cheap { border-left-color: var(--cheap); }
+  .call.balanced { border-left-color: var(--balanced); }
+  .call.frontier { border-left-color: var(--frontier); }
+  .call.cached { border-left-color: var(--cached); background: rgba(255,210,63,0.08); }
+  .call .row1 { display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; margin-bottom: 6px; }
+  .call .tier-pill { font-size: 11px; padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .call .tier-pill.cheap { background: rgba(46,204,113,0.15); color: var(--cheap); }
+  .call .tier-pill.balanced { background: rgba(109,99,255,0.15); color: var(--balanced); }
+  .call .tier-pill.frontier { background: rgba(255,107,107,0.15); color: var(--frontier); }
+  .call .tier-pill.cached { background: rgba(255,210,63,0.18); color: var(--cached); }
+  .call .lat { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .call .prompt { font-size: 13px; color: var(--ink); margin-bottom: 4px; }
+  .call .meta { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .call.cached .lat { color: var(--cached); font-weight: 600; }
+
+  .savings-banner { background: linear-gradient(135deg, var(--accent), #4733cc);
+    border-radius: 14px; padding: 28px; text-align: center; margin-top: 24px; }
+  .savings-banner .big { font-size: 56px; font-weight: 800; letter-spacing: -2px;
+    line-height: 1; margin-bottom: 8px; }
+  .savings-banner .sub-text { font-size: 15px; opacity: 0.9; }
+  .savings-banner .small { font-size: 12px; margin-top: 14px; opacity: 0.7;
+    text-transform: uppercase; letter-spacing: 1px; }
+
+  .config { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .config input { background: var(--bg); border: 1px solid var(--line); color: var(--ink);
+    padding: 8px 12px; border-radius: 6px; font-size: 13px; font-family: inherit; }
+  .config input.url { flex: 2; min-width: 200px; }
+  .config input.key { flex: 1; min-width: 150px; }
+  .config button { background: var(--accent); color: white; border: 0; padding: 8px 16px;
+    border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .config button:hover { opacity: 0.9; }
+
+  .empty { text-align: center; color: var(--muted); padding: 40px 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <div class="name">VIREN</div>
+        <div class="tag">Live gateway demo</div>
+      </div>
+    </div>
+    <div class="status">
+      <span class="dot" id="status-dot"></span>
+      <span id="status-text">Connecting...</span>
+    </div>
+  </header>
+
+  <h1>Watch the gateway <span class="accent">route, cache, and save</span> — in real time.</h1>
+  <p class="sub">Click any prompt below. Your call hits the gateway, which classifies it,
+  picks the right model, and returns. The cost-savings counter on the right updates live.
+  Click the same prompt twice in a row to see the semantic cache fire.</p>
+
+  <div class="config">
+    <input type="text" class="url" id="gw-url" placeholder="Gateway URL" value="http://localhost:8000/v1">
+    <input type="text" class="key" id="gw-key" placeholder="Bearer key">
+    <button onclick="connect()">Connect</button>
+    <button onclick="resetStats()" style="background: var(--line);">Reset stats</button>
+  </div>
+
+  <div class="grid">
+
+    <div>
+      <div class="panel">
+        <h2>Click to fire a real call</h2>
+        <div class="prompt-list" id="prompt-list"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Live activity</h2>
+        <div class="stats-row">
+          <div class="stat">
+            <div class="v" id="stat-calls">0</div>
+            <div class="l">calls</div>
+          </div>
+          <div class="stat">
+            <div class="v accent" id="stat-hits">0</div>
+            <div class="l">cache hits</div>
+          </div>
+          <div class="stat">
+            <div class="v good" id="stat-pct">0%</div>
+            <div class="l">cost saved</div>
+          </div>
+        </div>
+        <div class="history" id="history">
+          <div class="empty">Click a prompt to start.</div>
+        </div>
+      </div>
+
+      <div class="savings-banner">
+        <div class="big" id="big-savings">$0.0000</div>
+        <div class="sub-text">saved vs. a frontier-only baseline</div>
+        <div class="small">projected at 1M calls/month → <b id="big-projected">$0</b></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ----------- Demo prompts -----------
+const PROMPTS = [
+  { id: 1, label: "Classify sentiment of a customer review",
+    expected: "cheap",
+    text: "Classify the sentiment of this review as POSITIVE, NEGATIVE, or NEUTRAL: 'The shipping was fast but the product broke on day 2.'" },
+  { id: 2, label: "Translate a UI string to French",
+    expected: "cheap",
+    text: "Translate to French: 'Welcome back, your dashboard is ready.'" },
+  { id: 3, label: "Extract structured data from a customer email",
+    expected: "balanced",
+    text: "Parse this email into JSON with fields name, company, plan, seats, email: 'Hi, I am Sarah from Acme Co. Our team of 12 wants to upgrade from the Pro plan to Enterprise. Reach me at sarah@acme.co.'" },
+  { id: 4, label: "Summarize a quarterly business update",
+    expected: "balanced",
+    text: "Summarize in 2 sentences: 'Customer onboarding for our SaaS averages 14 days. The biggest dropoff is at the integration step where 38% of trial users abandon. We are piloting a low-code connector to address this.'" },
+  { id: 5, label: "Design a multi-tenant SaaS database schema",
+    expected: "frontier",
+    text: "Design the database schema (Postgres) for a multi-tenant SaaS that supports row-level security AND optionally per-tenant databases as a config switch. Discuss the trade-offs of each approach." },
+  { id: 6, label: "Prove a non-trivial mathematical statement",
+    expected: "frontier",
+    text: "Prove step-by-step that for any prime p > 3, p^2 - 1 is divisible by 24." },
+];
+
+// Sonnet baseline cost (what you'd pay if you sent everything to balanced/frontier directly)
+const BASELINE_INPUT_PER_TOK  = 0.000003;
+const BASELINE_OUTPUT_PER_TOK = 0.000015;
+
+// ----------- State -----------
+let stats = {
+  calls: 0,
+  hits: 0,
+  totalCost: 0,
+  totalBaseline: 0,
+};
+
+// ----------- Render prompts -----------
+function renderPrompts() {
+  const list = document.getElementById('prompt-list');
+  list.innerHTML = '';
+  PROMPTS.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'prompt-btn';
+    b.dataset.id = p.id;
+    b.innerHTML = `<span class="label">${p.label}</span>
+                   <span class="expected ${p.expected}">${p.expected}</span>`;
+    b.onclick = () => fire(p);
+    list.appendChild(b);
+  });
+}
+
+// ----------- Connection check -----------
+async function connect() {
+  const url = document.getElementById('gw-url').value;
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  try {
+    const r = await fetch(url.replace(/\/v1\/?$/, '') + '/health');
+    if (r.ok) {
+      dot.classList.remove('bad');
+      txt.textContent = 'Gateway live';
+    } else {
+      dot.classList.add('bad');
+      txt.textContent = 'Gateway error';
+    }
+  } catch (e) {
+    dot.classList.add('bad');
+    txt.textContent = 'Cannot reach gateway';
+  }
+}
+
+// ----------- Fire a call -----------
+async function fire(prompt) {
+  const url = document.getElementById('gw-url').value;
+  const key = document.getElementById('gw-key').value;
+  if (!key) {
+    alert('Set the Bearer key first.');
+    return;
+  }
+  const buttons = document.querySelectorAll('.prompt-btn');
+  buttons.forEach(b => b.disabled = true);
+
+  const t0 = performance.now();
+  let resp, payload;
+  try {
+    resp = await fetch(url.replace(/\/$/, '') + '/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + key,
+      },
+      body: JSON.stringify({
+        model: 'auto',
+        messages: [{ role: 'user', content: prompt.text }],
+        max_tokens: 300,
+      }),
+    });
+    payload = await resp.json();
+  } catch (e) {
+    addCall({ tier: 'error', latency: 0, model: 'fetch failed', label: prompt.label, cost: 0, cached: false, error: String(e) });
+    buttons.forEach(b => b.disabled = false);
+    return;
+  }
+  const latency = Math.round(performance.now() - t0);
+  buttons.forEach(b => b.disabled = false);
+
+  // Cached responses have id starting with "cached-"
+  const cached = (payload.id || '').startsWith('cached-');
+  const model = payload.model || 'unknown';
+  const inTok = payload.usage?.prompt_tokens || 0;
+  const outTok = payload.usage?.completion_tokens || 0;
+
+  // Compute actual cost from the model returned
+  const cost = costFor(model, inTok, outTok, cached);
+  const baselineCost = cached ? (BASELINE_INPUT_PER_TOK * inTok + BASELINE_OUTPUT_PER_TOK * outTok)
+                              : (BASELINE_INPUT_PER_TOK * inTok + BASELINE_OUTPUT_PER_TOK * outTok);
+
+  // Derive tier from model name
+  const tier = tierFor(model);
+
+  // Update stats
+  stats.calls += 1;
+  if (cached) stats.hits += 1;
+  stats.totalCost += cost;
+  stats.totalBaseline += baselineCost;
+
+  addCall({ tier, cached, latency, model, label: prompt.label, cost, baselineCost, inTok, outTok });
+  updateStats();
+}
+
+function costFor(model, inTok, outTok, cached) {
+  if (cached) return 0;
+  const PRICES = {
+    'haiku': [0.0000008, 0.000004],
+    'gpt-4o-mini': [0.00000015, 0.0000006],
+    'sonnet': [0.000003, 0.000015],
+    'opus': [0.000015, 0.000075],
+  };
+  let inP = 0.000003, outP = 0.000015; // default Sonnet
+  for (const k in PRICES) {
+    if (model.toLowerCase().includes(k)) {
+      [inP, outP] = PRICES[k]; break;
+    }
+  }
+  return inTok * inP + outTok * outP;
+}
+
+function tierFor(model) {
+  const m = model.toLowerCase();
+  if (m.includes('haiku') || m.includes('mini')) return 'cheap';
+  if (m.includes('sonnet') || m.includes('4o')) return 'balanced';
+  if (m.includes('opus') || m.includes('o1')) return 'frontier';
+  return 'balanced';
+}
+
+function addCall(c) {
+  const h = document.getElementById('history');
+  // remove empty state
+  const empty = h.querySelector('.empty');
+  if (empty) empty.remove();
+
+  const div = document.createElement('div');
+  div.className = 'call ' + (c.cached ? 'cached' : c.tier);
+  const pill = c.cached ? 'cached' : c.tier;
+  const pillTxt = c.cached ? 'CACHED' : c.tier.toUpperCase();
+  div.innerHTML = `
+    <div class="row1">
+      <span class="tier-pill ${pill}">${pillTxt}</span>
+      <span class="lat">${c.latency} ms</span>
+    </div>
+    <div class="prompt">${c.label}</div>
+    <div class="meta">
+      ${c.model || ''} ·
+      ${c.cached ? '$0.00000 (cache hit)' : '$' + c.cost.toFixed(5)} ·
+      ${c.inTok || 0} → ${c.outTok || 0} tok
+    </div>
+  `;
+  h.insertBefore(div, h.firstChild);
+}
+
+function updateStats() {
+  document.getElementById('stat-calls').textContent = stats.calls;
+  document.getElementById('stat-hits').textContent = stats.hits;
+  const saved = stats.totalBaseline - stats.totalCost;
+  const pct = stats.totalBaseline > 0 ? (saved / stats.totalBaseline * 100) : 0;
+  document.getElementById('stat-pct').textContent = pct.toFixed(0) + '%';
+  document.getElementById('big-savings').textContent = '$' + saved.toFixed(4);
+  // Projected: extrapolate to 1M calls assuming current avg per-call savings
+  const perCall = stats.calls > 0 ? (saved / stats.calls) : 0;
+  document.getElementById('big-projected').textContent = '$' + Math.round(perCall * 1_000_000).toLocaleString('en-US');
+}
+
+function resetStats() {
+  stats = { calls: 0, hits: 0, totalCost: 0, totalBaseline: 0 };
+  document.getElementById('history').innerHTML = '<div class="empty">Click a prompt to start.</div>';
+  updateStats();
+}
+
+// ----------- Init -----------
+renderPrompts();
+updateStats();
+connect();
+</script>
+</body>
+</html>

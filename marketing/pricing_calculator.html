@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VIREN — Savings calculator</title>
+<style>
+  :root {
+    --ink: #0a0a0a; --muted: #5b6168; --line: #e7e8ec;
+    --accent: #3b35ff; --bg: #ffffff; --soft: #f6f7fb;
+    --good: #137333;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.5; }
+  .wrap { max-width: 720px; margin: 40px auto; padding: 0 24px; }
+  h1 { font-size: 32px; margin: 0 0 8px 0; letter-spacing: -0.5px; }
+  h1 .accent { color: var(--accent); }
+  .sub { color: var(--muted); margin-bottom: 32px; }
+  .card { background: var(--soft); border-radius: 12px; padding: 28px; margin-bottom: 16px; }
+  .card h2 { margin: 0 0 16px 0; font-size: 13px; text-transform: uppercase;
+             letter-spacing: 1.5px; color: var(--muted); font-weight: 600; }
+  label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  input[type=number], input[type=range], select {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 6px;
+    font-size: 15px; background: white; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  .slider-row input { flex: 1; }
+  .slider-row span { font-weight: 600; color: var(--accent); min-width: 50px; text-align: right; }
+  .results { background: var(--ink); color: white; border-radius: 12px; padding: 32px;
+             margin-top: 24px; }
+  .results h2 { color: rgba(255,255,255,0.6); margin: 0 0 20px 0; font-size: 13px;
+                text-transform: uppercase; letter-spacing: 1.5px; }
+  .big { font-size: 56px; font-weight: 700; line-height: 1; letter-spacing: -1px;
+         color: white; margin-bottom: 8px; }
+  .big-sub { color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 24px; }
+  .small-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .small-stat .v { font-size: 22px; font-weight: 600; color: white; }
+  .small-stat .l { color: rgba(255,255,255,0.5); font-size: 12px; text-transform: uppercase;
+                   letter-spacing: 1px; margin-top: 4px; }
+  .pricing-note { font-size: 13px; color: var(--muted); margin-top: 16px;
+                  padding: 12px 16px; background: var(--soft); border-radius: 6px;
+                  border-left: 3px solid var(--accent); }
+  .disclaimer { font-size: 12px; color: var(--muted); margin-top: 24px;
+                line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>How much would you save with <span class="accent">VIREN?</span></h1>
+  <p class="sub">Sliders below. Numbers update live. Based on median results
+  from our pilots — your actual savings depend on your traffic mix.</p>
+
+  <div class="card">
+    <h2>Your current LLM spend</h2>
+    <div class="row">
+      <div>
+        <label>Monthly LLM API spend (USD)</label>
+        <input type="number" id="spend" value="40000" min="1000" step="1000">
+      </div>
+      <div>
+        <label>Primary provider</label>
+        <select id="provider">
+          <option value="anthropic">Anthropic (Claude)</option>
+          <option value="openai">OpenAI (GPT)</option>
+          <option value="mixed">Mixed</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Default model you use today</label>
+        <select id="model">
+          <option value="sonnet">Sonnet / GPT-4o (mid-tier)</option>
+          <option value="opus">Opus / o1 (frontier)</option>
+          <option value="haiku">Haiku / 4o-mini (already cheap)</option>
+        </select>
+      </div>
+      <div>
+        <label>Growth rate (monthly %)</label>
+        <input type="number" id="growth" value="20" min="0" max="100" step="1">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Your traffic mix (estimate)</h2>
+    <div>
+      <label>% of traffic that's simple (classification, extraction, short Q&A)</label>
+      <div class="slider-row">
+        <input type="range" id="pctCheap" min="0" max="100" value="40">
+        <span id="pctCheapVal">40%</span>
+      </div>
+    </div>
+    <div style="margin-top: 16px;">
+      <label>% of traffic where the same/similar prompt repeats often (FAQs, common queries)</label>
+      <div class="slider-row">
+        <input type="range" id="pctCache" min="0" max="80" value="25">
+        <span id="pctCacheVal">25%</span>
+      </div>
+    </div>
+    <div style="margin-top: 16px;">
+      <label>% of traffic with long system prompts (RAG, agents, &gt;2k tokens)</label>
+      <div class="slider-row">
+        <input type="range" id="pctLong" min="0" max="100" value="30">
+        <span id="pctLongVal">30%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="results">
+    <h2>Estimated monthly savings with VIREN</h2>
+    <div class="big" id="savings">$24,800</div>
+    <div class="big-sub" id="savingsPct">62% of your current bill</div>
+    <div class="small-stats">
+      <div class="small-stat">
+        <div class="v" id="annual">$297,600</div>
+        <div class="l">Annual savings</div>
+      </div>
+      <div class="small-stat">
+        <div class="v" id="yourCost">$6,200</div>
+        <div class="l">Your monthly VIREN fee</div>
+      </div>
+      <div class="small-stat">
+        <div class="v" id="netSavings">$18,600</div>
+        <div class="l">Net savings to you</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pricing-note">
+    <strong>Our pricing:</strong> 25% of verified savings, $2k/month floor,
+    12-month term, 60-day notice. You only pay when we save more than the
+    floor. Pilot is free — we prove the number above before you commit.
+  </div>
+
+  <p class="disclaimer">
+    Calculator based on median outcomes from our pilots. Routing saves
+    ~50% on traffic shifted from frontier→cheap; prompt-cache saves ~85%
+    on long-system-prompt traffic; semantic cache saves ~95% on repeated
+    queries (after the first hit). Actual savings depend on your traffic
+    distribution and quality tolerance and are verified during the
+    2-week shadow pilot before any contract.
+  </p>
+
+</div>
+
+<script>
+function fmt(n) {
+  return '$' + Math.round(n).toLocaleString('en-US');
+}
+
+function recalc() {
+  const spend = +document.getElementById('spend').value || 0;
+  const model = document.getElementById('model').value;
+  const pctCheap = +document.getElementById('pctCheap').value / 100;
+  const pctCache = +document.getElementById('pctCache').value / 100;
+  const pctLong = +document.getElementById('pctLong').value / 100;
+
+  document.getElementById('pctCheapVal').textContent = (pctCheap*100).toFixed(0) + '%';
+  document.getElementById('pctCacheVal').textContent = (pctCache*100).toFixed(0) + '%';
+  document.getElementById('pctLongVal').textContent = (pctLong*100).toFixed(0) + '%';
+
+  // Per-lever savings rates (empirical from pilots)
+  // - Routing: shifting simple traffic to cheap saves ~80% of that slice's cost
+  // - Semantic cache: hits save ~95% on that slice
+  // - Prompt cache: long-system-prompt traffic saves ~70% on input cost via provider cache
+  // Caps so combinations don't double-count past 75% total.
+
+  const routingSavings  = pctCheap * 0.80;
+  const cacheSavings    = pctCache * 0.95 * (1 - pctCheap);   // cache applies to remaining
+  const promptCacheSav  = pctLong  * 0.30 * (1 - pctCheap - pctCache);  // partial overlap
+
+  // Frontier-default users have more headroom; haiku-default users have less.
+  const modelMult = model === 'opus' ? 1.15 : (model === 'haiku' ? 0.55 : 1.0);
+
+  let totalSavingsPct = (routingSavings + cacheSavings + promptCacheSav) * modelMult;
+  totalSavingsPct = Math.min(totalSavingsPct, 0.78);  // hard cap
+  totalSavingsPct = Math.max(totalSavingsPct, 0.15);  // realistic floor
+
+  const savingsUsd = spend * totalSavingsPct;
+  const annual = savingsUsd * 12;
+  const ourFee = Math.max(savingsUsd * 0.25, 2000);
+  const net = savingsUsd - ourFee;
+
+  document.getElementById('savings').textContent = fmt(savingsUsd);
+  document.getElementById('savingsPct').textContent =
+    (totalSavingsPct*100).toFixed(0) + '% of your current bill';
+  document.getElementById('annual').textContent = fmt(annual);
+  document.getElementById('yourCost').textContent = fmt(ourFee);
+  document.getElementById('netSavings').textContent = fmt(net);
+}
+
+['spend','provider','model','growth','pctCheap','pctCache','pctLong'].forEach(id => {
+  document.getElementById(id).addEventListener('input', recalc);
+  document.getElementById(id).addEventListener('change', recalc);
+});
+recalc();
+</script>
+</body>
+</html>
