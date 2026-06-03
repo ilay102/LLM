@@ -1,0 +1,3 @@
+# False positive: "bogus-key" in self_test.sh is an intentionally invalid
+# test credential used to verify that the gateway returns 401 on bad tokens.
+c2450dd79989df554eaf622d15b17237f51443a8:scripts/self_test.sh:curl-auth-header:52

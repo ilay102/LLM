@@ -4,12 +4,6 @@ title = "VIREN gitleaks config"
 useDefault = true
 
 [[allowlists]]
-description = "Test fixtures and self-test script use intentionally fake keys"
-paths = [
-  "scripts/self_test.sh",
-]
-stopWords = [
-  "bogus-key",
-  "test-master-key",
-  "test_invalid_key",
-]
+description = "Test fixtures in self_test.sh use intentionally invalid credentials"
+paths = ['''scripts/self_test.sh''']
+regexes = ['''bogus-key''', '''test-master-key''']
