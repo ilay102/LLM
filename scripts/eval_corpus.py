@@ -61,11 +61,15 @@ def percentile(xs, q):
 
 
 PRICE = {
+    # Cheap tier
     "haiku": (0.8 / 1e6, 4.0 / 1e6),
     "gpt-4o-mini": (0.15 / 1e6, 0.6 / 1e6),
-    "deepseek-chat": (0.27 / 1e6, 1.10 / 1e6),       # V3 — cheap tier
-    "deepseek-reasoner": (0.55 / 1e6, 2.19 / 1e6),   # R1 — frontier reasoning
+    # Balanced tier — V4-Pro replaces verbose V4-Flash in this slot
+    "deepseek-v4-pro": (0.435 / 1e6, 0.87 / 1e6),
+    "deepseek-chat": (0.14 / 1e6, 0.28 / 1e6),       # alias = V4-Flash non-thinking (legacy)
     "sonnet": (3.0 / 1e6, 15.0 / 1e6),
+    # Frontier tier
+    "deepseek-reasoner": (0.435 / 1e6, 0.87 / 1e6),  # alias = V4 thinking mode (R1)
     "opus": (15.0 / 1e6, 75.0 / 1e6),
 }
 
