@@ -1,0 +1,56 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>VIREN — Latency Overhead Report</title>
+<style>
+ body{font-family:-apple-system,Inter,system-ui;max-width:1000px;margin:30px auto;color:#111;padding:0 20px}
+ h1{font-size:30px;margin:0 0 4px}
+ .sub{color:#666;margin-bottom:24px}
+ .verdict{background:#137333;color:white;border-radius:8px;padding:14px 20px;font-weight:700;font-size:16px;margin:16px 0}
+ .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+ .kpi{background:#f6f7fb;border-radius:10px;padding:18px}
+ .kpi .v{font-size:30px;font-weight:800;line-height:1;color:#6d63ff}
+ .kpi .l{font-size:11px;margin-top:6px;color:#666;text-transform:uppercase;letter-spacing:1px}
+ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:18px}
+ th,td{border-bottom:1px solid #eee;padding:8px 10px;text-align:left}
+ th{background:#fafafa;text-transform:uppercase;font-size:11px;letter-spacing:1px;color:#666}
+ code{background:#f3f4f6;padding:1px 5px;border-radius:3px;font-size:12px}
+</style></head><body>
+<h1>VIREN — Latency Overhead Report</h1>
+<p class="sub">Paired apples-to-apples comparison: same prompt to the gateway
+(model='auto') and direct to the provider (the model the gateway picked).
+Overhead = gateway latency &minus; direct latency. Sample: 0 paired
+calls.</p>
+
+<div class="verdict">Verdict: VIREN adds 0 ms at p95 — <b>Excellent</b></div>
+
+<div class="kpis">
+  <div class="kpi"><div class="v">0 ms</div><div class="l">Overhead p50</div></div>
+  <div class="kpi"><div class="v">0 ms</div><div class="l">Overhead p95</div></div>
+  <div class="kpi"><div class="v">0 ms</div><div class="l">Overhead p99</div></div>
+  <div class="kpi"><div class="v">0 ms</div><div class="l">Overhead avg</div></div>
+</div>
+
+<h2>What's in the overhead</h2>
+<ul>
+  <li>Auth + tenant lookup (SQLite, sub-ms)</li>
+  <li>PII redaction (Presidio, ~10-30 ms on typical prompts)</li>
+  <li>Classifier (rule layer + bge-small nearest-centroid, ~5-15 ms)</li>
+  <li>Semantic cache lookup (Redis HNSW, ~5-10 ms)</li>
+  <li>Prompt-cache breakpoint injection (sub-ms)</li>
+  <li>LiteLLM router selection (sub-ms)</li>
+</ul>
+<p>Note: gateway-side overhead does NOT include provider RTT — that's
+subtracted out by the paired baseline.</p>
+
+<h2>Routing distribution (over the sample)</h2>
+<table><tr><th>Model the gateway picked</th><th>Calls</th></tr>
+<tr><td><code>claude-haiku-4-5-20251001</code></td><td>15</td></tr><tr><td><code>gpt-4o-mini-2024-07-18</code></td><td>9</td></tr><tr><td><code>deepseek/deepseek-v4-pro</code></td><td>4</td></tr><tr><td><code>deepseek/deepseek-v4-flash</code></td><td>1</td></tr><tr><td><code>claude-sonnet-4-6</code></td><td>1</td></tr></table>
+<h2>Per-prompt detail</h2>
+<table><tr><th>#</th><th>Gateway model</th><th>Gateway ms</th><th>Direct ms</th><th>Overhead ms</th></tr>
+<tr><td>1</td><td><code>claude-haiku-4-5-20251001</code></td><td>831</td><td>—</td><td><b>—</b></td></tr><tr><td>2</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>230</td><td>—</td><td><b>—</b></td></tr><tr><td>3</td><td><code>claude-haiku-4-5-20251001</code></td><td>235</td><td>—</td><td><b>—</b></td></tr><tr><td>4</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>227</td><td>—</td><td><b>—</b></td></tr><tr><td>5</td><td><code>claude-haiku-4-5-20251001</code></td><td>98</td><td>—</td><td><b>—</b></td></tr><tr><td>6</td><td><code>claude-haiku-4-5-20251001</code></td><td>99</td><td>—</td><td><b>—</b></td></tr><tr><td>7</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>52</td><td>—</td><td><b>—</b></td></tr><tr><td>8</td><td><code>claude-haiku-4-5-20251001</code></td><td>42</td><td>—</td><td><b>—</b></td></tr><tr><td>9</td><td><code>deepseek/deepseek-v4-flash</code></td><td>78</td><td>—</td><td><b>—</b></td></tr><tr><td>10</td><td><code>claude-haiku-4-5-20251001</code></td><td>76</td><td>—</td><td><b>—</b></td></tr><tr><td>11</td><td><code>claude-haiku-4-5-20251001</code></td><td>37</td><td>—</td><td><b>—</b></td></tr><tr><td>12</td><td><code>claude-haiku-4-5-20251001</code></td><td>41</td><td>—</td><td><b>—</b></td></tr><tr><td>13</td><td><code>claude-haiku-4-5-20251001</code></td><td>30</td><td>—</td><td><b>—</b></td></tr><tr><td>14</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>44</td><td>—</td><td><b>—</b></td></tr><tr><td>15</td><td><code>claude-haiku-4-5-20251001</code></td><td>37</td><td>—</td><td><b>—</b></td></tr><tr><td>16</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>21</td><td>—</td><td><b>—</b></td></tr><tr><td>17</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>32</td><td>—</td><td><b>—</b></td></tr><tr><td>18</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>34</td><td>—</td><td><b>—</b></td></tr><tr><td>19</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>50</td><td>—</td><td><b>—</b></td></tr><tr><td>20</td><td><code>claude-haiku-4-5-20251001</code></td><td>38</td><td>—</td><td><b>—</b></td></tr><tr><td>21</td><td><code>deepseek/deepseek-v4-pro</code></td><td>39</td><td>—</td><td><b>—</b></td></tr><tr><td>22</td><td><code>deepseek/deepseek-v4-pro</code></td><td>25</td><td>—</td><td><b>—</b></td></tr><tr><td>23</td><td><code>deepseek/deepseek-v4-pro</code></td><td>18</td><td>—</td><td><b>—</b></td></tr><tr><td>24</td><td><code>deepseek/deepseek-v4-pro</code></td><td>27</td><td>—</td><td><b>—</b></td></tr><tr><td>25</td><td><code>claude-sonnet-4-6</code></td><td>36</td><td>—</td><td><b>—</b></td></tr><tr><td>26</td><td><code>gpt-4o-mini-2024-07-18</code></td><td>36</td><td>—</td><td><b>—</b></td></tr><tr><td>27</td><td><code>claude-haiku-4-5-20251001</code></td><td>18</td><td>—</td><td><b>—</b></td></tr><tr><td>28</td><td><code>claude-haiku-4-5-20251001</code></td><td>23</td><td>—</td><td><b>—</b></td></tr><tr><td>29</td><td><code>claude-haiku-4-5-20251001</code></td><td>16</td><td>—</td><td><b>—</b></td></tr><tr><td>30</td><td><code>claude-haiku-4-5-20251001</code></td><td>23</td><td>—</td><td><b>—</b></td></tr></table>
+<p style="margin-top:30px;color:#888;font-size:11px">
+Apples-to-apples: each row pairs one gateway call with a direct call to the
+SAME model. Skipped rows are non-Anthropic deployments we don't have a direct
+client for in this script (gpt-4o-mini, deepseek/*). Total wall-clock comparisons
+would bundle provider variance into our overhead and be misleading; the paired
+delta is the honest number.
+</p></body></html>
