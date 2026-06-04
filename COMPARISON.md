@@ -1,5 +1,20 @@
 # VIREN — Version Comparison
 
+## SHIP DECISION ✓ v0.2.2
+
+**Tagged `v0.2.2` — this is the version presented at the event.**
+
+| Metric | Value |
+|---|---|
+| Cost savings vs Sonnet-direct | **87.4%** |
+| Quality (majority 2-of-3 judges) | **80.0% win-or-tie** |
+| Eval size | 30 prompts, blind A/B |
+| Judges | claude-sonnet-4-6, gpt-4o, claude-opus-4-8 |
+
+Two DeepSeek experiments (v0.2.3, v0.2.4) ran after tagging. Neither beat
+v0.2.2 on both metrics simultaneously. DeepSeek work is parked in
+`deepseek-v4-retier` for a future reasoning-heavy corpus eval.
+
 ## Methodology note
 
 We tested with three judges from two model families. Sonnet judges favor
@@ -19,7 +34,9 @@ This run uses the fixed script with the correct model and no temperature arg.
 |---|---|---|---|---|---|---|
 | v0.2   | 89.5% | 73.3% | 53.3% | 73.3% | **73.3%** | 57% / 40% / 3% / 0% |
 | v0.2.1 | 48.2% | (no data) | (no data) | (no data) | **(no data)** | 23% / 40% / 33% / 3% |
-| v0.2.2 | 87.4% | 76.7% | 63.3% | 80.0% | **80.0%** | 30% / 50% / 17% / 3% |
+| **v0.2.2 ✓ SHIP** | **87.4%** | **76.7%** | **63.3%** | **80.0%** | **80.0%** | 30% / 50% / 17% / 3% |
+| v0.2.3 (DS cheap) | 64.7% | 76.7% | 66.7% | 76.7% | **76.7%** | 40% Haiku / 37% DS-flash / 13% 4o-mini / 10% Sonnet |
+| v0.2.4 (DS V4-Pro balanced) | 85.1% | 80.0% | 43.3% | 76.7% | **73.3%** | 43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro |
 | v0.2.3 (DeepSeek) | 64.7% | 76.7% | 66.7% | 76.7% | **76.7%** | 40% Haiku / 37% DeepSeek / 13% 4o-mini / 10% Sonnet |
 | v0.2.4 (DS V4-Pro balanced) | 85.1% | 80.0% | 43.3% | 76.7% | **73.3%** | 43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro |
 

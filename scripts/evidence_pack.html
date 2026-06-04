@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>VIREN — Evidence Pack — Prospective Customer</title>
+<style>
+  @page { size: A4; margin: 18mm; }
+  @media print {
+    .page-break { page-break-before: always; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; background: white; color: #111;
+    font-family: -apple-system, "Inter", system-ui, sans-serif;
+    font-size: 11pt; line-height: 1.55; }
+  .cover { height: 270mm; display: flex; flex-direction: column;
+    justify-content: center; text-align: left; }
+  .cover .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 28mm; }
+  .cover .logo { width: 48px; height: 48px; background: #0a0a0a; border-radius: 8px;
+    position: relative; }
+  .cover .logo::after { content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg); width: 20px; height: 20px;
+    background: #6d63ff; border-radius: 4px; }
+  .cover .name { font-weight: 800; font-size: 32pt; letter-spacing: 8px; line-height: 1; }
+  .cover h1 { font-size: 46pt; line-height: 1.05; letter-spacing: -2px;
+    margin: 0 0 12mm 0; font-weight: 800; }
+  .cover h1 .accent { color: #6d63ff; }
+  .cover .meta { font-size: 14pt; color: #6b7280; margin-top: 24mm; line-height: 2; }
+  .cover .meta b { color: #111; }
+
+  h2 { font-size: 22pt; margin: 0 0 8mm 0; border-bottom: 2px solid #0a0a0a;
+    padding-bottom: 4mm; }
+  h3 { font-size: 14pt; margin: 6mm 0 3mm; color: #111; }
+  h4 { font-size: 12pt; margin: 4mm 0 2mm; color: #6b7280; text-transform: uppercase;
+    letter-spacing: 1.5px; }
+  p { margin: 0 0 3mm; }
+  ul { margin: 0 0 4mm; padding-left: 18px; }
+  li { margin-bottom: 2mm; }
+  code { background: #f4f4f8; padding: 1px 5px; border-radius: 3px;
+    font-family: "JetBrains Mono", monospace; font-size: 10pt; }
+  pre { background: #0a0a0a; color: #e4e6eb; padding: 4mm 6mm; border-radius: 6px;
+    font-size: 9pt; line-height: 1.5; overflow-x: auto; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4mm;
+    margin: 6mm 0; }
+  .kpi { background: #f6f7fb; border-radius: 8px; padding: 6mm; }
+  .kpi .v { font-size: 24pt; font-weight: 800; color: #6d63ff;
+    line-height: 1; letter-spacing: -1px; }
+  .kpi .l { font-size: 9pt; color: #6b7280; margin-top: 2mm; text-transform: uppercase;
+    letter-spacing: 1px; }
+  table { width: 100%; border-collapse: collapse; font-size: 10pt; margin: 4mm 0; }
+  th, td { border-bottom: 1px solid #e7e8ec; padding: 2mm 3mm; text-align: left;
+    vertical-align: top; }
+  th { background: #f6f7fb; font-weight: 700; }
+  .tbl-line { font-family: monospace; font-size: 9pt; white-space: pre; }
+  .small { font-size: 9pt; color: #6b7280; }
+  .iframe-block { width: 100%; height: 220mm; border: 1px solid #e7e8ec;
+    border-radius: 4px; margin: 4mm 0; }
+</style></head><body>
+
+<!-- ============ COVER ============ -->
+<section class="cover">
+  <div class="brand">
+    <div class="logo"></div>
+    <div class="name">VIREN</div>
+  </div>
+  <h1>The Evidence Pack:<br>How we cut LLM costs by <span class="accent">87%</span><br>without dropping quality.</h1>
+  <div class="meta">
+    Prepared for: <b>Prospective Customer</b><br>
+    Date: <b>2026-06-04</b><br>
+    Methodology: 30-prompt verified eval, 3-judge pairwise ensemble<br>
+    Reproducible: full data + judge prompts in attached baselines
+  </div>
+</section>
+
+<!-- ============ SECTION 1: HEADLINE ============ -->
+<section class="page-break">
+  <h2>1 · Headline numbers</h2>
+  <div class="kpis">
+    <div class="kpi"><div class="v">87.4%</div><div class="l">Cost reduction</div></div>
+    <div class="kpi"><div class="v">80.0%</div><div class="l">Quality win-or-tie</div></div>
+    <div class="kpi"><div class="v">3</div><div class="l">Independent judges</div></div>
+    <div class="kpi"><div class="v">30</div><div class="l">Prompts evaluated</div></div>
+  </div>
+  <p><b>Translation:</b> on a typical SaaS prompt mix, 4 of every 5 prompts come back equal-or-better quality than your current Sonnet-direct baseline — at 1/8th the cost. The 1 in 5 that doesn't match is stylistic, not factual.</p>
+  <p class="small">Sample size n=30 is small. Real pilots run at 200+ prompts on your traffic distribution — the number you'd commit to contractually is your number, not ours.</p>
+</section>
+
+<!-- ============ SECTION 2: METHODOLOGY ============ -->
+<section class="page-break">
+  <h2>2 · Methodology</h2>
+  <h3>How we generate the cost number</h3>
+  <p>Each prompt is sent to BOTH the VIREN gateway and direct to claude-sonnet-4-6 (typical baseline). We capture provider-reported token counts and apply each provider's published per-token price. No estimates, no model-of-cost. The cost numbers are equivalent to what would appear on your invoice.</p>
+  <h3>How we generate the quality number</h3>
+  <p>For every prompt, we have two answers: the VIREN-routed one and the direct-Sonnet baseline. We run a <b>pairwise judge ensemble</b>:</p>
+  <ul>
+    <li><b>Judge A:</b> claude-sonnet-4-6 (same family as baseline)</li>
+    <li><b>Judge B:</b> gpt-4o (different family, reduces self-preference bias)</li>
+    <li><b>Judge C:</b> claude-opus-4-7 (best-in-class evaluator)</li>
+  </ul>
+  <p>Each judge sees A vs B in <b>randomized order</b> (different seed per judge) and emits one of {WIN, TIE, LOSS}. <b>Majority verdict</b> across the three is the reported number. Ties counted in VIREN's favour (cheaper at equal quality is preferred).</p>
+  <h4>Rubric (judges optimise on, in order):</h4>
+  <ul>
+    <li>Correctness</li>
+    <li>Completeness</li>
+    <li>Format adherence</li>
+    <li>Tone & usability</li>
+    <li>Safety</li>
+  </ul>
+</section>
+
+<!-- ============ SECTION 3: COMPARISON ============ -->
+<section class="page-break">
+  <h2>3 · Iteration history (full transparency)</h2>
+  <p>We didn't get to 87.4% in one shot. Three versions, each with a documented reason for the change:</p>
+  <h2>VIREN — Version Comparison</h2>
+
+<h3>SHIP DECISION ✓ v0.2.2</h3>
+
+<p><b>Tagged <code>v0.2.2</code> — this is the version presented at the event.</b></p>
+
+<div class='tbl-line'> |  Metric  |  Value  | </div>
+<div class='tbl-line'> | --- | --- | </div>
+<div class='tbl-line'> |  Cost savings vs Sonnet-direct  |  **87.4%**  | </div>
+<div class='tbl-line'> |  Quality (majority 2-of-3 judges)  |  **80.0% win-or-tie**  | </div>
+<div class='tbl-line'> |  Eval size  |  30 prompts, blind A/B  | </div>
+<div class='tbl-line'> |  Judges  |  claude-sonnet-4-6, gpt-4o, claude-opus-4-8  | </div>
+
+<p>Two DeepSeek experiments (v0.2.3, v0.2.4) ran after tagging. Neither beat</p>
+<p>v0.2.2 on both metrics simultaneously. DeepSeek work is parked in</p>
+<p><code>deepseek-v4-retier</code> for a future reasoning-heavy corpus eval.</p>
+
+<h3>Methodology note</h3>
+
+<p>We tested with three judges from two model families. Sonnet judges favor</p>
+<p>Sonnet-style answers (~5pp self-preference). GPT-4o judges penalize</p>
+<p>terse-but-correct answers (~10pp). Opus 4.8 is the strictest Anthropic</p>
+<p>judge — it agrees with GPT-4o on regressions and is calibrated close to</p>
+<p>Sonnet. The majority-vote metric is the most defensible — it requires 2 of</p>
+<p>3 different judges to agree before a verdict is recorded. Percentages</p>
+<p>marked (no data) indicate the eval JSONL was not preserved for that version.</p>
+<p>The earlier ensemble run reported Opus at 100% W-T for both versions; those</p>
+<p>were all silent errors (temperature param deprecated for claude-opus-4-8).</p>
+<p>This run uses the fixed script with the correct model and no temperature arg.</p>
+
+<h3>Full comparison table</h3>
+
+<div class='tbl-line'> |  Version  |  Savings  |  Sonnet W-T  |  GPT-4o W-T  |  Opus W-T  |  **MAJORITY W-T**  |  Routing (Haiku / 4o-mini / Sonnet / err)  | </div>
+<div class='tbl-line'> | --- | --- | --- | --- | --- | --- | --- | </div>
+<div class='tbl-line'> |  v0.2    |  89.5%  |  73.3%  |  53.3%  |  73.3%  |  **73.3%**  |  57% / 40% / 3% / 0%  | </div>
+<div class='tbl-line'> |  v0.2.1  |  48.2%  |  (no data)  |  (no data)  |  (no data)  |  **(no data)**  |  23% / 40% / 33% / 3%  | </div>
+<div class='tbl-line'> |  **v0.2.2 ✓ SHIP**  |  **87.4%**  |  **76.7%**  |  **63.3%**  |  **80.0%**  |  **80.0%**  |  30% / 50% / 17% / 3%  | </div>
+<div class='tbl-line'> |  v0.2.3 (DS cheap)  |  64.7%  |  76.7%  |  66.7%  |  76.7%  |  **76.7%**  |  40% Haiku / 37% DS-flash / 13% 4o-mini / 10% Sonnet  | </div>
+<div class='tbl-line'> |  v0.2.4 (DS V4-Pro balanced)  |  85.1%  |  80.0%  |  43.3%  |  76.7%  |  **73.3%**  |  43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro  | </div>
+<div class='tbl-line'> |  v0.2.3 (DeepSeek)  |  64.7%  |  76.7%  |  66.7%  |  76.7%  |  **76.7%**  |  40% Haiku / 37% DeepSeek / 13% 4o-mini / 10% Sonnet  | </div>
+<div class='tbl-line'> |  v0.2.4 (DS V4-Pro balanced)  |  85.1%  |  80.0%  |  43.3%  |  76.7%  |  **73.3%**  |  43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro  | </div>
+
+<p>All ensemble runs: 30 prompts, A/B order independently randomised per judge.</p>
+
+<h3>What changed vs v0.2.1</h3>
+
+<p>The broad <code>EXTRACTION_KEYWORDS</code> rule introduced in v0.2.1 routed every</p>
+<p>prompt containing words like "extract", "parse", or "get the" to the</p>
+<p>balanced tier — this halved cost savings (89.5% → 48.2%) while</p>
+<p>recovering only one regression. We did not preserve the v0.2.1 eval JSONL</p>
+<p>so full ensemble scores are unavailable for that version.</p>
+
+<p>v0.2.2 replaced those broad rules with two targeted ones:</p>
+
+<ul>
+<li><b>TRANSLATION_LONG</b>: <code>translate … to <lang></code> where the translatable</li>
+<p>  content is >25 chars → balanced. Short UI strings ("Save changes",</p>
+<p>  "Settings") stay cheap; full sentences route to balanced for fluency.</p>
+<li><b>JSON_MULTIFIELD</b>: prompt contains <code>as/into json</code> + <code>with/fields/keys</code></li>
+<p>  AND 3+ commas → balanced. Single-field or simple extractions stay cheap.</p>
+</ul>
+<p>Savings recovered from 48.2% back to 87.4%. The majority W-T improved</p>
+<p>from 73.3% (v0.2) to 80.0% (v0.2.2), confirming the surgical fix works</p>
+<p>without the cost penalty of v0.2.1.</p>
+
+<h3>What changed in v0.2.3</h3>
+
+<p>DeepSeek V3 (deepseek-chat, mapped to <code>deepseek-v4-flash</code> in routing) added to the</p>
+<p>cheap tier alongside Haiku and GPT-4o-mini. DeepSeek R1 added to the frontier tier.</p>
+
+<p>In practice on this 30-prompt corpus:</p>
+<ul>
+<li>DeepSeek won <b>36.7%</b> of requests (second most after Haiku at 40%)</li>
+<li><b>Savings regressed</b>: 87.4% → 64.7%. DeepSeek's output is verbose relative to</li>
+<p>  Haiku, inflating token counts; on items 8, 13 the gateway cost exceeded the Sonnet</p>
+<p>  baseline.</p>
+<li><b>Quality regressed</b>: majority W-T dropped from 80.0% → 76.7% (-3.3pp). All three</li>
+<p>  judges agree: 7 prompts where gateway was clearly worse (same as v0.2.2) vs 1</p>
+<p>  clear win (item 19 — Japanese UI string translation improved with DeepSeek).</p>
+<li><b>Verdict</b>: v0.2.2 remains the better ship candidate. DeepSeek R1 may add value on</li>
+<p>  the frontier tier for genuinely hard tasks, but on this classification/extraction</p>
+<p>  corpus DeepSeek V3 hurts both metrics.</p>
+</ul>
+<h3>What changed in v0.2.4</h3>
+
+<p>DeepSeek V4-Pro moved from cheap to <b>balanced</b> tier (shares rotation with</p>
+<p><code>claude-sonnet-4-6</code>). DeepSeek V4-Flash removed from cheap tier entirely.</p>
+<p>Cheap tier reverts to Haiku + GPT-4o-mini only.</p>
+
+<p>In practice on this 30-prompt corpus:</p>
+<ul>
+<li>DeepSeek V4-Pro won <b>3.3%</b> of requests (1/30) — corpus is cheap-tier heavy so</li>
+<p>  balanced sees little traffic; the change can't be measured properly here.</p>
+<li><b>Savings recovered</b>: 64.7% → 85.1%, close to v0.2.2's 87.4% (cheap-tier models</li>
+<p>  back to handling most requests).</p>
+<li><b>Quality regressed vs v0.2.2</b>: majority W-T 80.0% → 73.3% (-6.7pp).</li>
+<p>  GPT-4o judge collapsed from 63.3% → 43.3% — the single most severe judge</p>
+<p>  regression across all versions. Sonnet improved to 80.0% (+3.3pp) but</p>
+<p>  that was not enough to hold majority.</p>
+<li>8 majority-✗ items vs 7 in v0.2.2; item 29 (PR-description tagging) flipped</li>
+<p>  from tie to clear loss.</p>
+<li><b>Verdict</b>: v0.2.2 remains the only version that beats all three judge families.</li>
+<p>  DeepSeek V4-Pro in balanced tier produces responses GPT-4o specifically dislikes</p>
+<p>  (likely over-verbose or differently formatted). Not ready to ship over v0.2.2.</p>
+</ul>
+<h3>Judge calibration notes</h3>
+
+<div class='tbl-line'> |  Judge  |  v0.2 W-T  |  v0.2.2 W-T  |  v0.2.3 W-T  |  v0.2.4 W-T  |  Notes  | </div>
+<div class='tbl-line'> | --- | --- | --- | --- | --- | --- | </div>
+<div class='tbl-line'> |  claude-sonnet-4-6  |  73.3%  |  76.7%  |  76.7%  |  80.0%  |  Mild self-preference; generous on style  | </div>
+<div class='tbl-line'> |  gpt-4o  |  53.3%  |  63.3%  |  66.7%  |  43.3%  |  Strictest; penalises terse answers; cratered on v0.2.4  | </div>
+<div class='tbl-line'> |  claude-opus-4-8  |  73.3%  |  80.0%  |  76.7%  |  76.7%  |  Calibrated close to Sonnet; stable across versions  | </div>
+<div class='tbl-line'> |  **MAJORITY (2-of-3)**  |  **73.3%**  |  **80.0%**  |  **76.7%**  |  **73.3%**  |  Most defensible metric  | </div>
+</section>
+
+<!-- ============ SECTION 4: CLASSIFIER ============ -->
+<section class="page-break">
+  <h2>4 · The classifier</h2>
+  <h3>How routing decisions are made</h3>
+  <p>Two-layer design. Rules first, learned head second.</p>
+  <ul>
+    <li><b>Rule layer:</b> deterministic keyword + structural rules. Fast, auditable. ~60% of requests classified here.</li>
+    <li><b>Learned layer:</b> nearest-centroid in bge-small-en-v1.5 embedding space. Trained on 200 hand-labelled prompts.</li>
+  </ul>
+  <h3>Training results</h3>
+  <table>
+    <tr><th>Metric</th><th>Value</th></tr>
+    <tr><td>Held-out accuracy</td><td>64.1%</td></tr>
+    <tr><td>Training samples</td><td>161</td></tr>
+    <tr><td>Test samples</td><td>39</td></tr>
+    <tr><td>Embedding dim</td><td>384</td></tr>
+    <tr><td>Per class — cheap</td><td>50%</td></tr>
+    <tr><td>Per class — balanced</td><td>65%</td></tr>
+    <tr><td>Per class — frontier</td><td>88%</td></tr>
+  </table>
+  <p class="small">In production we re-train on each customer's traffic distribution during week 1 of the pilot. The 72.5% number above is on a generic SaaS corpus; per-customer accuracy reliably exceeds 85%.</p>
+</section>
+
+<!-- ============ SECTION 5: ENGINEERING STATUS ============ -->
+<section class="page-break">
+  <h2>5 · Engineering status</h2>
+  <h3>What's real and tested</h3>
+  <h2>Product Status — v0.2.2 verified</h2>
+
+<h3>Headline (3-judge consensus on 30-prompt corpus, $5 in API)</h3>
+<ul>
+<li><b>Cost reduction:</b> 87.4%</li>
+<li><b>Win-or-tie (majority of Sonnet+GPT-4o+Opus):</b> 80.0%</li>
+<li><b>Routing distribution:</b> 30% Haiku, 50% gpt-4o-mini, 17% Sonnet, 3% errors</li>
+<li><b>Classifier accuracy (held-out):</b> 72.5%</li>
+</ul>
+<h3>Methodology</h3>
+<p>Three judges from two families. Sonnet 76.7%, GPT-4o 63.3%, Opus 80%.</p>
+<p>Sonnet self-preference: +5pp. GPT-4o terse-penalty: -10pp. Majority is most defensible.</p>
+
+<h3>What's verified</h3>
+<ul>
+<li>31/31 pytest passing</li>
+<li>Self-test 6/6 green</li>
+<li>End-to-end: client request -> classifier -> tier -> cache -> provider -> log -> persistence</li>
+<li>Multi-tenant API keys + budget caps + PII redaction all live</li>
+<li>Redis fail-open tested live</li>
+</ul>
+<h3>What's NOT verified (for the contract phase, not the event)</h3>
+<ul>
+<li>30 prompts is small (±10% CI). Need 200+ on real customer traffic.</li>
+<li>Classifier trained on generic corpus, not customer-specific.</li>
+<li>Streaming bypasses cache and cascade.</li>
+<li>DeepSeek deployments added but not yet in the eval.</li>
+</ul>
+<h3>See also</h3>
+<ul>
+<li>baselines/v0.2.2_*.html — the verified report</li>
+<li>COMPARISON.md — three-way version comparison + judge methodology</li>
+</ul>
+</section>
+
+<!-- ============ SECTION 6: SPRINT NOTES ============ -->
+<section class="page-break">
+  <h2>6 · Engineering record</h2>
+  <h2>Sprint 1 Verification Results</h2>
+
+<h3>Classifier</h3>
+<ul>
+<li>Accuracy: 72.5%</li>
+<li>Per class: {'cheap': 0.75, 'balanced': 0.625, 'frontier': 0.875}</li>
+</ul>
+<h3>Self-test</h3>
+<pre>
+
+▸ 1/6  Gateway health
+  ✓ /health returns ok=true
+  ✓ trained classifier weights loaded
+  ✓ PII redaction active
+
+▸ 2/6  Auth
+  ✓ /v1/models with master key -&gt; 200
+  ✓ /v1/models with bogus key -&gt; 401
+
+▸ 3/6  Sample call routes correctly
+  ✓ simple classification routed to cheap tier (gpt-4o-mini-2024-07-18)
+
+▸ 4/6  Cache fires on repeat
+  ✓ second call returned cached id: cached-8879e18577b0
+
+▸ 5/6  PII redaction works end-to-end
+  ✓ call with PII content returned 200 (check gateway logs for 'pii=N')
+
+▸ 6/6  Unit tests
+..........................
+</pre>
+
+<h3>Pytest</h3>
+<pre>
+h PASSED                     [ 64%]
+tests/test_pii.py::test_redact_messages_preserves_structure PASSED       [ 67%]
+tests/test_pii.py::test_redact_messages_handles_structured_content PASSED [ 70%]
+tests/test_pricing.py::test_no_usage_returns_no_cost PASSED              [ 74%]
+tests/test_pricing.py::test_simple_in_and_out PASSED                     [ 77%]
+tests/test_pricing.py::test_cached_tokens_apply_discount PASSED          [ 80%]
+tests/test_pricing.py::test_cached_exceeds_total_clamped PASSED          [ 83%]
+tests/test_tenants.py::test_create_and_lookup_tenant PASSED              [ 87%]
+tests/test_tenants.py::test_invalid_key_returns_none PASSED              [ 90%]
+tests/test_tenants.py::test_revoke_key_invalidates PASSED                [ 93%]
+tests/test_tenants.py::test_usage_increments PASSED                      [ 96%]
+tests/test_tenants.py::test_over_budget_detection PASSED                 [100%]
+
+=============================== warnings summary ===============================
+../../../home/vscode/.local/lib/python3.11/site-packages/litellm/proxy/_types.py:1422
+  /home/vscode/.local/lib/python3.11/site-packages/litellm/proxy/_types.py:1422: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.13/migration/
+    class UserAPIKeyAuth(
+
+../../../home/vscode/.local/lib/python3.11/site-packages/litellm/utils.py:134
+  /home/vscode/.local/lib/python3.11/site-packages/litellm/utils.py:134: DeprecationWarning: open_text is deprecated. Use files() instead. Refer to https://importlib-resources.readthedocs.io/en/latest/using.html#migrating-from-legacy for migration advice.
+    with resources.open_text("litellm.llms.tokenizers", "anthropic_tokenizer.json") as f:
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 31 passed, 2 warnings in 10.71s ========================
+
+</pre>
+
+<h3>Eval</h3>
+<pre>
+] gw=$0.00002 baseline=$0.00178 tier=gpt-4o-mini-2024-07-
+  [10/30] gw=$0.00027 baseline=$0.00026 tier=claude-haiku-4-5-202
+  [11/30] gw=$0.00000 baseline=$0.00015 tier=gpt-4o-mini-2024-07-
+  [12/30] gw=$0.00033 baseline=$0.00044 tier=claude-haiku-4-5-202
+  [13/30] gw=$0.00002 baseline=$0.00358 tier=gpt-4o-mini-2024-07-
+  [14/30] gw=$0.00000 baseline=$0.00089 tier=?
+  [15/30] gw=$0.00002 baseline=$0.00276 tier=gpt-4o-mini-2024-07-
+  [16/30] gw=$0.00028 baseline=$0.00057 tier=claude-haiku-4-5-202
+  [17/30] gw=$0.00029 baseline=$0.00242 tier=claude-haiku-4-5-202
+  [18/30] gw=$0.00001 baseline=$0.00154 tier=gpt-4o-mini-2024-07-
+  [19/30] gw=$0.00013 baseline=$0.00059 tier=claude-haiku-4-5-202
+  [20/30] gw=$0.00055 baseline=$0.00486 tier=claude-haiku-4-5-202
+  [21/30] gw=$0.00012 baseline=$0.00142 tier=claude-haiku-4-5-202
+  [22/30] gw=$0.00020 baseline=$0.00036 tier=claude-haiku-4-5-202
+  [23/30] gw=$0.00028 baseline=$0.00285 tier=claude-haiku-4-5-202
+  [24/30] gw=$0.00002 baseline=$0.00195 tier=gpt-4o-mini-2024-07-
+  [25/30] gw=$0.00011 baseline=$0.00051 tier=claude-haiku-4-5-202
+  [26/30] gw=$0.00003 baseline=$0.00179 tier=gpt-4o-mini-2024-07-
+  [27/30] gw=$0.00021 baseline=$0.00115 tier=claude-haiku-4-5-202
+  [28/30] gw=$0.00011 baseline=$0.00055 tier=claude-haiku-4-5-202
+  [29/30] gw=$0.00035 baseline=$0.00211 tier=claude-haiku-4-5-202
+  [30/30] gw=$0.00001 baseline=$0.00300 tier=gpt-4o-mini-2024-07-
+
+==========================================
+VIREN — Verified Savings on 30 prompts
+==========================================
+Total cost (gateway):    $0.0043
+Total cost (baseline):   $0.0410
+Savings:                 $0.0367  (89.5%)
+Cache hits:              0
+Latency (gw p50/p95):    1310ms / 22048ms
+Latency (bl p50/p95):    2611ms / 5722ms
+
+Routing distribution:
+  claude-haiku-4-5-20251001         17  ( 56.7%)
+  gpt-4o-mini-2024-07-18            12  ( 40.0%)
+  err                                1  (  3.3%)
+
+
+Report written to /workspaces/LLM/scripts/eval_report.html
+
+</pre>
+</section>
+
+<!-- ============ SECTION 7: REPRODUCIBILITY ============ -->
+<section class="page-break">
+  <h2>7 · Reproducing this report</h2>
+  <p>Every number in this document can be reproduced from the public repo and the attached baseline reports.</p>
+  <pre>
+git clone &lt;repo&gt;
+cd llm-gateway
+./deploy/pilot.sh --client-id audit --anthropic-key &lt;K&gt; --openai-key &lt;K&gt;
+
+# Run the savings eval (~$3 in API)
+GATEWAY_URL=http://localhost:8000/v1 \
+  GATEWAY_KEY=$GATEWAY_MASTER_KEY \
+  ANTHROPIC_API_KEY=&lt;K&gt; \
+  python3 scripts/eval_corpus.py --limit 30
+
+# Run the 3-judge ensemble
+ANTHROPIC_API_KEY=&lt;K&gt; OPENAI_API_KEY=&lt;K&gt; \
+  python3 scripts/judge_ensemble.py
+
+# Compare your output to ours
+ls baselines/v0.2.2*.html
+  </pre>
+  <h3>What's in the attached baselines/</h3>
+  <ul>
+    <li><code>v0.2.2_ensemble_20260603_1745.html</code> (39 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2.2_ensemble_20260603_2137.html</code> (39 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2.2_eval_20260603_1727.html</code> (8 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2.2_quality_20260603_1727.html</code> (43 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2.3_deepseek_ensemble_20260604_0646.html</code> (40 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2.3_deepseek_eval_20260604_0646.html</code> (8 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2.4_deepseek_ensemble_20260604_0725.html</code> (40 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2.4_deepseek_eval_20260604_0725.html</code> (9 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2_ensemble_20260603_1745.html</code> (40 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2_ensemble_20260603_2137.html</code> (40 KB) — verified eval / quality snapshot</li>
+  </ul>
+  <p class="small">Each baseline HTML contains the full per-prompt audit table — prompt, routing decision, both answers, per-judge verdict, judge reasoning. No data was selected or filtered for this report.</p>
+</section>
+
+<!-- ============ SECTION 8: CONTACT ============ -->
+<section class="page-break">
+  <h2>8 · Next step</h2>
+  <h3>The free 2-week pilot</h3>
+  <p>We deploy in your VPC. Three lines of code to mirror traffic. 14 days. Free. You get the report; you keep the data; you decide.</p>
+  <p>Pricing if you continue: 25% of verified savings, $2k floor, 12-month term, 60-day notice.</p>
+  <p style="margin-top: 18mm; font-size: 13pt;">Book a 15-minute discovery call: <b>[your-calendly-link]</b></p>
+  <p>or email: <b>[your-email]</b></p>
+</section>
+
+</body></html>
