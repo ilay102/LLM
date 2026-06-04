@@ -21,6 +21,7 @@ This run uses the fixed script with the correct model and no temperature arg.
 | v0.2.1 | 48.2% | (no data) | (no data) | (no data) | **(no data)** | 23% / 40% / 33% / 3% |
 | v0.2.2 | 87.4% | 76.7% | 63.3% | 80.0% | **80.0%** | 30% / 50% / 17% / 3% |
 | v0.2.3 (DeepSeek) | 64.7% | 76.7% | 66.7% | 76.7% | **76.7%** | 40% Haiku / 37% DeepSeek / 13% 4o-mini / 10% Sonnet |
+| v0.2.4 (DS V4-Pro balanced) | 85.1% | 80.0% | 43.3% | 76.7% | **73.3%** | 43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro |
 
 All ensemble runs: 30 prompts, A/B order independently randomised per judge.
 
@@ -61,11 +62,32 @@ In practice on this 30-prompt corpus:
   the frontier tier for genuinely hard tasks, but on this classification/extraction
   corpus DeepSeek V3 hurts both metrics.
 
+## What changed in v0.2.4
+
+DeepSeek V4-Pro moved from cheap to **balanced** tier (shares rotation with
+`claude-sonnet-4-6`). DeepSeek V4-Flash removed from cheap tier entirely.
+Cheap tier reverts to Haiku + GPT-4o-mini only.
+
+In practice on this 30-prompt corpus:
+- DeepSeek V4-Pro won **3.3%** of requests (1/30) — corpus is cheap-tier heavy so
+  balanced sees little traffic; the change can't be measured properly here.
+- **Savings recovered**: 64.7% → 85.1%, close to v0.2.2's 87.4% (cheap-tier models
+  back to handling most requests).
+- **Quality regressed vs v0.2.2**: majority W-T 80.0% → 73.3% (-6.7pp).
+  GPT-4o judge collapsed from 63.3% → 43.3% — the single most severe judge
+  regression across all versions. Sonnet improved to 80.0% (+3.3pp) but
+  that was not enough to hold majority.
+- 8 majority-✗ items vs 7 in v0.2.2; item 29 (PR-description tagging) flipped
+  from tie to clear loss.
+- **Verdict**: v0.2.2 remains the only version that beats all three judge families.
+  DeepSeek V4-Pro in balanced tier produces responses GPT-4o specifically dislikes
+  (likely over-verbose or differently formatted). Not ready to ship over v0.2.2.
+
 ## Judge calibration notes
 
-| Judge | v0.2 W-T | v0.2.2 W-T | v0.2.3 W-T | Notes |
-|---|---|---|---|---|
-| claude-sonnet-4-6 | 73.3% | 76.7% | 76.7% | Mild self-preference; generous on style |
-| gpt-4o | 53.3% | 63.3% | 66.7% | Strictest; penalises terse answers |
-| claude-opus-4-8 | 73.3% | 80.0% | 76.7% | Calibrated close to Sonnet; agrees on clear regressions |
-| **MAJORITY (2-of-3)** | **73.3%** | **80.0%** | **76.7%** | Most defensible metric |
+| Judge | v0.2 W-T | v0.2.2 W-T | v0.2.3 W-T | v0.2.4 W-T | Notes |
+|---|---|---|---|---|---|
+| claude-sonnet-4-6 | 73.3% | 76.7% | 76.7% | 80.0% | Mild self-preference; generous on style |
+| gpt-4o | 53.3% | 63.3% | 66.7% | 43.3% | Strictest; penalises terse answers; cratered on v0.2.4 |
+| claude-opus-4-8 | 73.3% | 80.0% | 76.7% | 76.7% | Calibrated close to Sonnet; stable across versions |
+| **MAJORITY (2-of-3)** | **73.3%** | **80.0%** | **76.7%** | **73.3%** | Most defensible metric |
