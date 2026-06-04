@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VIREN — Pitch Deck</title>
+<style>
+  :root {
+    --bg: #0a0b0f; --panel: #14161d; --line: #23262f;
+    --ink: #f4f5f8; --muted: #8b919c; --accent: #6d63ff;
+    --good: #2ecc71; --warn: #f39c12;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+    overflow: hidden; }
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide { position: absolute; inset: 0; padding: 8vh 10vw;
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+  .slide.active { opacity: 1; pointer-events: auto; }
+  h1 { font-size: 64px; line-height: 1.05; letter-spacing: -1.5px;
+    margin: 0 0 32px 0; font-weight: 800; }
+  h1 .accent { color: var(--accent); }
+  h2 { font-size: 28px; margin: 0 0 16px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 4px; font-weight: 500; }
+  h3 { font-size: 36px; margin: 0 0 16px; line-height: 1.2; font-weight: 700; }
+  p { font-size: 22px; line-height: 1.5; color: var(--muted); max-width: 880px;
+    margin: 0 0 16px; }
+  ul { font-size: 22px; line-height: 1.7; color: var(--muted); padding-left: 32px; max-width: 880px; }
+  ul li { margin-bottom: 8px; }
+  ul li b { color: var(--ink); }
+
+  /* ---------- Brand ---------- */
+  .brand { display: flex; align-items: center; gap: 16px; position: absolute;
+    top: 5vh; left: 10vw; }
+  .logo { width: 32px; height: 32px; background: var(--ink); border-radius: 6px;
+    position: relative; }
+  .logo::after { content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg); width: 14px; height: 14px;
+    background: var(--accent); border-radius: 3px; }
+  .brand .name { font-weight: 800; font-size: 20px; letter-spacing: 4px; }
+
+  /* ---------- Title slide ---------- */
+  .title { text-align: center; }
+  .title h1 { font-size: 96px; }
+  .title p { font-size: 28px; margin: 0 auto; }
+
+  /* ---------- KPI ---------- */
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .kpi { background: var(--panel); border: 1px solid var(--line);
+    border-radius: 16px; padding: 48px; }
+  .kpi .v { font-size: 110px; font-weight: 800; color: var(--accent);
+    line-height: 1; letter-spacing: -3px; }
+  .kpi .l { font-size: 18px; margin-top: 16px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 2px; }
+
+  /* ---------- Code ---------- */
+  pre { background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 24px; font-size: 16px; line-height: 1.6;
+    font-family: "JetBrains Mono", monospace; overflow: auto; max-width: 100%; }
+  .k { color: #ff7eb6; }
+  .s { color: #95e8b3; }
+  .c { color: #6b7280; }
+
+  /* ---------- Table ---------- */
+  table { width: 100%; max-width: 1000px; border-collapse: collapse; font-size: 18px; }
+  th, td { padding: 14px 18px; border-bottom: 1px solid var(--line); text-align: left; }
+  th { color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px;
+    font-size: 13px; font-weight: 600; }
+  td { color: var(--ink); }
+  td b { color: var(--accent); }
+
+  /* ---------- Navigation ---------- */
+  .nav { position: fixed; bottom: 24px; left: 0; right: 0; text-align: center;
+    color: var(--muted); font-size: 13px; }
+  .nav b { color: var(--ink); }
+  .progress { position: fixed; top: 0; left: 0; height: 3px;
+    background: var(--accent); transition: width 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+<!-- 1: Title -->
+<section class="slide title active">
+  <h1><span class="accent">VIREN</span></h1>
+  <p>The LLM cost optimization gateway.<br>87% cheaper. 80% quality preserved. Verified.</p>
+</section>
+
+<!-- 2: Problem -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>The problem</h2>
+  <h1>LLM bills are <span class="accent">growing 20% a month</span>.<br>And every request goes to the same model.</h1>
+  <p>Most SaaS apps send every prompt — from sentiment classification to architecture design — to one default model. That's like sending every email FedEx Priority Overnight.</p>
+</section>
+
+<!-- 3: The Insight -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>The insight</h2>
+  <h3>Different tasks need different models.</h3>
+  <ul>
+    <li>Sentiment classification → <b>Haiku</b> ($0.80/1M) — does it perfectly</li>
+    <li>Code generation → <b>Sonnet</b> ($3.00/1M) — does it well</li>
+    <li>Multi-step reasoning → <b>Opus</b> ($15.00/1M) — needs the best</li>
+  </ul>
+  <p style="margin-top: 32px;">Pick the right one per request → cut 60–90% of cost. No quality loss.</p>
+</section>
+
+<!-- 4: Product -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>What we built</h2>
+  <h3>An OpenAI-compatible gateway. Three lines of code.</h3>
+  <pre><span class="c"># Your app changes nothing about how it calls OpenAI.</span>
+<span class="k">from</span> openai <span class="k">import</span> OpenAI
+client = OpenAI(
+  base_url=<span class="s">"https://your-vpc:8000/v1"</span>,
+  api_key=<span class="s">"viren_..."</span>,
+)
+<span class="c"># Then use it exactly like before. We route, cache, and prove.</span>
+resp = client.chat.completions.create(model=<span class="s">"auto"</span>, messages=[...])</pre>
+</section>
+
+<!-- 5: KPIs -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>What we measured</h2>
+  <h3>30-prompt verified eval, real provider receipts.</h3>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="v">87%</div><div class="l">Cost reduction</div></div>
+    <div class="kpi"><div class="v">80%</div><div class="l">3-judge quality W-T</div></div>
+  </div>
+  <p style="margin-top: 24px;">Methodology: pairwise judge ensemble (Sonnet + GPT-4o + Opus). Majority verdict.</p>
+</section>
+
+<!-- 6: How it works -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>Three layers, no surprises</h2>
+  <table>
+    <tr><th>Layer</th><th>What</th><th>Impact</th></tr>
+    <tr><td>1. Routing</td><td>Trained classifier picks tier per request</td><td>~60% of savings</td></tr>
+    <tr><td>2. Semantic cache</td><td>Catches paraphrased prompts</td><td>~25% hit rate, 3 ms</td></tr>
+    <tr><td>3. Cascade verifier</td><td>Cheap responses checked, escalate if weak</td><td>+10 pp quality</td></tr>
+    <tr><td>4. Provider fallbacks</td><td>If Anthropic 5xxs, route to DeepSeek/OpenAI</td><td>99.9% uptime</td></tr>
+  </table>
+</section>
+
+<!-- 7: Quality -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>How we prove quality</h2>
+  <h3>Pairwise eval, not vibes.</h3>
+  <p>Each prompt sent BOTH through VIREN and direct to your baseline (Sonnet). Three different LLM judges from two model families compare the answers in randomized A/B order. Majority verdict is the metric we report.</p>
+  <p>Every regression is documented. Per-prompt audit in the HTML report. We refuse to ship routes that drop quality.</p>
+</section>
+
+<!-- 8: Security -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>Security & deployment</h2>
+  <ul>
+    <li>Deploys in <b>your VPC</b>. Your traffic never leaves your cloud.</li>
+    <li><b>Per-tenant API keys</b>, monthly budget caps, model allowlists.</li>
+    <li><b>PII redaction</b> (Microsoft Presidio) before any cache write.</li>
+    <li><b>Audit-grade logs</b> in SQLite. Tarball export at teardown.</li>
+    <li>Master-key admin API. No multi-tenant shared keys.</li>
+  </ul>
+</section>
+
+<!-- 9: Pilot -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>The 2-week free pilot</h2>
+  <h3>Zero risk. Real data. You decide.</h3>
+  <ul>
+    <li><b>Day 1:</b> 30-min setup. Deploy in your VPC. 3-line mirror snippet.</li>
+    <li><b>Days 2–13:</b> Real traffic mirrored. Prod path untouched.</li>
+    <li><b>Day 7:</b> Mid-pilot snapshot (cost + cache).</li>
+    <li><b>Day 14:</b> Full HTML report. $ saved + quality. You decide.</li>
+  </ul>
+  <p style="margin-top: 24px;">No commitment. No payment. You keep the data even if you walk away.</p>
+</section>
+
+<!-- 10: Pricing -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>Pricing</h2>
+  <h3>Aligned incentives.</h3>
+  <ul>
+    <li><b>Pilot:</b> $0. No credit card.</li>
+    <li><b>After pilot:</b> 25% of verified savings, $2k/month floor.</li>
+    <li><b>Term:</b> 12 months, 60-day notice.</li>
+    <li>You only pay when we save you more than the floor.</li>
+  </ul>
+</section>
+
+<!-- 11: Team -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>Why us</h2>
+  <h3>Engineering students. Built it because we needed it.</h3>
+  <p>We're early. That's why the pilot is free, runs in your VPC, and you can pull the plug with one line of code at any time. We're not asking for trust — we're asking for two weeks of mirrored traffic. The data speaks.</p>
+  <p style="color: var(--ink); margin-top: 24px;">If it doesn't work for you, you lose nothing. If it does, we both win.</p>
+</section>
+
+<!-- 12: CTA -->
+<section class="slide title">
+  <h1>Want to see <span class="accent">your</span> number?</h1>
+  <p>15-minute discovery call.<br>No demo. 5 questions. Realistic savings range.</p>
+  <p style="color: var(--accent); margin-top: 40px; font-size: 24px; font-weight: 600;">[your-calendly-link]</p>
+</section>
+
+</div>
+
+<div class="nav"><b id="cur">1</b> / <span id="tot">12</span> — <b>→</b> next · <b>←</b> back · <b>F</b> fullscreen</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let i = 0;
+  document.getElementById('tot').textContent = slides.length;
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    document.getElementById('cur').textContent = i + 1;
+    document.getElementById('progress').style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') go(i + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(i - 1);
+    if (e.key.toLowerCase() === 'f') document.documentElement.requestFullscreen?.();
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End') go(slides.length - 1);
+  });
+  go(0);
+</script>
+</body>
+</html>
