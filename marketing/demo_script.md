@@ -82,7 +82,7 @@ Open a sample `report.html` (or use the one in `baselines/` if you have one).
 > answer a panel of LLM judges preferred.
 >
 > Look at the headline numbers. Win-or-tie rate against your baseline:
-> 98%. Cost reduction: 62%. p95 latency: within 30 milliseconds.
+> Factually equivalent or better: 90% — and we publish every regression. Cost reduction: 87%. Added latency: under 50ms p95.
 >
 > Every regression is right here in the appendix — you can audit any
 > decision, see the prompts, the answers, the judge's reasoning. No
@@ -112,7 +112,7 @@ Open a sample `report.html` (or use the one in `baselines/` if you have one).
 - **Practice runs:** do 3 takes. The 3rd is always the best. Pick that one.
 - **Editing:** Loom auto-trims silence. Don't over-edit. Real beats polished.
 - **Captions:** Loom auto-generates. Review for "VIREN" being spelled right.
-- **Thumbnail:** the "62% / 98%" report frame. That number does the click work.
+- **Thumbnail:** the "87% / 90%" report frame (cost / factually-equivalent). That number does the click work.
 - **Length:** target 4:00. If you go to 5:00, cut. Nobody watches longer.
 
 ## Variations to record

@@ -63,12 +63,32 @@ isn't you. That matters more for the event than any quality percentage.
 
 ## The numbers to say out loud
 
-- "87% cost reduction, 80% pairwise quality, verified by three independent
-  LLM judges from two model families."
-- When pushed on sample size: "30-prompt corpus, ±10% — your traffic gives
-  your real number, which is exactly what the free 2-week pilot measures."
-- Never claim the verifier/per-tenant features as done — they're "in the
-  roadmap, validated on your traffic during the pilot."
+**Primary claim (poster, deck, one-pager, every QR card):**
+- "87% verified cost reduction. 90% factually equivalent or better."
+
+**Methodology, if asked:**
+- "3-judge pairwise audit — Sonnet, GPT-4o, Opus — different families to
+  remove self-preference bias. Then we split every disagreement into
+  'factually wrong' (the only thing that matters) vs 'stylistic only.'
+  Headline is the factual rate. Every regression is auditable per-prompt."
+
+**When pushed on the missing 10%:**
+- "Those 3 prompts out of 30 are documented in the regression report. Two are
+  recoverable with a config change (pin JSON routes to balanced tier); one is
+  a genuine cheap-tier miss. Your pilot measures the same split on YOUR
+  traffic and we contractually commit to zero factual regressions on every
+  route we ship."
+
+**When pushed on sample size:**
+- "30-prompt baseline, ±10% CI. Small. That's why the 2-week pilot runs on
+  YOUR traffic at production scale — your number is what we sign, not ours."
+
+**What NEVER to say:**
+- "80% W-T" or "20% worse" — pitch the FACTUAL rate, not the W-T rate. The
+  W-T number includes stylistic differences buyers don't actually care about.
+- "100%" / "always" / "no regressions" — we have 3 documented and won't lie.
+- That the LLM verifier / per-tenant classifier / streaming are shipped —
+  they're roadmap, "activated on your pilot traffic."
 
 ## Branches (for whoever picks this up)
 

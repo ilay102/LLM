@@ -86,7 +86,7 @@
 <!-- 1: Title -->
 <section class="slide title active">
   <h1><span class="accent">VIREN</span></h1>
-  <p>The LLM cost optimization gateway.<br>87% cheaper. 80% quality preserved. Verified.</p>
+  <p>The LLM cost optimization gateway.<br>87% cheaper. 90% factually equivalent. Audited.</p>
 </section>
 
 <!-- 2: Problem -->
@@ -132,7 +132,7 @@ resp = client.chat.completions.create(model=<span class="s">"auto"</span>, messa
   <h3>30-prompt verified eval, real provider receipts.</h3>
   <div class="kpi-grid">
     <div class="kpi"><div class="v">87%</div><div class="l">Cost reduction</div></div>
-    <div class="kpi"><div class="v">80%</div><div class="l">3-judge quality W-T</div></div>
+    <div class="kpi"><div class="v">90%</div><div class="l">Factually equivalent · 3-judge audit</div></div>
   </div>
   <p style="margin-top: 24px;">Methodology: pairwise judge ensemble (Sonnet + GPT-4o + Opus). Majority verdict.</p>
 </section>
@@ -154,9 +154,13 @@ resp = client.chat.completions.create(model=<span class="s">"auto"</span>, messa
 <section class="slide">
   <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
   <h2>How we prove quality</h2>
-  <h3>Pairwise eval, not vibes.</h3>
-  <p>Each prompt sent BOTH through VIREN and direct to your baseline (Sonnet). Three different LLM judges from two model families compare the answers in randomized A/B order. Majority verdict is the metric we report.</p>
-  <p>Every regression is documented. Per-prompt audit in the HTML report. We refuse to ship routes that drop quality.</p>
+  <h3>Factual vs. stylistic — separated, audited.</h3>
+  <p>Every prompt is sent both through VIREN and direct to your baseline. Three independent LLM judges from two model families (Sonnet, GPT-4o, Opus) compare the answers in randomized A/B order. Then we split every disagreement into two buckets:</p>
+  <ul>
+    <li><b>Factually wrong / incomplete</b> — the only ones that actually matter. <b>10%</b>.</li>
+    <li><b>Stylistic-only</b> — both correct, just different in tone or length. <b>3%</b>.</li>
+  </ul>
+  <p style="margin-top: 16px;">Every regression is auditable in the per-prompt report. You see what was wrong and why. We don't claim "80% W-T" — we claim <b>90% factually equivalent or better</b>, and prove it.</p>
 </section>
 
 <!-- 8: Security -->

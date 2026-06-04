@@ -171,7 +171,7 @@ These numbers tell you which step is broken and what to fix next time.
 > "Two layers: rule-based for obvious cases — short prompts with classification keywords go cheap. Then a learned head — a logistic regression on bge embeddings, trained on labeled prompts. Want me to show the corpus?" (open `classifier/prompts_to_label.jsonl`)
 
 **"What about quality? How do you prove the cheap model didn't degrade my output?"**
-> "Two-week shadow pilot. We mirror your prod traffic, route it both ways, judge them pairwise with Sonnet-4.6, and produce a report with win-or-tie rate. Contractually we guarantee 98% win-or-tie or we don't ship the route."
+> "Two-week shadow pilot in your VPC. We mirror your prod traffic, route it both ways, run a 3-judge pairwise audit, and split every disagreement into 'factually wrong' vs 'stylistic-only.' Contractually we guarantee zero factual regressions vs your baseline on every route we ship — or that route stays on the higher tier."
 
 **"What about PII / GDPR?"**
 > "Gateway deploys in your VPC. Your traffic never leaves your cloud. Optional Presidio integration for PII redaction before cache write. SOC2 — not yet, expected Q3 next year. Most pre-Series-C companies don't require it on day one, but we'd love to talk to your security person."
