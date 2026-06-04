@@ -105,31 +105,57 @@ async def call_direct_anthropic(anth: AsyncAnthropic, model: str, messages) -> d
         return {"ok": False, "err": str(e)[:120], "ms": (time.perf_counter() - t0) * 1000}
 
 
-def map_to_direct_model(gw_model: str) -> str | None:
-    """Map the model the gateway picked to its direct-API name. We only direct-call
-    Anthropic models in this script (OpenAI/DeepSeek direct calls would need their
-    own clients). Returns None if we can't compare apples-to-apples."""
+async def call_direct_openai_compat(client, model: str, messages, label: str) -> dict:
+    """Direct call against an OpenAI-compatible endpoint (OpenAI itself, or
+    DeepSeek's OpenAI-compatible endpoint at https://api.deepseek.com/v1)."""
+    msgs = _to_messages(messages)
+    t0 = time.perf_counter()
+    try:
+        r = await client.chat.completions.create(
+            model=model, messages=msgs, max_tokens=300, temperature=0.2,
+        )
+        dt = (time.perf_counter() - t0) * 1000
+        return {"ok": True, "model": r.model, "ms": dt,
+                "in_tokens": r.usage.prompt_tokens, "out_tokens": r.usage.completion_tokens,
+                "provider": label}
+    except Exception as e:
+        return {"ok": False, "err": str(e)[:120], "ms": (time.perf_counter() - t0) * 1000,
+                "provider": label}
+
+
+def classify_model(gw_model: str) -> tuple[str, str] | None:
+    """Return (provider, direct_model_name) for the gateway's pick, or None
+    if we can't pair (no direct client / unknown model)."""
     if not gw_model:
         return None
     m = gw_model.lower()
-    if "haiku" in m:
-        return "claude-haiku-4-5"
-    if "sonnet" in m:
-        return "claude-sonnet-4-6"
-    if "opus" in m:
-        return "claude-opus-4-8"
-    return None  # gpt-4o-mini, deepseek etc. — skip pairing
+    if "haiku" in m:           return ("anthropic", "claude-haiku-4-5")
+    if "sonnet" in m:          return ("anthropic", "claude-sonnet-4-6")
+    if "opus" in m:            return ("anthropic", "claude-opus-4-8")
+    if "gpt-4o-mini" in m:     return ("openai", "gpt-4o-mini")
+    if "gpt-4o" in m:          return ("openai", "gpt-4o")
+    if "deepseek-v4-pro" in m: return ("deepseek", "deepseek-v4-pro")
+    if "deepseek-v4-flash" in m or "deepseek-chat" in m: return ("deepseek", "deepseek-chat")
+    if "deepseek-reasoner" in m: return ("deepseek", "deepseek-reasoner")
+    return None
 
 
-async def one(sem, oai, anth, prompt_id, payload):
+async def one(sem, oai_gw, anth_direct, openai_direct, deepseek_direct,
+              prompt_id, payload):
     async with sem:
         # Run through the gateway first
-        g = await call_gateway(oai, payload)
-        # If the gateway picked an Anthropic model, call it direct so we can pair
-        direct_model = map_to_direct_model(g.get("model", "")) if g.get("ok") else None
+        g = await call_gateway(oai_gw, payload)
+        # If we can pair against a direct client, do so
+        cls = classify_model(g.get("model", "")) if g.get("ok") else None
         d = None
-        if direct_model:
-            d = await call_direct_anthropic(anth, direct_model, payload)
+        if cls:
+            provider, direct_model = cls
+            if provider == "anthropic" and anth_direct is not None:
+                d = await call_direct_anthropic(anth_direct, direct_model, payload)
+            elif provider == "openai" and openai_direct is not None:
+                d = await call_direct_openai_compat(openai_direct, direct_model, payload, "openai")
+            elif provider == "deepseek" and deepseek_direct is not None:
+                d = await call_direct_openai_compat(deepseek_direct, direct_model, payload, "deepseek")
         overhead_ms = None
         if g.get("ok") and d and d.get("ok"):
             overhead_ms = g["ms"] - d["ms"]
@@ -152,10 +178,12 @@ async def amain():
     gw_url = os.environ.get("GATEWAY_URL", "http://localhost:8000/v1")
     gw_key = os.environ.get("GATEWAY_KEY", "")
     anth_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    openai_key = os.environ.get("OPENAI_API_KEY", "")
+    deepseek_key = os.environ.get("DEEPSEEK_API_KEY", "")
     if not gw_key:
         print("ERROR: set GATEWAY_KEY", file=sys.stderr); return 1
-    if not anth_key:
-        print("ERROR: set ANTHROPIC_API_KEY", file=sys.stderr); return 1
+    if not anth_key and not openai_key:
+        print("ERROR: set ANTHROPIC_API_KEY and/or OPENAI_API_KEY", file=sys.stderr); return 1
 
     rows = []
     with open(args.corpus, encoding="utf-8") as f:
@@ -167,10 +195,19 @@ async def amain():
                 break
 
     print(f"Measuring overhead on {len(rows)} prompts. Gateway={gw_url}")
-    oai = AsyncOpenAI(base_url=gw_url, api_key=gw_key)
-    anth = AsyncAnthropic(api_key=anth_key)
+    print(f"  Direct clients: anthropic={'on' if anth_key else 'OFF'} "
+          f"openai={'on' if openai_key else 'OFF'} "
+          f"deepseek={'on' if deepseek_key else 'OFF'}")
+    oai_gw = AsyncOpenAI(base_url=gw_url, api_key=gw_key)
+    anth_direct = AsyncAnthropic(api_key=anth_key) if anth_key else None
+    openai_direct = AsyncOpenAI(api_key=openai_key) if openai_key else None
+    deepseek_direct = (AsyncOpenAI(base_url="https://api.deepseek.com/v1",
+                                   api_key=deepseek_key) if deepseek_key else None)
     sem = asyncio.Semaphore(args.concurrency)
-    results = await asyncio.gather(*[one(sem, oai, anth, pid, p) for pid, p in rows])
+    results = await asyncio.gather(*[
+        one(sem, oai_gw, anth_direct, openai_direct, deepseek_direct, pid, p)
+        for pid, p in rows
+    ])
 
     with open(args.out_jsonl, "w", encoding="utf-8") as f:
         for r in results:

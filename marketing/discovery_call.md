@@ -43,7 +43,7 @@ What you're listening for:
 ### Q3. "What's the mix — mostly customer-facing chat? Internal tools? Batch / async?"
 
 What you're listening for:
-- **Customer-facing latency-sensitive** = lead with the overhead number (<50ms p95).
+- **Customer-facing latency-sensitive** = lead with the overhead number (<250ms p95 measured; faster than direct Sonnet at median).
 - **Internal tools or batch** = lead with cost (less latency-sensitive).
 - **Tool-using agents** = mention tier stickiness explicitly ("we don't drop mid-agent").
 
@@ -149,7 +149,7 @@ Print this card and keep it next to your screen:
 
 - **87%** verified cost reduction (3-judge audit on our corpus)
 - **90%** factually equivalent or better (regression split, auditable)
-- **<50ms** added p95 latency (paired measurement)
+- **<250ms** added p95 routing latency (measured); **faster than direct Sonnet at median**
 - **$0** pilot cost · **14 days** · **your VPC**
 - **3-line** integration · removable instantly
 - **0** factual regressions on every shipped route (contractual)

@@ -107,6 +107,12 @@ isn't you. That matters more for the event than any quality percentage.
 - "30-prompt baseline, ±10% CI. Small. That's why the 2-week pilot runs on
   YOUR traffic at production scale — your number is what we sign, not ours."
 
+**When pushed on latency (this is real, defensible — see `scripts/LATENCY_MEMO.md`):**
+- "Routing overhead is under 250 ms at p95 on fresh requests, measured on our
+  stack. At median, total gateway latency is **lower** than direct Sonnet
+  (1.4s vs 2.8s) because requests route to faster cheap-tier models. Cache
+  hits return in 26 ms p50. The pilot measures all three on YOUR traffic."
+
 **What NEVER to say:**
 - "80% W-T" or "20% worse" — pitch the FACTUAL rate, not the W-T rate. The
   W-T number includes stylistic differences buyers don't actually care about.
