@@ -1,8 +1,18 @@
 # VIREN — Version Comparison
 
-## SHIP DECISION ✓ v0.2.2
+## SHIP DECISION ✓ v0.3.0
 
-**Tagged `v0.2.2` — this is the version presented at the event.**
+**Tagged `v0.3.0` — current ship version. Adds prefix caching, tier stickiness, Prometheus /metrics.**
+
+| Metric | Value |
+|---|---|
+| Cost savings vs Sonnet-direct | **89.3%** |
+| Quality (majority 2-of-3 judges) | **78.3% win-or-tie** |
+| Eval size | 60 prompts, 260-prompt corpus slice |
+| Judges | claude-sonnet-4-6, gpt-4o, claude-opus-4-8 |
+| Semantic cache p95 (warm) | **248ms** (vs 37215ms cold) |
+
+## Previous ship: v0.2.2
 
 | Metric | Value |
 |---|---|
@@ -39,8 +49,9 @@ This run uses the fixed script with the correct model and no temperature arg.
 | v0.2.4 (DS V4-Pro balanced) | 85.1% | 80.0% | 43.3% | 76.7% | **73.3%** | 43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro |
 | v0.2.3 (DeepSeek) | 64.7% | 76.7% | 66.7% | 76.7% | **76.7%** | 40% Haiku / 37% DeepSeek / 13% 4o-mini / 10% Sonnet |
 | v0.2.4 (DS V4-Pro balanced) | 85.1% | 80.0% | 43.3% | 76.7% | **73.3%** | 43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro |
+| **v0.3.0 ✓ SHIP** | **89.3%** | **78.3%** | **56.7%** | **78.3%** | **78.3%** | 47% Haiku / 43% 4o-mini / 7% DS-pro / 2% DS-flash / 2% Sonnet |
 
-All ensemble runs: 30 prompts, A/B order independently randomised per judge.
+v0.2.2–v0.2.4 runs: 30 prompts. v0.3.0 run: 60 prompts, 260-prompt corpus (multi-turn + RAG rows included).
 
 ## What changed vs v0.2.1
 
