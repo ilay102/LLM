@@ -39,6 +39,7 @@ from litellm import Router
 from pydantic import BaseModel
 
 import classifier as classifier_module
+import conversation
 import persistence
 import pii
 import prompt_cache
@@ -312,6 +313,7 @@ async def chat_completions(
     x_no_cache: str | None = Header(None),
     x_no_pii_redact: str | None = Header(None),
     x_pilot_id: str | None = Header(None),
+    x_conversation_id: str | None = Header(None),
 ):
     tenant_id, tenant_obj = _resolve_tenant(authorization)
     body = await request.json()
@@ -367,6 +369,18 @@ async def chat_completions(
                 reason=f"tenant min_tier={tenant_obj.min_tier} (was {decision.tier})",
                 confidence=decision.confidence,
             )
+
+    # Conversation tier stickiness (v0.3.4): never drop below the highest tier
+    # this conversation has used. Only routes UP — safe by construction.
+    if len(messages) > 1 or x_conversation_id:
+        try:
+            conv_id = conversation.conversation_id(x_conversation_id, messages)
+            eff_tier, sticky_reason = conversation.apply_stickiness(decision.tier, conv_id)
+            if sticky_reason:
+                decision = RouteDecision(tier=eff_tier, reason=sticky_reason,  # type: ignore[arg-type]
+                                         confidence=decision.confidence)
+        except Exception:
+            LOG.exception("conversation stickiness failed (non-fatal)")
 
     chosen_alias = f"tier-{decision.tier}"
 
