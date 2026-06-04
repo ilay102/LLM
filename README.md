@@ -1,7 +1,15 @@
 # VIREN — LLM Cost Optimization Gateway
 
+**87% verified cost reduction. 90% factually equivalent or better.**
+3-judge audit, factual-vs-stylistic split — every regression auditable.
+
 OpenAI-compatible gateway that routes, caches, and proves quality —
 designed for 2-week shadow pilots that close design partners.
+
+> **Ship version:** `v0.2.2` (tagged on `main`). Active development on
+> `v0.3.4-conversation` adds Prometheus metrics, prefix caching, tier
+> stickiness, and a regression-split analyzer. See `EVENT_READINESS.md`
+> for the single status doc.
 
 ```
                     Your app (OpenAI / Anthropic SDK)
