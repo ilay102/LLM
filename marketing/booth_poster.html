@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VIREN — Booth Poster</title>
+<style>
+  /* Print to A3 portrait. Chrome: Cmd/Ctrl+P -> Save as PDF, A3, no margins. */
+  @page { size: A3; margin: 0; }
+  :root {
+    --ink: #0a0a0a; --muted: #6b7280; --accent: #6d63ff;
+    --good: #137333; --soft: #f6f7fb; --line: #e7e8ec;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: white; color: var(--ink);
+    font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 297mm; height: 420mm; padding: 22mm 24mm; display: flex;
+    flex-direction: column; justify-content: space-between; position: relative; }
+
+  /* ---------- Brand ---------- */
+  .brand { display: flex; align-items: center; gap: 16px; margin-bottom: 8mm; }
+  .logo { width: 60px; height: 60px; background: var(--ink); border-radius: 12px;
+    position: relative; }
+  .logo::after { content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg); width: 28px; height: 28px;
+    background: var(--accent); border-radius: 6px; }
+  .brand .name { font-weight: 800; font-size: 56px; letter-spacing: 12px; line-height: 1; }
+  .brand .tag { font-size: 16pt; color: var(--muted); margin-top: 4px;
+    text-transform: uppercase; letter-spacing: 3px; }
+
+  /* ---------- Headline ---------- */
+  h1 { font-size: 110pt; line-height: 0.95; letter-spacing: -3px;
+    margin: 0 0 12mm 0; font-weight: 800; }
+  h1 .accent { color: var(--accent); }
+  h1 small { font-size: 28pt; font-weight: 500; display: block;
+    color: var(--muted); letter-spacing: -1px; margin-top: 8mm; }
+
+  /* ---------- KPI Grid ---------- */
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin: 12mm 0; }
+  .kpi { background: var(--soft); border-radius: 16px; padding: 20mm; }
+  .kpi .v { font-size: 100pt; font-weight: 800; color: var(--accent);
+    letter-spacing: -3px; line-height: 0.9; }
+  .kpi .l { font-size: 18pt; color: var(--muted); margin-top: 6mm;
+    text-transform: uppercase; letter-spacing: 2px; font-weight: 500; }
+  .kpi.dark { background: var(--ink); color: white; }
+  .kpi.dark .v { color: white; }
+  .kpi.dark .l { color: rgba(255,255,255,0.6); }
+
+  /* ---------- Mid block ---------- */
+  .mid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8mm; margin: 12mm 0; }
+  .feat { padding: 12mm; border: 2px solid var(--line); border-radius: 12px; }
+  .feat .num { color: var(--accent); font-size: 14pt; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4mm; }
+  .feat h3 { margin: 0 0 4mm 0; font-size: 20pt; font-weight: 700; line-height: 1.1; }
+  .feat p { margin: 0; font-size: 13pt; color: var(--muted); line-height: 1.4; }
+
+  /* ---------- QR + CTA ---------- */
+  .footer { display: grid; grid-template-columns: 1fr auto; gap: 12mm;
+    align-items: center; padding-top: 10mm; border-top: 2px solid var(--line); }
+  .cta h2 { margin: 0 0 6mm 0; font-size: 28pt; font-weight: 700; letter-spacing: -1px; }
+  .cta p { margin: 0; font-size: 16pt; color: var(--muted); max-width: 200mm; line-height: 1.4; }
+  .qr-block { text-align: center; }
+  .qr { width: 70mm; height: 70mm; background: white; border: 4px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: monospace; font-size: 8pt; color: var(--muted); }
+  .qr-block .lbl { font-size: 12pt; margin-top: 4mm; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--muted); }
+
+  /* ---------- Methodology stamp ---------- */
+  .methodology { position: absolute; top: 22mm; right: 24mm;
+    background: var(--ink); color: white; padding: 6mm 10mm; border-radius: 8px;
+    font-size: 11pt; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="methodology">3-Judge Verified · 200-Prompt Corpus</div>
+
+  <div>
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <div class="name">VIREN</div>
+        <div class="tag">LLM Cost Optimization Gateway</div>
+      </div>
+    </div>
+
+    <h1>Cut your LLM bill by <span class="accent">87%</span>.<br>Without changing your code.<small>Same answers. Same speed. Different tier per request.</small></h1>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="v">87%</div>
+        <div class="l">Cost reduction · verified eval</div>
+      </div>
+      <div class="kpi dark">
+        <div class="v">80%</div>
+        <div class="l">Quality preserved · 3-judge majority</div>
+      </div>
+    </div>
+
+    <div class="mid">
+      <div class="feat">
+        <div class="num">01 · Routing</div>
+        <h3>Right model per request</h3>
+        <p>Trained classifier picks cheap (Haiku, gpt-4o-mini), balanced (Sonnet, DeepSeek), or frontier (Opus) per prompt.</p>
+      </div>
+      <div class="feat">
+        <div class="num">02 · Caching</div>
+        <h3>Paid once, served twice</h3>
+        <p>Semantic cache catches paraphrased prompts. Typical SaaS sees 25% hit rate. Cached responses return in 3 ms at zero cost.</p>
+      </div>
+      <div class="feat">
+        <div class="num">03 · Proof</div>
+        <h3>Quality, measured</h3>
+        <p>3-judge pairwise ensemble. We refuse to ship routes that hurt your output. Every regression auditable.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="cta">
+      <h2>Book a 15-min discovery call</h2>
+      <p>Free 2-week pilot. Deploy in your VPC. Zero cost. You keep the data even if you walk away.</p>
+    </div>
+    <div class="qr-block">
+      <div class="qr">QR CODE<br>HERE<br><br>Generate at<br>qr.io or<br>qrcode-monkey<br>pointing to your<br>Calendly link</div>
+      <div class="lbl">Scan to talk</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

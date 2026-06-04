@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VIREN — QR Cards (10 per A4)</title>
+<style>
+  /* Print on A4. 10 standard business-card-sized QR cards per page.
+     Card size: 85mm × 55mm (standard business card). */
+  @page { size: A4 portrait; margin: 10mm; }
+  :root {
+    --ink: #0a0a0a; --muted: #6b7280; --accent: #6d63ff; --line: #d1d5db;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; background: white;
+    font-family: -apple-system, "Inter", system-ui, sans-serif;
+    color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .sheet { display: grid; grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(5, 55mm); gap: 0;
+    width: 190mm; margin: 0 auto; }
+  .card { width: 85mm; height: 55mm; border: 1px dashed #ccc;
+    padding: 6mm 7mm; display: flex; gap: 5mm; align-items: center;
+    page-break-inside: avoid; }
+  .qr { width: 38mm; height: 38mm; flex-shrink: 0;
+    background: white; border: 2px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: monospace; font-size: 6pt; color: var(--muted); text-align: center; }
+  .info { flex: 1; min-width: 0; }
+  .brand { display: flex; align-items: center; gap: 4mm; margin-bottom: 2mm; }
+  .logo { width: 12mm; height: 12mm; background: var(--ink); border-radius: 2mm;
+    position: relative; flex-shrink: 0; }
+  .logo::after { content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg); width: 5mm; height: 5mm;
+    background: var(--accent); border-radius: 1mm; }
+  .name { font-weight: 800; font-size: 14pt; letter-spacing: 3px; line-height: 1; }
+  .tag { font-size: 7pt; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 1px; margin-top: 1mm; }
+  .ask { font-size: 9pt; font-weight: 700; margin: 3mm 0 1mm 0; line-height: 1.15; }
+  .url { font-size: 7pt; color: var(--muted); font-family: monospace; word-break: break-all; }
+  .stat { font-size: 7pt; color: var(--accent); font-weight: 600;
+    margin-top: 2mm; letter-spacing: 1px; text-transform: uppercase; }
+  .note { font-size: 7pt; color: var(--muted); text-align: center;
+    margin: 5mm 0; font-style: italic; }
+</style>
+</head>
+<body>
+
+<p class="note">
+  Print on standard A4. Cut along dashed lines. 10 cards per page.<br>
+  Replace QR placeholder with a real code from qr.io or qrcode-monkey pointing to your Calendly.
+</p>
+
+<div class="sheet">
+  <!-- Card template repeated 10x -->
+  <!-- Card 1 -->
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <div class="name">VIREN</div>
+          <div class="tag">LLM cost optimization</div>
+        </div>
+      </div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+
+  <!-- Card 2 (copy of 1) -->
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <div class="name">VIREN</div>
+          <div class="tag">LLM cost optimization</div>
+        </div>
+      </div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+
+  <!-- Cards 3-10: identical -->
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand"><div class="logo"></div><div><div class="name">VIREN</div><div class="tag">LLM cost optimization</div></div></div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand"><div class="logo"></div><div><div class="name">VIREN</div><div class="tag">LLM cost optimization</div></div></div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand"><div class="logo"></div><div><div class="name">VIREN</div><div class="tag">LLM cost optimization</div></div></div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand"><div class="logo"></div><div><div class="name">VIREN</div><div class="tag">LLM cost optimization</div></div></div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand"><div class="logo"></div><div><div class="name">VIREN</div><div class="tag">LLM cost optimization</div></div></div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand"><div class="logo"></div><div><div class="name">VIREN</div><div class="tag">LLM cost optimization</div></div></div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand"><div class="logo"></div><div><div class="name">VIREN</div><div class="tag">LLM cost optimization</div></div></div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="qr">QR<br><br>Calendly<br>link</div>
+    <div class="info">
+      <div class="brand"><div class="logo"></div><div><div class="name">VIREN</div><div class="tag">LLM cost optimization</div></div></div>
+      <div class="ask">Cut your LLM bill 87%.<br>15-min chat?</div>
+      <div class="stat">3-Judge verified · 80% quality</div>
+      <div class="url">your-calendly-link.com</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
