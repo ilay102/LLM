@@ -34,12 +34,13 @@ from typing import Any
 import litellm
 import yaml
 from fastapi import FastAPI, Header, HTTPException, Request
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse, Response
 from litellm import Router
 from pydantic import BaseModel
 
 import classifier as classifier_module
 import conversation
+import metrics
 import persistence
 import pii
 import prompt_cache
@@ -246,7 +247,16 @@ async def health():
                           if state["cache"] is not None and hasattr(state["cache"], "degraded")
                           else None),
         "pii_redaction": ENABLE_PII,
+        "metrics_enabled": metrics.enabled(),
     }
+
+
+@app.get("/metrics")
+async def prometheus_metrics():
+    """Prometheus scrape endpoint. Unauthenticated by design (scrapers don't
+    send bearer tokens); contains only aggregate counters, no prompt content."""
+    body, content_type = metrics.render()
+    return Response(content=body, media_type=content_type)
 
 
 @app.get("/v1/models")
@@ -573,6 +583,13 @@ async def _post_hook(
         tenants.record_usage(tenant_id, record_event["cost_usd"])
     except Exception:
         LOG.exception("tenant usage update failed")
+
+    # 4. Prometheus metrics (no-op if prometheus_client not installed)
+    metrics.record_request(
+        tier=decision.tier, cache_hit=cache_hit, cascaded=cascade,
+        cost_usd=record_event["cost_usd"], baseline_cost_usd=baseline_cost,
+        latency_ms=latency_ms, pii_entities=pii_entities,
+    )
 
     LOG.info("call tenant=%s tier=%s reason=%s cost=$%.5f baseline=$%.5f latency=%.0fms cache=%s pii=%d",
              tenant_id, decision.tier, decision.reason, record_event["cost_usd"],

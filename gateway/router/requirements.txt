@@ -16,6 +16,9 @@ spacy==3.7.6
 # Presidio needs a spaCy English model. Install with:
 #   python -m spacy download en_core_web_sm
 
+# Observability
+prometheus-client==0.21.1
+
 # Tests (CI uses these; not loaded at runtime)
 pytest==8.3.4
 pytest-asyncio==0.24.0

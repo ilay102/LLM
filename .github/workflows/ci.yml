@@ -26,7 +26,8 @@ jobs:
           # Skip heavy ML deps in unit-test CI; only what tests need
           pip install fastapi==0.115.5 pydantic==2.10.2 numpy==1.26.4 \
                       pyyaml==6.0.2 redis==5.2.0 pytest==8.3.4 \
-                      pytest-asyncio==0.24.0 httpx==0.28.1
+                      pytest-asyncio==0.24.0 httpx==0.28.1 \
+                      prometheus-client==0.21.1
 
       - name: Run unit tests
         working-directory: gateway
