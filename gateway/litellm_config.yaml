@@ -1,27 +1,29 @@
 # LiteLLM Router model_list. Loaded by router/main.py at startup.
-# Each entry is a "deployment". Aliases (model_name) are what clients ask for;
-# the gateway rewrites these to the right deployment based on the classifier.
 #
-# Pricing is sourced from LiteLLM's built-in price map; we override below for
-# anything that drifts. Costs in USD per 1M tokens.
+# v0.2.4 — DeepSeek V4 RE-TIERED based on empirical eval results:
+#   - V4-Flash performed WORSE than Haiku/4o-mini on cheap-tier tasks
+#     (verbose responses, lost net savings). REMOVED from cheap tier.
+#   - V4-Pro placed in BALANCED tier — 7x cheaper than Sonnet at potentially
+#     Sonnet-grade quality. This is the real test.
+#   - R1 (reasoner) kept in frontier — should fire on actual reasoning prompts
+#     (proofs, architecture, multi-step planning) where it can shine.
 #
-# DEEPSEEK NOTE: DeepSeek models are exceptional value (V3 is cheaper than
-# Haiku at near-Sonnet quality; R1 is ~4% of Opus's cost for similar reasoning).
-# HOWEVER they are hosted in China. For tenants in finance, healthcare,
-# defense, or EU-strict GDPR contexts, exclude `deepseek/*` from their
-# `allowed_models` list. The gateway's tenant.allowed_models field enforces
-# this. Default: enabled for tenants that don't restrict.
+# DEEPSEEK NOTE: China-hosted. For tenants in finance, healthcare, defense,
+# or EU-strict GDPR contexts, exclude `deepseek/*` from their `allowed_models`.
+#
+# Per-model `max_tokens` cap defensively limits verbosity. Clients can
+# override via request body.
 
 model_list:
-  # ---------- TIER: cheap & fast (classification, extraction, short Q&A) ----------
+  # ---------- TIER: cheap (classification, extraction, short Q&A) ----------
   - model_name: tier-cheap
     litellm_params:
       model: anthropic/claude-haiku-4-5-20251001
       api_key: os.environ/ANTHROPIC_API_KEY
-      # Anthropic prompt-cache breakpoints injected automatically by gateway
+      max_tokens: 500   # cap verbosity — most cheap tasks need <300
     model_info:
-      input_cost_per_token: 0.0000008    # $0.80 / 1M
-      output_cost_per_token: 0.000004    # $4.00 / 1M
+      input_cost_per_token: 0.0000008
+      output_cost_per_token: 0.000004
     gateway_info:
       tier: cheap
 
@@ -29,89 +31,81 @@ model_list:
     litellm_params:
       model: openai/gpt-4o-mini
       api_key: os.environ/OPENAI_API_KEY
+      max_tokens: 500
     model_info:
       input_cost_per_token: 0.00000015
       output_cost_per_token: 0.0000006
     gateway_info:
       tier: cheap
 
-  # DeepSeek V3 — cheaper than Haiku, smarter for code/reasoning. China-hosted.
-  - model_name: tier-cheap
-    litellm_params:
-      model: deepseek/deepseek-chat
-      api_key: os.environ/DEEPSEEK_API_KEY
-    model_info:
-      input_cost_per_token: 0.00000027   # $0.27 / 1M
-      output_cost_per_token: 0.0000011   # $1.10 / 1M
-    gateway_info:
-      tier: cheap
-      data_residency: china              # for tenant allowed_models filtering
-      strengths: "code, reasoning, structured output"
-
-  # ---------- TIER: balanced (default for unknown traffic) ----------
+  # ---------- TIER: balanced (real work, code, structured output) ----------
   - model_name: tier-balanced
     litellm_params:
       model: anthropic/claude-sonnet-4-6
       api_key: os.environ/ANTHROPIC_API_KEY
+      max_tokens: 1500
     model_info:
-      input_cost_per_token: 0.000003     # $3.00 / 1M
-      output_cost_per_token: 0.000015    # $15.00 / 1M
+      input_cost_per_token: 0.000003
+      output_cost_per_token: 0.000015
     gateway_info:
       tier: balanced
 
-  # DeepSeek V3 also makes a strong balanced-tier candidate for code-heavy
-  # workloads. Same china-hosted caveat applies.
+  # DeepSeek V4-Pro — the cost-optimization play of the year.
+  # $0.435/$0.87 per 1M (7x cheaper than Sonnet input, 17x cheaper output).
+  # Strong on: code, structured output, JSON parsing, technical writing.
+  # Weak on: subtle creative writing (judge often prefers Sonnet style).
   - model_name: tier-balanced
     litellm_params:
-      model: deepseek/deepseek-chat
+      model: deepseek/deepseek-v4-pro
       api_key: os.environ/DEEPSEEK_API_KEY
+      max_tokens: 1500
     model_info:
-      input_cost_per_token: 0.00000027
-      output_cost_per_token: 0.0000011
+      input_cost_per_token: 0.000000435  # $0.435 / 1M
+      output_cost_per_token: 0.00000087  # $0.87 / 1M
     gateway_info:
       tier: balanced
       data_residency: china
+      strengths: "code, JSON, structured tasks, technical writing"
 
-  # ---------- TIER: frontier (reasoning, agents, code-gen escalations) ----------
+  # ---------- TIER: frontier (reasoning, agents, complex code) ----------
   - model_name: tier-frontier
     litellm_params:
       model: anthropic/claude-opus-4-7
       api_key: os.environ/ANTHROPIC_API_KEY
+      max_tokens: 3000
     model_info:
-      input_cost_per_token: 0.000015     # $15.00 / 1M
-      output_cost_per_token: 0.000075    # $75.00 / 1M
+      input_cost_per_token: 0.000015
+      output_cost_per_token: 0.000075
     gateway_info:
       tier: frontier
 
-  # DeepSeek R1 — reasoning model close to o1 / Opus quality at ~4% of cost.
-  # PUT IT FIRST in the frontier rotation so cost-sensitive tenants benefit
-  # by default; Opus remains as a high-quality fallback.
+  # DeepSeek R1 (reasoner) — V4 thinking mode for serious reasoning.
+  # Per docs: deepseek-reasoner alias = V4 thinking mode.
+  # Pricing: $0.435/$0.87 (cache miss) — 35x cheaper than Opus.
+  # Listed FIRST in frontier rotation so cost-sensitive tenants benefit by default.
   - model_name: tier-frontier
     litellm_params:
       model: deepseek/deepseek-reasoner
       api_key: os.environ/DEEPSEEK_API_KEY
+      max_tokens: 3000
     model_info:
-      input_cost_per_token: 0.00000055   # $0.55 / 1M
-      output_cost_per_token: 0.00000219  # $2.19 / 1M
+      input_cost_per_token: 0.000000435
+      output_cost_per_token: 0.00000087
     gateway_info:
       tier: frontier
       data_residency: china
-      strengths: "step-by-step reasoning, math, complex code"
+      strengths: "step-by-step reasoning, math proofs, multi-step planning"
 
-# Fallback chain: if the chosen tier 5xx's or rate-limits, try the next.
-# This is LiteLLM-native; it kicks in BELOW our app-level cascade logic.
-# Each tier has multiple deployments — LiteLLM rotates between them and
-# falls back to the next tier only when all deployments in this tier fail.
+# Fallback chain. LiteLLM rotates within a tier; falls back to next tier
+# only when all deployments in current tier fail.
 litellm_settings:
   fallbacks:
     - tier-cheap: ["tier-balanced"]
     - tier-balanced: ["tier-frontier"]
   num_retries: 2
   request_timeout: 60
-  drop_params: true   # silently drop unsupported params instead of erroring
+  drop_params: true
 
-# Per-tier circuit breaker. If a deployment fails this many times in a row,
-# LiteLLM cools it down for cooldown_time seconds before retrying.
 router_settings:
   routing_strategy: simple-shuffle
   allowed_fails: 3
