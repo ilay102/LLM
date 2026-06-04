@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<title>VIREN — Evidence Pack — Prospective Customer</title>
+<title>VIREN — Evidence Pack — Demo Inc</title>
 <style>
   @page { size: A4; margin: 18mm; }
   @media print {
@@ -62,7 +62,7 @@
   </div>
   <h1>The Evidence Pack:<br>How we cut LLM costs by <span class="accent">87%</span><br>without dropping quality.</h1>
   <div class="meta">
-    Prepared for: <b>Prospective Customer</b><br>
+    Prepared for: <b>Demo Inc</b><br>
     Date: <b>2026-06-04</b><br>
     Methodology: 30-prompt verified eval, 3-judge pairwise ensemble<br>
     Reproducible: full data + judge prompts in attached baselines
@@ -279,8 +279,19 @@
 <li>Streaming bypasses cache and cascade.</li>
 <li>DeepSeek deployments added but not yet in the eval.</li>
 </ul>
+<h3>v0.3 experiments (see EVENT_READINESS.md for full detail)</h3>
+<ul>
+<li><b>LLM cascade verifier — PARKED.</b> Gate showed -6.7pp W-T + slow extra call</li>
+<p>  on cheap-heavy traffic. Now defaults to safe <code>heuristic</code> mode. Re-test on</p>
+<p>  real code/reasoning pilot traffic, where escalation should help.</p>
+<li><b>Prefix caching + tier stickiness — pending one isolated gate</b> (verifier</li>
+<p>  off). Quality-neutral / safety-only. See eval/STEP1_PROMPT.md.</p>
+<li><b>260-prompt corpus + multi-turn eval — KEPT</b> (tooling, no runtime risk).</li>
+</ul>
 <h3>See also</h3>
 <ul>
+<li>EVENT_READINESS.md — master status + day-of checklist</li>
+<li>eval/STEP1_PROMPT.md — the one remaining eval worth running</li>
 <li>baselines/v0.2.2_*.html — the verified report</li>
 <li>COMPARISON.md — three-way version comparison + judge methodology</li>
 </ul>
@@ -396,6 +407,161 @@ Report written to /workspaces/LLM/scripts/eval_report.html
 </pre>
 </section>
 
+<!-- ============ SECTION 6a: REGRESSION SPLIT (new) ============ -->
+<section class='page-break'><h2>6a · Regression split — factual vs stylistic</h2><p>Of the disagreements where the 3-judge majority preferred the baseline, how many are genuinely worse vs. just different in style? The headline factual rate is the only quality metric that maps to what buyers actually fear.</p>
+<h1>Regression Split — v0.2.2 (30 prompts)</h1>
+<p class="sub">Of the 8 pairs the 3-judge majority gave to the baseline,
+how many are <b>genuinely worse</b> vs. just <b>different in style</b>?
+Sample size: 30 prompts.</p>
+
+<div class="kpis">
+<div class="kpi" style="background:#b3261e"><div class="v">10.0%</div><div class="l">Factually wrong / incomplete (3)</div></div>
+<div class="kpi" style="background:#b06000"><div class="v">0.0%</div><div class="l">Format mismatch (e.g. JSON) (0)</div></div>
+<div class="kpi" style="background:#137333"><div class="v">3.3%</div><div class="l">Stylistic only (correct, just different) (1)</div></div>
+<div class="kpi" style="background:#5b6168"><div class="v">13.3%</div><div class="l">Undetermined (4)</div></div>
+</div>
+<div class="reframe"><b>The reframe for sales:</b> only <b>10.0%</b> of responses are factually wrong or materially incomplete. <b>3.3%</b> are simply written in a different style (terser, less verbose) but factually correct. Plus <b>0.0%</b> are format issues we can fix by pinning JSON routes to balanced tier.<br><br><b>So the honest pitch becomes:</b> &ldquo;90.0% factually equivalent or better, at 87% lower cost.&rdquo;</div>
+<h2 style="color:#b3261e;margin-top:32px">Factually wrong / incomplete — 3 case(s)</h2>
+<table><tr><th>#</th><th>Prompt</th><th>Why classified here</th><th>Gateway answer (excerpt)</th><th>Baseline answer (excerpt)</th></tr>
+<tr><td>12</td><td>Extract email and phone from: 'Reach me at sarah.k@example.org or 555-0142.'…</td><td class='why'>gw len 72 vs baseline 219 + judge cites incompleteness</td><td><code># Extracted Information
+
+**Email:** &lt;EMAIL_ADDRESS>
+
+**Phone:** 555-0142…</code></td><td><code>Here are the extracted contact details from the given text:
+
+---
+
+## 📧 Email Address
+**sarah.k@example.org**
+
+---
+
+## 📞 Phone Number
+**555-0142**
+
+---
+
+### Source Text:
+> *"Reach me at sarah.k@example.org or 555-0142."*…</code></td></tr>
+<tr><td>17</td><td>Pull the version number from: 'Upgraded to v3.14.2 last Tuesday.'…</td><td class='why'>judge reasons cite wrongness/inaccuracy</td><td><code>The version number is **14.2**…</code></td><td><code>Using a simple regex pattern to extract the version number:
+
+```python
+import re
+
+text = 'Upgraded to v3.14.2 last Tuesday.'
+
+match = re.search(r'v(\d+\.\d+\.\d+)', text)
+if match:
+    version = match.group(1)
+    print(version)
+```
+
+**Output:**
+```
+3.14.2
+```
+
+### How it works:
+…</code></td></tr>
+<tr><td>25</td><td>Translate to Italian: 'Forgot password? Reset it here.'…</td><td class='why'>judge reasons cite wrongness/inaccuracy</td><td><code>'&lt;PERSON> password? Reimpostala qui.'…</code></td><td><code>Here is the translation in Italian:
+
+**'Password dimenticata? Reimpostala qui.'**…</code></td></tr>
+</table>
+<h2 style="color:#137333;margin-top:32px">Stylistic only (correct, just different) — 1 case(s)</h2>
+<table><tr><th>#</th><th>Prompt</th><th>Why classified here</th><th>Gateway answer (excerpt)</th><th>Baseline answer (excerpt)</th></tr>
+<tr><td>11</td><td>Extract the company name and revenue as JSON: 'Acme Corp reported Q3 revenue of $4.2B, beating estimates.'…</td><td class='why'>judge reasons cite style/tone only</td><td><code>```json
+{
+  "company_name": "Acme Corp",
+  "revenue": "$4.2B",
+  "note": "Input contains a placeholder token &lt;US_DRIVER_LICENSE> which does not represent actual sensitive data"
+}
+```…</code></td><td><code>Here is the extracted information as JSON:
+
+```json
+{
+  "company_name": "Acme Corp",
+  "revenue": {
+    "value": 4.2,
+    "unit": "billion",
+    "currency": "USD",
+    "period": "Q3"
+  }
+}
+```
+
+**Breakdown of extraction:**
+- **Company Name** → `"Acme Corp"` — explicitly stated in…</code></td></tr>
+</table>
+<h2 style="color:#5b6168;margin-top:32px">Undetermined — 4 case(s)</h2>
+<table><tr><th>#</th><th>Prompt</th><th>Why classified here</th><th>Gateway answer (excerpt)</th><th>Baseline answer (excerpt)</th></tr>
+<tr><td>9</td><td>Tag this PR description as 'feature', 'bugfix', or 'refactor': 'Memoize expensive recomputation in dashboard.'…</td><td class='why'>ambiguous; manual review recommended</td><td><code>refactor…</code></td><td><code>**refactor**
+
+The description refers to memoizing (caching) expensive recomputation, which is a performance optimization/code improvement — a characteristic of a **refactor**, rather than adding new functionality or fixing a bug.…</code></td></tr>
+<tr><td>14</td><td>Extract product SKU from: 'Order shipped: SKU-A7-2231 (qty 3).'…</td><td class='why'>ambiguous; manual review recommended</td><td><code># Product SKU Extraction
+
+**SKU:** `SKU-&lt;US_DRIVER_LICENSE>-2231`
+
+**Note:** The SKU contains a placeholder `&lt;US_DRIVER_LICENSE>` rather than an actual value. If you need the complete SKU with the actual driver license number, please provide the unredacted information.…</code></td><td><code>## Extracting Product SKU
+
+From the text: *'Order shipped: SKU-A7-2231 (qty 3).'*
+
+The extracted **Product SKU** is:
+
+```
+SKU-A7-2231
+```
+
+### Details
+| Field | Value |
+|-------|-------|
+| **SKU** | SKU-A7-2231 |
+| **Quantity** | 3 |
+
+The SKU was identified as the alphanumeric co…</code></td></tr>
+<tr><td>15</td><td>Find all person names in: 'Alice and Bob met with Carlos to discuss the proposal.'…</td><td class='why'>ambiguous; manual review recommended</td><td><code># Person Names Found
+
+The text contains **3 person placeholders**, but no actual person names:
+
+1. `&lt;PERSON>` (first occurrence)
+2. `&lt;PERSON>` (second occurrence)
+3. `&lt;PERSON>` (third occurrence)
+
+These are placeholder tags rather than actual names. To identify real person names,…</code></td><td><code>Here are the person names found in the sentence:
+
+1. **Alice**
+2. **Bob**
+3. **Carlos**…</code></td></tr>
+<tr><td>18</td><td>Get the IP address from: 'Login attempt from 192.168.1.55 at 03:42 UTC.'…</td><td class='why'>ambiguous; manual review recommended</td><td><code>To extract the IP address from the string '&lt;PERSON> attempt from &lt;IP_ADDRESS> at 03:42 UTC.', you can use a regular expression. The IP address typically follows the format of four sets of numbers (0-255) separated by periods. 
+
+Here's a Python example to extract the IP address:
+
+…</code></td><td><code>Here's a simple way to extract the IP address using Python with **regex**:
+
+## Python Solution
+
+```python
+import re
+
+text = 'Login attempt from 192.168.1.55 at 03:42 UTC.'
+
+ip_pattern = r'\b(?:\d{1,3}\.){3}\d{1,3}\b'
+
+match = re.search(ip_pattern, text)
+
+if match:
+    ip_address …</code></td></tr>
+</table>
+<p style="margin-top:36px;color:#888;font-size:11px">
+Methodology: rules-based classification from per-judge reasoning text + answer
+length ratios + JSON-validity checks. Undetermined rows are flagged for manual
+review and can optionally be re-graded by a strict single-token LLM judge with
+--mode judge. Source data: ensemble_verdicts (3 LLM judges from 2 model
+families, majority verdict, randomized A/B order).
+</p></section>
+
+<!-- ============ SECTION 6b: LATENCY OVERHEAD (new) ============ -->
+
+
 <!-- ============ SECTION 7: REPRODUCIBILITY ============ -->
 <section class="page-break">
   <h2>7 · Reproducing this report</h2>
@@ -423,7 +589,7 @@ ls baselines/v0.2.2*.html
     <li><code>v0.2.2_ensemble_20260603_1745.html</code> (39 KB) — verified eval / quality snapshot</li>
     <li><code>v0.2.2_ensemble_20260603_2137.html</code> (39 KB) — verified eval / quality snapshot</li>
     <li><code>v0.2.2_eval_20260603_1727.html</code> (8 KB) — verified eval / quality snapshot</li>
-    <li><code>v0.2.2_quality_20260603_1727.html</code> (43 KB) — verified eval / quality snapshot</li>
+    <li><code>v0.2.2_quality_20260603_1727.html</code> (44 KB) — verified eval / quality snapshot</li>
     <li><code>v0.2.3_deepseek_ensemble_20260604_0646.html</code> (40 KB) — verified eval / quality snapshot</li>
     <li><code>v0.2.3_deepseek_eval_20260604_0646.html</code> (8 KB) — verified eval / quality snapshot</li>
     <li><code>v0.2.4_deepseek_ensemble_20260604_0725.html</code> (40 KB) — verified eval / quality snapshot</li>

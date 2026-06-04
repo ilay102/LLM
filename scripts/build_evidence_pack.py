@@ -102,6 +102,17 @@ def main() -> None:
     baselines_dir = REPO / "baselines"
     baseline_files = sorted(baselines_dir.glob("*.html")) if baselines_dir.exists() else []
 
+    # v0.3 receipts (optional — present after scripts have been run)
+    regression_split_html = read_safe(REPO / "scripts" / "regression_split.html")
+    overhead_html = read_safe(REPO / "scripts" / "overhead_report.html")
+    # We extract just the body content from the standalone reports so the cover
+    # PDF stays one document. Cheap-and-cheerful: find <body>...</body>.
+    import re as _re
+    def _body(html: str) -> str:
+        if not html: return ""
+        m = _re.search(r"<body[^>]*>(.*?)</body>", html, _re.DOTALL | _re.IGNORECASE)
+        return m.group(1) if m else html
+
     today = datetime.utcnow().strftime("%Y-%m-%d")
     cover_client = args.client_name or "Prospective Customer"
 
@@ -256,6 +267,20 @@ def main() -> None:
   {md_to_html(sprint)}
 </section>
 
+<!-- ============ SECTION 6a: REGRESSION SPLIT (new) ============ -->
+{("<section class='page-break'><h2>6a · Regression split — factual vs stylistic</h2>"
+  "<p>Of the disagreements where the 3-judge majority preferred the baseline, "
+  "how many are genuinely worse vs. just different in style? The headline "
+  "factual rate is the only quality metric that maps to what buyers actually fear.</p>"
+  + _body(regression_split_html) + "</section>") if regression_split_html else ""}
+
+<!-- ============ SECTION 6b: LATENCY OVERHEAD (new) ============ -->
+{("<section class='page-break'><h2>6b · Latency overhead</h2>"
+  "<p>Apples-to-apples paired test: each prompt run both through VIREN and "
+  "direct to the same provider model. Overhead = gateway latency &minus; direct "
+  "latency, isolating exactly what VIREN adds (excluding provider variance).</p>"
+  + _body(overhead_html) + "</section>") if overhead_html else ""}
+
 <!-- ============ SECTION 7: REPRODUCIBILITY ============ -->
 <section class="page-break">
   <h2>7 · Reproducing this report</h2>
@@ -304,8 +329,11 @@ ls baselines/v0.2.2*.html
     out_path.write_text(html, encoding="utf-8")
     print(f"Wrote {out_path}")
     print(f"  Cover: {cover_client}")
-    print(f"  Sections: 8")
+    extras = sum([bool(regression_split_html), bool(overhead_html)])
+    print(f"  Sections: 8 + {extras} extra (regression split / latency overhead)")
     print(f"  Baselines included: {len(baseline_files)}")
+    print(f"  Regression split inline: {'yes' if regression_split_html else 'no — run scripts/split_regressions.py first'}")
+    print(f"  Latency overhead inline: {'yes' if overhead_html else 'no — run scripts/measure_overhead.py first'}")
     print()
     print(f"  Open in Chrome -> Cmd/Ctrl+P -> Save as PDF -> A4 portrait")
 

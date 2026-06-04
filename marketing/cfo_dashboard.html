@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>VIREN — Live Savings (CFO view)</title>
+<style>
+  :root {
+    --bg: #0a0b0f; --panel: #14161d; --line: #23262f;
+    --ink: #f4f5f8; --muted: #8b919c;
+    --accent: #6d63ff; --good: #2ecc71; --warn: #f39c12; --bad: #ff6b6b;
+    --cheap: #2ecc71; --balanced: #6d63ff; --frontier: #ff6b6b;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 32px 40px; }
+  header { display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 36px; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo { width: 36px; height: 36px; background: var(--ink); border-radius: 8px;
+    position: relative; }
+  .logo::after { content: ""; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg); width: 16px; height: 16px;
+    background: var(--accent); border-radius: 3px; }
+  .brand .name { font-weight: 700; font-size: 22px; letter-spacing: 5px; }
+  .brand .tag { font-size: 11px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: 1px; margin-top: 2px; }
+  .status { display: flex; align-items: center; gap: 10px; font-size: 13px;
+    color: var(--muted); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good);
+    animation: pulse 2s infinite; }
+  .dot.bad { background: var(--bad); animation: none; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  h1 { font-size: 36px; margin: 0 0 8px; letter-spacing: -1px; line-height: 1.1; }
+  .sub { color: var(--muted); margin-bottom: 32px; font-size: 15px; }
+
+  /* HERO savings number */
+  .hero { background: linear-gradient(135deg, #2a1a8a 0%, #6d63ff 100%);
+    border-radius: 18px; padding: 40px; margin-bottom: 24px;
+    box-shadow: 0 12px 40px rgba(109, 99, 255, 0.2); }
+  .hero .small { font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+    color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+  .hero .big { font-size: 88px; font-weight: 800; line-height: 0.95;
+    letter-spacing: -3px; color: white; }
+  .hero .savings-pct { font-size: 22px; font-weight: 600; color: white;
+    margin-top: 8px; opacity: 0.9; }
+  .hero .baseline { color: rgba(255,255,255,0.7); font-size: 14px;
+    margin-top: 14px; font-variant-numeric: tabular-nums; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 24px; }
+  .panel h2 { margin: 0 0 16px; font-size: 12px; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--muted); font-weight: 600; }
+
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .stat { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 16px; }
+  .stat .v { font-size: 28px; font-weight: 700; letter-spacing: -0.5px;
+    line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat .v.accent { color: var(--accent); }
+  .stat .v.good { color: var(--good); }
+  .stat .l { font-size: 11px; color: var(--muted); margin-top: 6px;
+    text-transform: uppercase; letter-spacing: 1px; }
+
+  .tier-bar { display: flex; height: 24px; border-radius: 6px; overflow: hidden;
+    margin-bottom: 12px; background: var(--line); }
+  .tier-seg { display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: white; }
+  .tier-legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); }
+  .tier-legend span::before { content: ""; display: inline-block;
+    width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+  .tier-legend .cheap::before { background: var(--cheap); }
+  .tier-legend .balanced::before { background: var(--balanced); }
+  .tier-legend .frontier::before { background: var(--frontier); }
+
+  .config { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;
+    align-items: center; }
+  .config input { background: var(--panel); border: 1px solid var(--line);
+    color: var(--ink); padding: 9px 14px; border-radius: 6px;
+    font-size: 13px; font-family: inherit; min-width: 280px; }
+  .config button { background: var(--accent); color: white; border: 0;
+    padding: 9px 18px; border-radius: 6px; font-size: 13px; cursor: pointer;
+    font-family: inherit; font-weight: 600; }
+  .config label { color: var(--muted); font-size: 12px; text-transform: uppercase;
+    letter-spacing: 1px; }
+
+  .footnote { font-size: 11px; color: var(--muted); margin-top: 32px;
+    border-top: 1px solid var(--line); padding-top: 16px; line-height: 1.6; }
+  .empty { color: var(--muted); text-align: center; padding: 24px; font-size: 13px; }
+
+  /* Projected savings cards */
+  .projections { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .proj { background: rgba(46,204,113,0.08); border: 1px solid rgba(46,204,113,0.3);
+    border-radius: 10px; padding: 16px; }
+  .proj .v { font-size: 24px; font-weight: 700; color: var(--good);
+    font-variant-numeric: tabular-nums; }
+  .proj .l { font-size: 11px; color: var(--muted); margin-top: 4px;
+    text-transform: uppercase; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <div class="name">VIREN</div>
+        <div class="tag">Live savings — CFO view</div>
+      </div>
+    </div>
+    <div class="status">
+      <span class="dot" id="status-dot"></span>
+      <span id="status-text">Connecting...</span>
+      <span id="last-update" style="margin-left:12px"></span>
+    </div>
+  </header>
+
+  <div class="config">
+    <label>Gateway:</label>
+    <input type="text" id="gw-url" placeholder="http://localhost:8000" value="http://localhost:8000">
+    <button onclick="connect()">Connect</button>
+    <button onclick="reset()" style="background: var(--line);">Reset baseline</button>
+  </div>
+
+  <h1>Real savings, right now.</h1>
+  <p class="sub">Live counters straight from the gateway's <code>/metrics</code> endpoint. No estimates, no spin — just the running total of what you'd have paid vs. what you actually paid. Polls every 5 seconds.</p>
+
+  <div class="hero">
+    <div class="small">SAVED THIS SESSION (vs. all-Sonnet baseline)</div>
+    <div class="big" id="hero-savings">$0.00</div>
+    <div class="savings-pct" id="hero-pct">0% cheaper</div>
+    <div class="baseline">Actual spend: <b id="hero-actual">$0.0000</b> · Baseline would have been <b id="hero-baseline">$0.0000</b></div>
+  </div>
+
+  <div class="grid">
+
+    <div class="panel">
+      <h2>Operational stats</h2>
+      <div class="stats-row">
+        <div class="stat"><div class="v" id="stat-requests">0</div><div class="l">Requests</div></div>
+        <div class="stat"><div class="v accent" id="stat-cache-rate">0%</div><div class="l">Cache hit rate</div></div>
+        <div class="stat"><div class="v" id="stat-p95">0 ms</div><div class="l">Gateway p95 latency</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Routing distribution</h2>
+      <div class="tier-bar" id="tier-bar">
+        <div class="tier-seg" style="width: 100%; background: var(--line);">No traffic yet</div>
+      </div>
+      <div class="tier-legend">
+        <span class="cheap" id="leg-cheap">Cheap 0%</span>
+        <span class="balanced" id="leg-balanced">Balanced 0%</span>
+        <span class="frontier" id="leg-frontier">Frontier 0%</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="panel" style="margin-top: 20px;">
+    <h2>Projected at scale</h2>
+    <p style="color: var(--muted); font-size: 13px; margin: -4px 0 14px;">
+      Extrapolated from the current per-call savings rate. Real numbers from
+      your traffic during the pilot would replace these.
+    </p>
+    <div class="projections">
+      <div class="proj"><div class="v" id="proj-day">$0</div><div class="l">Per day (at 100k calls)</div></div>
+      <div class="proj"><div class="v" id="proj-month">$0</div><div class="l">Per month (at 1M calls)</div></div>
+      <div class="proj"><div class="v" id="proj-year">$0</div><div class="l">Per year (at 1M/month)</div></div>
+    </div>
+  </div>
+
+  <p class="footnote">
+    Source: <code>/metrics</code> Prometheus endpoint on the gateway you connected to.
+    Counters: <code>viren_cost_usd_total</code>, <code>viren_baseline_cost_usd_total</code>,
+    <code>viren_requests_total</code>, <code>viren_cache_hits_total</code>,
+    <code>viren_request_latency_seconds</code>. The "baseline" is the cost the same
+    traffic would have incurred if every request went to <code>tier-balanced</code> (Sonnet)
+    direct — the typical SaaS baseline. Savings = baseline − actual. Cumulative since
+    the gateway started or since you last hit Reset.
+  </p>
+
+</div>
+
+<script>
+let lastSnapshot = null;
+let resetOffset = { actual: 0, baseline: 0, requests: 0, cacheHits: 0 };
+const POLL_MS = 5000;
+
+function fmt$(n, places = 2) {
+  const v = (n || 0).toFixed(places);
+  return "$" + v.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function bigFmt$(n) {
+  if (!isFinite(n) || isNaN(n)) return "$0";
+  if (Math.abs(n) >= 1_000_000) return "$" + (n/1_000_000).toFixed(2) + "M";
+  if (Math.abs(n) >= 1_000) return "$" + (n/1_000).toFixed(1) + "k";
+  return "$" + n.toFixed(0);
+}
+
+// Parse Prometheus text format. Returns { metricName: { labels...: value } }.
+function parsePromText(txt) {
+  const out = {};
+  for (const line of txt.split("\n")) {
+    if (!line || line.startsWith("#")) continue;
+    // metric_name{l1="v1",l2="v2"} value [timestamp]
+    const m = line.match(/^([a-zA-Z_:][a-zA-Z0-9_:]*)(\{[^}]*\})?\s+([\d.eE+\-]+)/);
+    if (!m) continue;
+    const name = m[1];
+    const labelsRaw = m[2] || "";
+    const value = parseFloat(m[3]);
+    const labels = {};
+    const lm = labelsRaw.matchAll(/([a-zA-Z_][a-zA-Z0-9_]*)="([^"]*)"/g);
+    for (const lp of lm) labels[lp[1]] = lp[2];
+    if (!out[name]) out[name] = [];
+    out[name].push({ labels, value });
+  }
+  return out;
+}
+
+function sumMetric(parsed, name, filter) {
+  const arr = parsed[name] || [];
+  let total = 0;
+  for (const row of arr) {
+    if (filter && !filter(row.labels)) continue;
+    total += row.value;
+  }
+  return total;
+}
+
+async function fetchMetrics() {
+  const url = document.getElementById("gw-url").value.replace(/\/+$/, "") + "/metrics";
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error(`/metrics returned ${r.status}`);
+  return r.text();
+}
+
+async function tick() {
+  const dot = document.getElementById("status-dot");
+  const txt = document.getElementById("status-text");
+  try {
+    const raw = await fetchMetrics();
+    const m = parsePromText(raw);
+    dot.classList.remove("bad");
+    txt.textContent = "Live";
+    document.getElementById("last-update").textContent =
+      "updated " + new Date().toLocaleTimeString();
+
+    const totalActual = sumMetric(m, "viren_cost_usd_total") - resetOffset.actual;
+    const totalBaseline = sumMetric(m, "viren_baseline_cost_usd_total") - resetOffset.baseline;
+    const totalRequests = sumMetric(m, "viren_requests_total") - resetOffset.requests;
+    const cacheHits = sumMetric(m, "viren_cache_hits_total") - resetOffset.cacheHits;
+    const saved = Math.max(0, totalBaseline - totalActual);
+    const pct = totalBaseline > 0 ? (saved / totalBaseline * 100) : 0;
+
+    document.getElementById("hero-savings").textContent = bigFmt$(saved);
+    document.getElementById("hero-pct").textContent =
+      pct.toFixed(0) + "% cheaper than baseline";
+    document.getElementById("hero-actual").textContent = fmt$(totalActual, 4);
+    document.getElementById("hero-baseline").textContent = fmt$(totalBaseline, 4);
+
+    document.getElementById("stat-requests").textContent =
+      Math.round(totalRequests).toLocaleString();
+    const cacheRate = totalRequests > 0 ? cacheHits / totalRequests * 100 : 0;
+    document.getElementById("stat-cache-rate").textContent = cacheRate.toFixed(0) + "%";
+
+    // Latency p95 — Prometheus histogram needs buckets; we approximate by sum/count
+    // here (mean). A real Grafana would compute p95 from buckets.
+    const latSum = sumMetric(m, "viren_request_latency_seconds_sum");
+    const latCnt = sumMetric(m, "viren_request_latency_seconds_count");
+    const latMean = latCnt > 0 ? (latSum / latCnt * 1000) : 0;
+    document.getElementById("stat-p95").textContent = latMean.toFixed(0) + " ms avg";
+
+    // Tier distribution from viren_requests_total{tier=...}
+    const tierCounts = { cheap: 0, balanced: 0, frontier: 0 };
+    for (const row of (m["viren_requests_total"] || [])) {
+      const t = row.labels.tier;
+      if (tierCounts[t] !== undefined) tierCounts[t] += row.value;
+    }
+    const tierTotal = tierCounts.cheap + tierCounts.balanced + tierCounts.frontier;
+    const bar = document.getElementById("tier-bar");
+    if (tierTotal > 0) {
+      const pc = t => Math.round(tierCounts[t] / tierTotal * 100);
+      bar.innerHTML = "";
+      for (const t of ["cheap", "balanced", "frontier"]) {
+        const pct = tierCounts[t] / tierTotal * 100;
+        if (pct < 0.5) continue;
+        const seg = document.createElement("div");
+        seg.className = "tier-seg";
+        seg.style.width = pct + "%";
+        seg.style.background = t === "cheap" ? "var(--cheap)" :
+                               t === "balanced" ? "var(--balanced)" : "var(--frontier)";
+        seg.textContent = pct >= 8 ? Math.round(pct) + "%" : "";
+        bar.appendChild(seg);
+      }
+      document.getElementById("leg-cheap").textContent = "Cheap " + pc("cheap") + "%";
+      document.getElementById("leg-balanced").textContent = "Balanced " + pc("balanced") + "%";
+      document.getElementById("leg-frontier").textContent = "Frontier " + pc("frontier") + "%";
+    }
+
+    // Projections: scale per-call savings
+    const perCallSaved = totalRequests > 0 ? saved / totalRequests : 0;
+    document.getElementById("proj-day").textContent = bigFmt$(perCallSaved * 100_000);
+    document.getElementById("proj-month").textContent = bigFmt$(perCallSaved * 1_000_000);
+    document.getElementById("proj-year").textContent = bigFmt$(perCallSaved * 12_000_000);
+
+    lastSnapshot = { totalActual, totalBaseline, totalRequests, cacheHits };
+  } catch (e) {
+    dot.classList.add("bad");
+    txt.textContent = "Cannot reach /metrics — is the gateway running?";
+  }
+}
+
+function connect() { tick(); }
+function reset() {
+  if (!lastSnapshot) return;
+  resetOffset.actual    += lastSnapshot.totalActual;
+  resetOffset.baseline  += lastSnapshot.totalBaseline;
+  resetOffset.requests  += lastSnapshot.totalRequests;
+  resetOffset.cacheHits += lastSnapshot.cacheHits;
+  tick();
+}
+
+setInterval(tick, POLL_MS);
+tick();
+</script>
+</body>
+</html>

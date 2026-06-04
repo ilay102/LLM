@@ -10,6 +10,7 @@ Everything you need for the booth, in print-ready form.
 | `qr_cards.html` | 10 business-card-sized QR cards per A4 sheet | Print 2-3 sheets, cut, stack on the desk |
 | `pitch_deck.html` | 12-slide HTML deck for 5-min conversations | Open on a tablet/phone if someone wants slides |
 | `demo_dashboard.html` | Live interactive demo | Fullscreen on your laptop during the event |
+| `cfo_dashboard.html` | **Live $-savings counter** reading `/metrics` | Second tab — when a CTO/CFO asks "how much have you saved?" — flip to it |
 | `landing_page.html` | Public page QR codes point to | Host on GitHub Pages |
 | `EVENT_PLAYBOOK.md` | 60-sec pitch + Q&A prep | Read morning-of |
 | `../scripts/build_evidence_pack.py` | Generates the CTO handout PDF | After eval lands, generate fresh per-prospect |
