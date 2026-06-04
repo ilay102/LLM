@@ -1,0 +1,79 @@
+# Event Readiness — VIREN
+
+The single status doc. If you read one thing before the event, read this.
+
+## Ship version: v0.2.2 (frozen, proven)
+
+- **Cost reduction: 87.4%**  ·  **Quality (3-judge majority W-T): 80.0%**
+- 31/31 unit tests, self-test 6/6, end-to-end verified
+- Multi-tenant keys, budget caps, PII redaction, Redis fail-open — all live
+- This is the number on the poster. It does not change unless an isolated gate
+  proves an improvement.
+
+## What we tried in v0.3 and what the data said
+
+| Improvement | Verdict | Why |
+|---|---|---|
+| Bigger eval corpus (260, multi-turn + RAG) | ✅ KEEP | Pure tooling. Lets us actually measure changes. No runtime risk. |
+| LLM cascade verifier | ❌ PARKED | Gate proved -6.7pp W-T + slow extra call on cheap-heavy traffic. Default now `heuristic` (= safe v0.2.2 behavior). Re-test on real code/reasoning pilot traffic. |
+| Prefix caching (provider cache) | ⏳ ONE GATE LEFT | Pure cost, quality-neutral by design. Needs one isolated confirming run. |
+| Tier stickiness (conversation memory) | ⏳ ONE GATE LEFT | Pure safety, only routes up. Needs same confirming run. |
+| Per-tenant classifier | 🔜 PILOT | Needs real customer traffic. Framework only. |
+
+**Key lesson:** the verifier wasn't "broken" — it was wrong for *cheap-heavy*
+traffic, where short answers win. The gate caught it before it shipped. That's
+the system working. We don't tune it against synthetic data; we re-test it on a
+real pilot's traffic where escalation actually helps.
+
+## The ONE eval still worth running (~$4)
+
+Isolate the two SAFE wins (prefix caching + stickiness) with the verifier OFF.
+If quality holds and cost drops → merge them; the product gets cheaper + safer
+with zero quality risk. Prompt for Claude Code is in `eval/STEP1_PROMPT.md`.
+
+After that run: **stop spending on synthetic-corpus evals.** The real proof is
+a pilot.
+
+## "Ready & functional" checklist (costs ~$0 — just verification)
+
+Run these in the Codespace once; all should be green:
+
+- [ ] `docker compose up --build -d` → gateway healthy (`curl /health` ok=true)
+- [ ] `pytest -m unit` → all green (now includes verifier/prompt_cache/conversation)
+- [ ] `bash scripts/self_test.sh` → 6/6
+- [ ] `./deploy/pilot.sh --client-id demo --anthropic-key … --openai-key …`
+      → green banner, gateway reachable (proves a stranger can deploy it)
+- [ ] Open `marketing/demo_dashboard.html` against the live gateway → click 6
+      prompts → cache fires on repeat (proves the live demo works)
+- [ ] `./deploy/teardown.sh --client-id demo` → clean shutdown
+
+If all six pass, the product is functional and deployable by someone who
+isn't you. That matters more for the event than any quality percentage.
+
+## Event-day kit (already built, in marketing/)
+
+- [ ] `booth_poster.html` → fill calendly+email → print A3, foam-mount
+- [ ] `qr_cards.html` → generate QR (qr.io → your Calendly) → print, cut
+- [ ] `one_pager.html` → fill placeholders → PDF, 5 copies
+- [ ] `pitch_deck.html` → fill placeholders → open on tablet for longer chats
+- [ ] `demo_dashboard.html` → tested live, fullscreen on laptop
+- [ ] Loom demo recorded (script in `marketing/demo_script.md`)
+- [ ] `scripts/build_evidence_pack.py` → generate the CTO PDF
+- [ ] Read `marketing/EVENT_PLAYBOOK.md` — the 60-sec pitch is muscle memory
+
+## The numbers to say out loud
+
+- "87% cost reduction, 80% pairwise quality, verified by three independent
+  LLM judges from two model families."
+- When pushed on sample size: "30-prompt corpus, ±10% — your traffic gives
+  your real number, which is exactly what the free 2-week pilot measures."
+- Never claim the verifier/per-tenant features as done — they're "in the
+  roadmap, validated on your traffic during the pilot."
+
+## Branches (for whoever picks this up)
+
+- `main` — has v0.2.2 (ship)
+- `v0.3-quality` — corpus + verifier (verifier now defaults to safe heuristic)
+- `v0.3.2-prefix-cache` — stacked: prefix caching
+- `v0.3.4-conversation` — stacked: tier stickiness + verifier safe-default
+  (this branch = the full v0.3 candidate; run STEP1 gate, then merge if green)

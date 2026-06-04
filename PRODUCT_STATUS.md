@@ -23,6 +23,16 @@ Sonnet self-preference: +5pp. GPT-4o terse-penalty: -10pp. Majority is most defe
 - Streaming bypasses cache and cascade.
 - DeepSeek deployments added but not yet in the eval.
 
+## v0.3 experiments (see EVENT_READINESS.md for full detail)
+- **LLM cascade verifier — PARKED.** Gate showed -6.7pp W-T + slow extra call
+  on cheap-heavy traffic. Now defaults to safe `heuristic` mode. Re-test on
+  real code/reasoning pilot traffic, where escalation should help.
+- **Prefix caching + tier stickiness — pending one isolated gate** (verifier
+  off). Quality-neutral / safety-only. See eval/STEP1_PROMPT.md.
+- **260-prompt corpus + multi-turn eval — KEPT** (tooling, no runtime risk).
+
 ## See also
+- EVENT_READINESS.md — master status + day-of checklist
+- eval/STEP1_PROMPT.md — the one remaining eval worth running
 - baselines/v0.2.2_*.html — the verified report
 - COMPARISON.md — three-way version comparison + judge methodology

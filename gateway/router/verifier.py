@@ -29,7 +29,11 @@ from dataclasses import dataclass
 
 LOG = logging.getLogger("gateway.verifier")
 
-VERIFIER_MODE = os.environ.get("VERIFIER_MODE", "llm").lower()
+# Default is "heuristic" (free obvious-failure checks only — same behavior as
+# the proven v0.2.2 cascade). The "llm" grader mode REGRESSED quality on
+# cheap-tier-heavy traffic (v0.3 gate: -6.7pp W-T, +slow extra call), so it is
+# OFF by default and only worth enabling on reasoning/code-heavy pilot traffic.
+VERIFIER_MODE = os.environ.get("VERIFIER_MODE", "heuristic").lower()
 VERIFIER_THRESHOLD = int(os.environ.get("VERIFIER_THRESHOLD", "3"))
 VERIFIER_MODEL = os.environ.get("VERIFIER_MODEL", "tier-cheap")
 
