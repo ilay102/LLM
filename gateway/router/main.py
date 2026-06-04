@@ -42,6 +42,7 @@ import classifier as classifier_module
 import persistence
 import pii
 import tenants
+import verifier
 from classifier import classify, RouteDecision
 from pricing import compute_cost
 from semantic_cache import SemanticCache
@@ -422,17 +423,27 @@ async def chat_completions(
     response_dict = response.model_dump() if hasattr(response, "model_dump") else dict(response)
 
     # ---- Cascade if cheap response looks weak ----------------------------
+    # v0.3.1: LLM cascade verifier replaces the old heuristic-only check.
+    # Heuristic pre-filter runs first (free); LLM grader only on responses
+    # that survive it. Both gated by VERIFIER_MODE.
     cascade_used = False
-    if decision.tier == "cheap" and looks_low_quality(response_dict, expects_json=expects_json):
-        LOG.info("cascade: cheap response failed verifier, retrying on balanced")
-        body_for_call["model"] = "tier-balanced"
+    verifier_score = None
+    if decision.tier == "cheap":
         try:
-            response = await router.acompletion(**body_for_call)
-            response_dict = response.model_dump() if hasattr(response, "model_dump") else dict(response)
-            decision = RouteDecision("balanced", "cascade from cheap (verifier failed)", 0.7)
-            cascade_used = True
+            vr = await verifier.verify(
+                router, response_dict, messages, expects_json=expects_json,
+                mode=(tenant_obj.verifier_mode if tenant_obj and getattr(tenant_obj, "verifier_mode", None) else None),
+            )
+            verifier_score = vr.score
+            if vr.escalate:
+                LOG.info("cascade: %s -> escalating to balanced", vr.reason)
+                body_for_call["model"] = "tier-balanced"
+                response = await router.acompletion(**body_for_call)
+                response_dict = response.model_dump() if hasattr(response, "model_dump") else dict(response)
+                decision = RouteDecision("balanced", f"cascade from cheap ({vr.reason})", 0.7)
+                cascade_used = True
         except Exception:
-            LOG.exception("cascade retry failed; returning original cheap response")
+            LOG.exception("cascade/verify failed; returning original cheap response")
 
     # ---- Cache write ----------------------------------------------------
     if cache is not None and not cascade_used:
@@ -453,7 +464,7 @@ async def chat_completions(
         tenant_id=tenant_id, pilot_id=x_pilot_id, body=body, decision=decision,
         response=response_dict, latency_ms=latency_ms,
         cache_hit=None, cache_similarity=None, cascade=cascade_used,
-        pii_entities=pii_entities,
+        pii_entities=pii_entities, verifier_score=verifier_score,
     )
     return JSONResponse(response_dict)
 
@@ -487,7 +498,7 @@ async def _post_hook(
     *, tenant_id: str, pilot_id: str | None, body: dict, decision: RouteDecision,
     response: dict, latency_ms: float, cache_hit: str | None,
     cache_similarity: float | None, cascade: bool = False,
-    pii_entities: list[dict] | None = None,
+    pii_entities: list[dict] | None = None, verifier_score: int | None = None,
 ) -> None:
     info = state["model_info"].get(f"tier-{decision.tier}", {})
     cost = compute_cost(
@@ -524,6 +535,7 @@ async def _post_hook(
         "baseline_cost_usd": baseline_cost,
         "pii_entities": pii_entities or [],
         "prompt_hash": prompt_hash,
+        "verifier_score": verifier_score,
     }
 
     # 1. SQLite (canonical store)

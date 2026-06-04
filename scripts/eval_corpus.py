@@ -44,7 +44,7 @@ except ImportError:
 
 HERE = Path(__file__).parent
 REPO = HERE.parent
-CORPUS = REPO / "classifier" / "prompts_to_label.jsonl"
+CORPUS = REPO / "eval" / "corpus_v1.jsonl"
 RESULTS = HERE / "eval_results.jsonl"
 REPORT = HERE / "eval_report.html"
 
@@ -84,12 +84,30 @@ def price(model: str) -> tuple[float, float]:
     return SONNET_IN, SONNET_OUT
 
 
-async def call_gateway(oai: AsyncOpenAI, prompt: str) -> dict:
+def _to_messages(prompt_or_msgs) -> list[dict]:
+    """Accept either a string prompt or a full messages array (multi-turn)."""
+    if isinstance(prompt_or_msgs, list):
+        return prompt_or_msgs
+    return [{"role": "user", "content": prompt_or_msgs}]
+
+
+def _split_baseline_messages(messages: list[dict]):
+    """Anthropic wants system as a separate kwarg, not a message role."""
+    system = "\n".join(m["content"] for m in messages
+                       if m.get("role") == "system" and isinstance(m.get("content"), str))
+    convo = [m for m in messages if m.get("role") != "system"]
+    if not convo:
+        convo = [{"role": "user", "content": "(no user turn)"}]
+    return system or None, convo
+
+
+async def call_gateway(oai: AsyncOpenAI, messages) -> dict:
+    msgs = _to_messages(messages)
     t0 = time.perf_counter()
     try:
         r = await oai.chat.completions.create(
             model="auto",
-            messages=[{"role": "user", "content": prompt}],
+            messages=msgs,
             max_tokens=500,
             temperature=0.2,
         )
@@ -108,14 +126,16 @@ async def call_gateway(oai: AsyncOpenAI, prompt: str) -> dict:
         return {"error": str(e), "latency_ms": (time.perf_counter() - t0) * 1000}
 
 
-async def call_baseline(anth: AsyncAnthropic, prompt: str) -> dict:
+async def call_baseline(anth: AsyncAnthropic, messages) -> dict:
+    msgs = _to_messages(messages)
+    system, convo = _split_baseline_messages(msgs)
     t0 = time.perf_counter()
     try:
-        r = await anth.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=500, temperature=0.2,
-            messages=[{"role": "user", "content": prompt}],
-        )
+        kwargs = dict(model="claude-sonnet-4-6", max_tokens=500,
+                      temperature=0.2, messages=convo)
+        if system:
+            kwargs["system"] = system
+        r = await anth.messages.create(**kwargs)
         latency = (time.perf_counter() - t0) * 1000
         in_t = r.usage.input_tokens
         out_t = r.usage.output_tokens
@@ -127,14 +147,23 @@ async def call_baseline(anth: AsyncAnthropic, prompt: str) -> dict:
         return {"error": str(e), "latency_ms": (time.perf_counter() - t0) * 1000}
 
 
+def _excerpt(prompt_or_msgs) -> str:
+    if isinstance(prompt_or_msgs, list):
+        last = next((m for m in reversed(prompt_or_msgs) if m.get("role") == "user"), None)
+        c = last.get("content", "") if last else ""
+        return (c if isinstance(c, str) else str(c))[:200]
+    return str(prompt_or_msgs)[:200]
+
+
 async def eval_one(sem, oai, anth, prompt_id, prompt_text):
     async with sem:
-        # Fire both concurrently
+        # Fire both concurrently. prompt_text may be a string OR a messages array.
         g, b = await asyncio.gather(
             call_gateway(oai, prompt_text),
             call_baseline(anth, prompt_text),
         )
-        return {"id": prompt_id, "prompt": prompt_text[:200],
+        return {"id": prompt_id, "prompt": _excerpt(prompt_text),
+                "messages": prompt_text if isinstance(prompt_text, list) else None,
                 "gateway": g, "baseline": b}
 
 
@@ -156,10 +185,12 @@ async def amain():
         print("ERROR: set ANTHROPIC_API_KEY env var", file=sys.stderr); return 1
 
     prompts = []
-    with open(args.corpus) as f:
+    with open(args.corpus, encoding="utf-8") as f:
         for line in f:
             r = json.loads(line)
-            prompts.append((r["id"], r["prompt"]))
+            # v0.3 corpus uses "messages"; legacy corpus uses "prompt".
+            payload = r.get("messages") if r.get("messages") else r.get("prompt", "")
+            prompts.append((r["id"], payload))
     if args.limit:
         prompts = prompts[: args.limit]
 
