@@ -41,6 +41,7 @@ from pydantic import BaseModel
 import classifier as classifier_module
 import persistence
 import pii
+import prompt_cache
 import tenants
 import verifier
 from classifier import classify, RouteDecision
@@ -401,8 +402,13 @@ async def chat_completions(
         )
         return JSONResponse(resp)
 
-    # ---- Prompt-cache injection -----------------------------------------
-    body["messages"] = inject_prompt_cache(messages)
+    # ---- Prefix cache injection (v0.3.2) --------------------------------
+    # Smarter than the old inject_prompt_cache: handles few-shot prefixes and
+    # respects Anthropic's token minimum. We inject Anthropic-style breakpoints
+    # unconditionally; litellm drop_params=True strips cache_control for
+    # providers that don't support it (DeepSeek/OpenAI cache automatically),
+    # so this is safe across the mixed-provider tiers.
+    body["messages"] = prompt_cache.inject_cache_breakpoints(messages, "anthropic")
 
     # ---- Call -----------------------------------------------------------
     router: Router = state["router"]
