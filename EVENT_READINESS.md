@@ -2,6 +2,24 @@
 
 The single status doc. If you read one thing before the event, read this.
 
+## Sales arsenal — what to bring (all built, all in repo)
+
+| Asset | What it kills | File |
+|---|---|---|
+| Booth poster (A3) | "Why should I stop?" | `marketing/booth_poster.html` |
+| QR cards | Capture mechanism → Calendly | `marketing/qr_cards.html` |
+| Live tier demo | "Show me it works" | `marketing/demo_dashboard.html` |
+| **Live CFO $-saved screen** | **"My CFO wants to SEE savings"** | **`marketing/cfo_dashboard.html`** |
+| 1-pager + landing page | "Send me info" | `marketing/one_pager.html` / `landing_page.html` |
+| 12-slide deck | "Got 5 mins for slides?" | `marketing/pitch_deck.html` |
+| **Regression split report** | **"80% W-T = 1 in 5 worse"** | **`scripts/regression_split.html` (90% factual)** |
+| Latency overhead report | "How much p95 do you add?" | `scripts/overhead_report.html` (run script first) |
+| Security one-pager | "What's your security story?" | `marketing/security_onepager.md` |
+| Discovery-call script | "How do I qualify in 15 min?" | `marketing/discovery_call.md` |
+| Evidence pack PDF | The CTO leave-behind | `scripts/build_evidence_pack.py` → `scripts/evidence_pack.html` |
+| 60-sec pitch + playbook | Day-of script | `marketing/EVENT_PLAYBOOK.md` |
+
+
 ## Ship version: v0.2.2 (frozen, proven)
 
 - **Cost reduction: 87.4%**  ·  **Quality (3-judge majority W-T): 80.0%**
@@ -50,16 +68,22 @@ Run these in the Codespace once; all should be green:
 If all six pass, the product is functional and deployable by someone who
 isn't you. That matters more for the event than any quality percentage.
 
-## Event-day kit (already built, in marketing/)
+## Event-day kit (already built, in marketing/ + scripts/)
 
 - [ ] `booth_poster.html` → fill calendly+email → print A3, foam-mount
 - [ ] `qr_cards.html` → generate QR (qr.io → your Calendly) → print, cut
 - [ ] `one_pager.html` → fill placeholders → PDF, 5 copies
 - [ ] `pitch_deck.html` → fill placeholders → open on tablet for longer chats
-- [ ] `demo_dashboard.html` → tested live, fullscreen on laptop
+- [ ] `demo_dashboard.html` → tested live, fullscreen on laptop tab 1
+- [ ] **`cfo_dashboard.html` → laptop tab 2, the live "$ saved" screen for CFO/CTO**
+- [ ] `security_onepager.md` → PDF, attach when sending evidence pack
 - [ ] Loom demo recorded (script in `marketing/demo_script.md`)
-- [ ] `scripts/build_evidence_pack.py` → generate the CTO PDF
+- [ ] `scripts/build_evidence_pack.py` → generate the CTO PDF (now auto-includes
+      regression split + latency overhead sections if those scripts have been run)
 - [ ] Read `marketing/EVENT_PLAYBOOK.md` — the 60-sec pitch is muscle memory
+- [ ] Read `marketing/discovery_call.md` — the 15-min qualification script
+- [ ] `scripts/measure_overhead.py` — RUN ONCE in Codespace to publish a real
+      "VIREN adds X ms p95" number for the evidence pack
 
 ## The numbers to say out loud
 
