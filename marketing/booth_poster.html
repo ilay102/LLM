@@ -36,7 +36,13 @@
     color: var(--muted); letter-spacing: -1px; margin-top: 8mm; }
 
   /* ---------- KPI Grid ---------- */
-  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin: 12mm 0; }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; margin: 12mm 0 6mm; }
+  .kpi-codegen { background: linear-gradient(135deg, var(--accent), #4733cc); color: white;
+    border-radius: 8px; padding: 6mm 9mm; margin-bottom: 12mm; display: flex;
+    align-items: center; gap: 8mm; }
+  .kpi-codegen .left .num { font-size: 36pt; font-weight: 800; line-height: 1; letter-spacing: -1px; }
+  .kpi-codegen .left .lbl { font-size: 11pt; margin-top: 3mm; opacity: 0.92; }
+  .kpi-codegen .right { font-size: 9pt; line-height: 1.45; opacity: 0.88; flex: 1; }
   .kpi { background: var(--soft); border-radius: 16px; padding: 20mm; }
   .kpi .v { font-size: 100pt; font-weight: 800; color: var(--accent);
     letter-spacing: -3px; line-height: 0.9; }
@@ -96,6 +102,17 @@
       <div class="kpi dark">
         <div class="v">90%</div>
         <div class="l">Factually equivalent or better · 3-judge audit</div>
+      </div>
+    </div>
+
+    <div class="kpi-codegen">
+      <div class="left">
+        <div class="num">100% / 79%</div>
+        <div class="lbl">Code generation: 20/20 pass · 79% lower cost</div>
+      </div>
+      <div class="right">
+        Real execution tests — Python functions run with assert checks,<br>
+        JS syntax-validated, SQL clauses verified. No LLM-as-judge.
       </div>
     </div>
 

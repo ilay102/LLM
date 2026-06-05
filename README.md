@@ -1,7 +1,9 @@
 # VIREN — LLM Cost Optimization Gateway
 
-**87% verified cost reduction. 90% factually equivalent or better.**
+**87% verified cost reduction. 90% factually equivalent or better.
+100% code-generation pass rate at 79% lower cost.**
 3-judge audit, factual-vs-stylistic split — every regression auditable.
+Code answers actually *executed*, not LLM-as-judge.
 
 OpenAI-compatible gateway that routes, caches, and proves quality —
 designed for 2-week shadow pilots that close design partners.

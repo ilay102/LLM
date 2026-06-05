@@ -27,6 +27,11 @@
   .stat { background: var(--soft); border-radius: 6px; padding: 4mm 5mm; }
   .stat .num { font-size: 22pt; font-weight: 700; color: var(--accent);
                letter-spacing: -0.5px; line-height: 1; }
+  .codegen-banner { background: linear-gradient(135deg, var(--accent), #4733cc);
+    color: white; border-radius: 6px; padding: 4mm 6mm; margin: 4mm 0 0; }
+  .codegen-banner .num { font-size: 13pt; font-weight: 700; }
+  .codegen-banner .num .hi { font-size: 17pt; }
+  .codegen-banner .sub { font-size: 8.5pt; margin-top: 2mm; opacity: 0.92; line-height: 1.4; }
   .stat .lbl { font-size: 9pt; color: var(--muted); margin-top: 2mm;
                text-transform: uppercase; letter-spacing: 1px; }
   .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; }
@@ -93,6 +98,12 @@
       <div class="num">0</div>
       <div class="lbl">Code changes in your hot path</div>
     </div>
+  </div>
+
+  <div class="codegen-banner">
+    <div class="num"><span class="hi">100%</span> code pass · <span class="hi">79%</span> cheaper</div>
+    <div class="sub">20-prompt code-gen eval, Python/JS/SQL. Python answers actually executed
+    with assert checks — not LLM-as-judge. Strict tie on quality vs direct Sonnet, 79% lower cost.</div>
   </div>
 
   <h2>How it works</h2>

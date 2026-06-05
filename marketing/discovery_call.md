@@ -150,6 +150,7 @@ Print this card and keep it next to your screen:
 
 - **87%** verified cost reduction (3-judge audit on our corpus)
 - **90%** factually equivalent or better (regression split, auditable)
+- **100% code-gen pass at 79% lower cost** (real execution tests, strict tie with Sonnet)
 - **<250ms** added p95 routing latency (measured); **faster than direct Sonnet at median**
 - **$0** pilot cost · **14 days** · **your VPC**
 - **3-line** integration · removable instantly

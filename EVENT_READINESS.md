@@ -89,7 +89,8 @@ isn't you. That matters more for the event than any quality percentage.
 ## The numbers to say out loud
 
 **Primary claim (poster, deck, one-pager, every QR card):**
-- "87% verified cost reduction. 90% factually equivalent or better."
+- "87% verified cost reduction. 90% factually equivalent or better.
+   100% code-generation pass rate at 79% lower cost."
 
 **Methodology, if asked:**
 - "3-judge pairwise audit — Sonnet, GPT-4o, Opus — different families to
@@ -115,16 +116,18 @@ isn't you. That matters more for the event than any quality percentage.
   hits return in 26 ms p50. The pilot measures all three on YOUR traffic."
 
 **When asked about code generation (THE common technical question):**
-- "We route — we don't train a code model. Code-gen requests still hit the
-  best frontier model your config allows (Opus 4.8, DeepSeek R1, etc.); the
-  classifier just decides which tier. For routes where you need code quality
-  guaranteed, you set `min_tier: balanced` on that tenant — the gateway will
-  *never* drop those requests to a cheap model. It's a structural guarantee,
-  not a promise."
-- "We have a code-specific eval harness (`scripts/code_quality_eval.py`) — 20
-  Python/JS/SQL prompts where Python answers are extracted, executed, and
-  asserted against expected outputs (gold-standard). We can run it on your
-  pilot setup so YOU see the code pass rate, not just ours."
+- **Lead with receipts:** "20-prompt code-gen eval — Python / JavaScript / SQL.
+  Python answers were extracted from the response, **executed**, and asserted
+  against expected outputs. Strict tie with direct Sonnet: 20/20 pass on both
+  sides. **At 79% lower cost.** Per-prompt audit is in section 6c of the
+  evidence pack."
+- **Structural guarantee:** "If you want code quality contractually
+  guaranteed on a specific route, set `min_tier: balanced` on that tenant —
+  the gateway will *never* drop those requests below balanced. It's a
+  structural floor, not a promise."
+- "The eval harness ships with the gateway (`scripts/code_quality_eval.py`).
+  We re-run it on YOUR pilot setup so the pass rate is on YOUR config,
+  not ours."
 
 **What NEVER to say:**
 - "80% W-T" or "20% worse" — pitch the FACTUAL rate, not the W-T rate. The

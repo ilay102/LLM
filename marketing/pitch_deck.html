@@ -86,7 +86,7 @@
 <!-- 1: Title -->
 <section class="slide title active">
   <h1><span class="accent">VIREN</span></h1>
-  <p>The LLM cost optimization gateway.<br>87% cheaper. 90% factually equivalent. Audited.</p>
+  <p>The LLM cost optimization gateway.<br>87% cheaper. 90% factually equivalent. 100% code pass rate. Audited.</p>
 </section>
 
 <!-- 2: Problem -->
@@ -135,6 +135,18 @@ resp = client.chat.completions.create(model=<span class="s">"auto"</span>, messa
     <div class="kpi"><div class="v">90%</div><div class="l">Factually equivalent · 3-judge audit</div></div>
   </div>
   <p style="margin-top: 24px;">Methodology: pairwise judge ensemble (Sonnet + GPT-4o + Opus). Majority verdict.</p>
+</section>
+
+<!-- 5b: Code generation (objection killer) -->
+<section class="slide">
+  <div class="brand"><div class="logo"></div><div class="name">VIREN</div></div>
+  <h2>Code generation</h2>
+  <h3>20-prompt eval. Code actually executed. Strict tie at 79% lower cost.</h3>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="v">100%</div><div class="l">VIREN code pass rate</div></div>
+    <div class="kpi"><div class="v">79%</div><div class="l">Cheaper than direct Sonnet</div></div>
+  </div>
+  <p style="margin-top: 24px;">Python: extracted, executed, asserted against expected outputs.<br>JavaScript: <code>node --check</code> syntax validation.<br>SQL: required clauses verified, balanced parens. <b>No LLM-as-judge over code.</b></p>
 </section>
 
 <!-- 6: How it works -->
