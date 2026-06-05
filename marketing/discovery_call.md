@@ -46,6 +46,7 @@ What you're listening for:
 - **Customer-facing latency-sensitive** = lead with the overhead number (<250ms p95 measured; faster than direct Sonnet at median).
 - **Internal tools or batch** = lead with cost (less latency-sensitive).
 - **Tool-using agents** = mention tier stickiness explicitly ("we don't drop mid-agent").
+- **Code generation / copilot** = mention `min_tier: balanced` floor + the code-eval harness (`scripts/code_quality_eval.py`). "Code routes never drop to cheap unless you explicitly enable it — structural guarantee."
 
 ### Q4. "How are you tracking cost & quality today?"
 

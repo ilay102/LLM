@@ -105,6 +105,7 @@ def main() -> None:
     # v0.3 receipts (optional — present after scripts have been run)
     regression_split_html = read_safe(REPO / "scripts" / "regression_split.html")
     overhead_html = read_safe(REPO / "scripts" / "overhead_report.html")
+    code_quality_html = read_safe(REPO / "scripts" / "code_quality_report.html")
     # We extract just the body content from the standalone reports so the cover
     # PDF stays one document. Cheap-and-cheerful: find <body>...</body>.
     import re as _re
@@ -281,6 +282,15 @@ def main() -> None:
   "latency, isolating exactly what VIREN adds (excluding provider variance).</p>"
   + _body(overhead_html) + "</section>") if overhead_html else ""}
 
+<!-- ============ SECTION 6c: CODE-GEN QUALITY (new) ============ -->
+{("<section class='page-break'><h2>6c · Code-generation quality</h2>"
+  "<p>20 Python / JS / SQL code-generation prompts run through VIREN AND direct "
+  "Sonnet. Python answers are extracted, executed, and asserted against expected "
+  "outputs (gold-standard); JS answers syntax-checked with <code>node --check</code>; "
+  "SQL checked for required structural clauses. Real pass rates, not LLM-as-judge "
+  "over code.</p>"
+  + _body(code_quality_html) + "</section>") if code_quality_html else ""}
+
 <!-- ============ SECTION 7: REPRODUCIBILITY ============ -->
 <section class="page-break">
   <h2>7 · Reproducing this report</h2>
@@ -329,11 +339,12 @@ ls baselines/v0.2.2*.html
     out_path.write_text(html, encoding="utf-8")
     print(f"Wrote {out_path}")
     print(f"  Cover: {cover_client}")
-    extras = sum([bool(regression_split_html), bool(overhead_html)])
-    print(f"  Sections: 8 + {extras} extra (regression split / latency overhead)")
+    extras = sum([bool(regression_split_html), bool(overhead_html), bool(code_quality_html)])
+    print(f"  Sections: 8 + {extras} extra (regression split / latency overhead / code-gen quality)")
     print(f"  Baselines included: {len(baseline_files)}")
-    print(f"  Regression split inline: {'yes' if regression_split_html else 'no — run scripts/split_regressions.py first'}")
-    print(f"  Latency overhead inline: {'yes' if overhead_html else 'no — run scripts/measure_overhead.py first'}")
+    print(f"  Regression split inline: {'yes' if regression_split_html else 'no - run scripts/split_regressions.py first'}")
+    print(f"  Latency overhead inline:  {'yes' if overhead_html else 'no - run scripts/measure_overhead.py first'}")
+    print(f"  Code-gen quality inline:  {'yes' if code_quality_html else 'no - run scripts/code_quality_eval.py first'}")
     print()
     print(f"  Open in Chrome -> Cmd/Ctrl+P -> Save as PDF -> A4 portrait")
 

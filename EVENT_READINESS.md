@@ -14,6 +14,7 @@ The single status doc. If you read one thing before the event, read this.
 | 12-slide deck | "Got 5 mins for slides?" | `marketing/pitch_deck.html` |
 | **Regression split report** | **"80% W-T = 1 in 5 worse"** | **`scripts/regression_split.html` (90% factual)** |
 | Latency overhead report | "How much p95 do you add?" | `scripts/overhead_report.html` (run script first) |
+| **Code-gen quality eval** | **"Does it work for code?"** | **`scripts/code_quality_eval.py` → `scripts/code_quality_report.html`** (run for ~$1) |
 | Security one-pager | "What's your security story?" | `marketing/security_onepager.md` |
 | Discovery-call script | "How do I qualify in 15 min?" | `marketing/discovery_call.md` |
 | Evidence pack PDF | The CTO leave-behind | `scripts/build_evidence_pack.py` → `scripts/evidence_pack.html` |
@@ -112,6 +113,18 @@ isn't you. That matters more for the event than any quality percentage.
   stack. At median, total gateway latency is **lower** than direct Sonnet
   (1.4s vs 2.8s) because requests route to faster cheap-tier models. Cache
   hits return in 26 ms p50. The pilot measures all three on YOUR traffic."
+
+**When asked about code generation (THE common technical question):**
+- "We route — we don't train a code model. Code-gen requests still hit the
+  best frontier model your config allows (Opus 4.8, DeepSeek R1, etc.); the
+  classifier just decides which tier. For routes where you need code quality
+  guaranteed, you set `min_tier: balanced` on that tenant — the gateway will
+  *never* drop those requests to a cheap model. It's a structural guarantee,
+  not a promise."
+- "We have a code-specific eval harness (`scripts/code_quality_eval.py`) — 20
+  Python/JS/SQL prompts where Python answers are extracted, executed, and
+  asserted against expected outputs (gold-standard). We can run it on your
+  pilot setup so YOU see the code pass rate, not just ours."
 
 **What NEVER to say:**
 - "80% W-T" or "20% worse" — pitch the FACTUAL rate, not the W-T rate. The
