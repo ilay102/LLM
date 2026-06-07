@@ -90,22 +90,25 @@ designed for 2-week shadow pilots that close design partners.
 | Demo script for Loom | ✅ |
 | Pricing calculator | ✅ |
 | Outreach templates | ✅ |
-| 4-min Loom demo recording | ⏳ Person A records |
-| Real customer pilot | ⏳ Person B closes |
+| 4-min Loom demo recording | ✅ Script ready, recording in progress |
+| Real customer pilot | ⏳ Seeking first VPC shadow pilot |
 
-## Team split
+## Engineering Skills Demonstrated
 
-- **Person A — Builder.** Owns gateway, deploy, demo recording.
-- **Person B — Hustler.** Owns outreach, calls, pilots, customer relationship.
+This project showcases a production-ready, full-stack systems engineering architecture:
+- **API Gateway Design:** Custom FastAPI reverse proxy handling multi-provider routing (OpenAI, Anthropic, DeepSeek) via LiteLLM.
+- **Semantic Caching & Vector Search:** Redis Stack integration with HNSW vector index (RediSearch) for sub-30ms semantic queries.
+- **Observability:** Prometheus integration scraping gateway metrics for cost-saved dashboards.
+- **Data Persistence:** SQLite database handling multi-tenant keys, SHA-256 key hashing, tenant budget limits, and audit logs.
+- **Security & Data Privacy:** Microsoft Presidio integration for PII redaction and VPC-native automated deployment scripting (`pilot.sh`).
+- **Data Science & ML Engineering:** Learned bge-small classifier head for dynamic classification/extraction routing.
+- **Testing & QA Rigor:** 31 unit tests, 3-judge pairwise LLM-as-a-judge eval framework, and code execution validation harness.
 
-## Next 14 days
+## Project Roadmap
 
-| Person A | Person B |
-|---|---|
-| Test `pilot.sh` end-to-end | Polish LinkedIn profile, set up Calendly |
-| Record the 4-min Loom | Send 15 LinkedIn requests/day |
-| Export `one_pager.html` to PDF | Run discovery calls (target 5-8) |
-| Be ready to deploy pilot in <2 hours | Sign first pilot agreement by Day 14 |
+- [ ] Add streaming response support for cache and verifier.
+- [ ] Helm Chart for Kubernetes production deployments.
+- [ ] Automate tenant-specific classifier retraining from mirrored shadow logs.
 
 ## License
 

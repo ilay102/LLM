@@ -92,4 +92,4 @@ If the security review says no, you've installed nothing you can't `docker
 compose down`.
 
 ---
-*Contact: [your-email] · Repo available for review on request.*
+*Contact: ilay10lankin@gmail.com · Repo available for review on request.*

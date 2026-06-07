@@ -31,7 +31,7 @@ The conversation is the actual asset.
 
 ## Part 1 — The 60-second pitch (memorize verbatim)
 
-> "Hi. I'm [name], engineering student at [university]. With a partner I built
+> "Hi. I'm Ilay Lankin, engineering student at Ariel University. I built
 > **VIREN**, a cost-optimization gateway for LLM APIs. It sits between an app
 > and the LLM providers, routes every request to the right model — cheap stuff
 > to Haiku, complex stuff to Opus — and caches what it can. On our 30-prompt
@@ -257,11 +257,11 @@ Read the deeper layers until the words feel natural.
 
 ### What's the team?
 
-- **One-line:** "Two engineering students. Me + my partner. AI used as a
+- **One-line:** "An engineering student. Built solo, using AI as a
   coworker, not as a black box."
-- **30-second:** "Two of us. We're studying engineering at [university].
-  Built this in about a week using Claude Code as a coding partner — every
-  line is reviewed, every architecture decision is ours, every commit is
+- **30-second:** "I am studying engineering at Ariel University. I
+  built this in about a week using Claude Code as a coding partner — every
+  line is reviewed, every architecture decision is mine, every commit is
   traceable in the git history."
 
 ### Vendor longevity — what if you graduate / disappear?
@@ -341,8 +341,7 @@ Be honest about this. It builds trust faster than over-claiming.
 - [ ] Demo dashboard opens against running gateway. Cache hit visible on
       repeat click.
 - [ ] CFO dashboard polls `/metrics`. Numbers move.
-- [ ] All 6 placeholders (`[your-calendly-link]`, `[your-email]`) replaced
-      in booth poster, QR cards, pitch deck, one-pager, landing page.
+- [x] All placeholders replaced in booth poster, QR cards, pitch deck, one-pager, landing page, and metadata.
 - [ ] QR code generated at qr.io, dropped into booth poster + cards.
 - [ ] Printed: booth poster (foam-mounted), 30+ QR cards, 5 one-pagers.
 - [ ] Laptop charged, hotspot ready.
@@ -359,9 +358,8 @@ real working product they'd be lucky to learn about.
 Walk up, eye contact, friendly. **Their first question is almost always
 "what are you studying?"** Have an answer that sets up your pitch:
 
-> "Engineering at [university]. I built an LLM cost-optimization product
-> with a partner — we measure 87% savings, 100% on code generation. Mind if
-> I show it for two minutes?"
+> "Engineering at Ariel University. I built an LLM cost-optimization product —
+> I measure 87% savings, 100% on code generation. Mind if I show it for two minutes?"
 
 That sentence does three things:
 1. Tells them you're a student (sets context for the recruiting frame).

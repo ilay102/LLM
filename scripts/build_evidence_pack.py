@@ -329,8 +329,8 @@ ls baselines/v0.2.2*.html
   <h3>The free 2-week pilot</h3>
   <p>We deploy in your VPC. Three lines of code to mirror traffic. 14 days. Free. You get the report; you keep the data; you decide.</p>
   <p>Pricing if you continue: 25% of verified savings, $2k floor, 12-month term, 60-day notice.</p>
-  <p style="margin-top: 18mm; font-size: 13pt;">Book a 15-minute discovery call: <b>[your-calendly-link]</b></p>
-  <p>or email: <b>[your-email]</b></p>
+  <p style="margin-top: 18mm; font-size: 13pt;">Project repository: <b>github.com/ilay102/LLM</b></p>
+  <p>or email: <b>ilay10lankin@gmail.com</b></p>
 </section>
 
 </body></html>"""

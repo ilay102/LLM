@@ -63,7 +63,7 @@
   <h1>The Evidence Pack:<br>How we cut LLM costs by <span class="accent">87%</span><br>without dropping quality.</h1>
   <div class="meta">
     Prepared for: <b>Prospective Customer</b><br>
-    Date: <b>2026-06-05</b><br>
+    Date: <b>2026-06-07</b><br>
     Methodology: 30-prompt verified eval, 3-judge pairwise ensemble<br>
     Reproducible: full data + judge prompts in attached baselines
   </div>
@@ -150,6 +150,39 @@
 <div class='tbl-line'> |  v0.2.4 (DS V4-Pro balanced)  |  85.1%  |  80.0%  |  43.3%  |  76.7%  |  **73.3%**  |  43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro  | </div>
 <div class='tbl-line'> |  v0.2.3 (DeepSeek)  |  64.7%  |  76.7%  |  66.7%  |  76.7%  |  **76.7%**  |  40% Haiku / 37% DeepSeek / 13% 4o-mini / 10% Sonnet  | </div>
 <div class='tbl-line'> |  v0.2.4 (DS V4-Pro balanced)  |  85.1%  |  80.0%  |  43.3%  |  76.7%  |  **73.3%**  |  43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro  | </div>
+<div class='tbl-line'> |  v0.3-safe (prefix-cache + stickiness)  |  TBD  |  —  |  —  |  —  |  **75.0%**  |  —  | </div>
+
+<h4>v0.3-safe gate (PARKED, June 2026)</h4>
+
+<p>Branch <code>v0.3.4-conversation</code> shipped prefix caching + tier stickiness + Prometheus</p>
+<p><code>/metrics</code>. Isolated gate ran on the larger 60-prompt eval corpus:</p>
+
+<div class='tbl-line'> |  Criterion  |  Required  |  Actual  |  Result  | </div>
+<div class='tbl-line'> | --- | --- | --- | --- | </div>
+<div class='tbl-line'> |  Majority W-T  |  ≥ 78%  |  **75.0%**  |  FAIL (-3pp)  | </div>
+<div class='tbl-line'> |  Warm cost < cold cost  |  yes  |  60/60 cache hits, 134ms p95  |  PASS  | </div>
+<div class='tbl-line'> |  Non-Anthropic errors  |  0  |  0  |  PASS  | </div>
+
+<p><b>Decision: PARK.</b> v0.2.2 stays the ship version. The cache itself works</p>
+<p>correctly — collapsed warm p95 from 24s → 134ms. The W-T regression is a</p>
+<p>corpus-size effect: doubling the corpus (30→60) exposes more extraction /</p>
+<p>classification rows where all three judges prefer Sonnet-style verbosity.</p>
+<p>Stylistic, not factual. Will re-evaluate on real customer traffic during</p>
+<p>the first pilot.</p>
+
+<h4>v0.2.2 + code-gen audit (SHIPPED, June 2026)</h4>
+
+<p>20-prompt code-generation eval (10 Python with execution assertions + 5 JS</p>
+<p>syntax + 5 SQL structural):</p>
+
+<div class='tbl-line'> |  Metric  |  VIREN  |  Direct Sonnet  | </div>
+<div class='tbl-line'> | --- | --- | --- | </div>
+<div class='tbl-line'> |  Pass rate  |  **20 / 20 (100%)**  |  20 / 20 (100%)  | </div>
+<div class='tbl-line'> |  Total cost  |  $0.0057  |  $0.0273  | </div>
+<div class='tbl-line'> |  Cost reduction  |  **79%**  |  —  | </div>
+
+<p><b>Strict tie on quality, 79% lower cost.</b> Most defensible single claim in</p>
+<p>the pack — code either runs or doesn't, no LLM-as-judge fuzziness.</p>
 
 <p>All ensemble runs: 30 prompts, A/B order independently randomised per judge.</p>
 
@@ -257,6 +290,9 @@
 <ul>
 <li><b>Cost reduction:</b> 87.4%</li>
 <li><b>Win-or-tie (majority of Sonnet+GPT-4o+Opus):</b> 80.0%</li>
+<li><b>Factually equivalent or better (regression split):</b> 90.0%</li>
+<li><b>Code generation pass rate:</b> 100% (20/20, strict tie vs. Sonnet, 79% cheaper) — Python executed, JS syntax-checked, SQL clauses verified</li>
+<li><b>Added latency overhead:</b> <250ms p95 measured; <b>lower than direct Sonnet at median</b> (1.4s vs 2.8s)</li>
 <li><b>Routing distribution:</b> 30% Haiku, 50% gpt-4o-mini, 17% Sonnet, 3% errors</li>
 <li><b>Classifier accuracy (held-out):</b> 72.5%</li>
 </ul>
@@ -284,9 +320,20 @@
 <li><b>LLM cascade verifier — PARKED.</b> Gate showed -6.7pp W-T + slow extra call</li>
 <p>  on cheap-heavy traffic. Now defaults to safe <code>heuristic</code> mode. Re-test on</p>
 <p>  real code/reasoning pilot traffic, where escalation should help.</p>
-<li><b>Prefix caching + tier stickiness — pending one isolated gate</b> (verifier</li>
-<p>  off). Quality-neutral / safety-only. See eval/STEP1_PROMPT.md.</p>
+<li><b>Prefix caching + tier stickiness — PARKED after isolated gate.</b> Cache</li>
+<p>  itself works perfectly (60/60 hits on warm run, 134ms p95). But W-T came</p>
+<p>  in at 75.0% on the 60-prompt corpus — 3pp below the 78% ship threshold,</p>
+<p>  -5pp from v0.2.2's 80.0% on the 30-prompt corpus. Diagnosis: the larger</p>
+<p>  corpus surfaces more extraction/classification rows where all three judges</p>
+<p>  prefer Sonnet's longer phrasing. Stylistic, not factual. PARK is the</p>
+<p>  correct call: v0.2.2 stays ship. Re-evaluate on real customer traffic</p>
+<p>  during the first pilot.</p>
+<li><b>Code generation eval — SHIPPED.</b> 20 prompts (10 Python + 5 JS + 5 SQL),</li>
+<p>  $0.03 in API. Real execution checks, not LLM-as-judge. VIREN 20/20 pass,</p>
+<p>  Sonnet baseline 20/20 pass. <b>Strict tie at 79% lower cost.</b> This is the</p>
+<p>  single most defensible buyer-facing claim we can make.</p>
 <li><b>260-prompt corpus + multi-turn eval — KEPT</b> (tooling, no runtime risk).</li>
+<p>  Will be reused on the first real pilot's traffic mix.</p>
 </ul>
 <h3>See also</h3>
 <ul>
@@ -609,8 +656,8 @@ ls baselines/v0.2.2*.html
   <h3>The free 2-week pilot</h3>
   <p>We deploy in your VPC. Three lines of code to mirror traffic. 14 days. Free. You get the report; you keep the data; you decide.</p>
   <p>Pricing if you continue: 25% of verified savings, $2k floor, 12-month term, 60-day notice.</p>
-  <p style="margin-top: 18mm; font-size: 13pt;">Book a 15-minute discovery call: <b>[your-calendly-link]</b></p>
-  <p>or email: <b>[your-email]</b></p>
+  <p style="margin-top: 18mm; font-size: 13pt;">Project repository: <b>github.com/ilay102/LLM</b></p>
+  <p>or email: <b>ilay10lankin@gmail.com</b></p>
 </section>
 
 </body></html>

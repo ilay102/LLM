@@ -31,7 +31,7 @@ Would love to learn from you — no pitch, just research. Mind connecting?
 
 Variant B (slightly different opener):
 ```
-Hi [Name] — [University] student, doing my final-year research on LLM
+Hi [Name] — Ariel University student, doing my final-year research on LLM
 cost in production SaaS. [Their Company]'s [feature] caught my eye —
 mind a quick connect? Happy to share what I'm learning from the cohort.
 ```
@@ -46,7 +46,7 @@ automated.
 ```
 Thanks for connecting, [Name] 🙏
 
-Quick context — I'm an engineering student at [University] and for my
+Quick context — I'm an engineering student at Ariel University and for my
 final project I'm researching how mid-stage SaaS teams handle the LLM
 cost problem as their AI features scale.
 
@@ -55,12 +55,12 @@ I get 15 minutes of your time on Zoom? No demo, no pitch — I just want
 to hear what you're seeing in production. I'll share back the patterns
 I learn from the other 14.
 
-If yes, here's my calendar: [Calendly link]
+If yes, let me know what day next week works for you, or reply here.
 
 If now's not the right time, no worries at all — totally understand.
 
 Thanks,
-[Your name]
+Ilay Lankin
 ```
 
 ---
@@ -68,17 +68,17 @@ Thanks,
 ## 3. Cold Email (when LinkedIn doesn't connect)
 
 **Subject line options (rotate):**
-- `Question from a [University] engineering student`
+- `Question from a Ariel University engineering student`
 - `15-min research chat — LLM cost in SaaS`
 - `Final project research — would love your perspective`
-- `[University] student researching LLM cost in SaaS`
+- `Ariel University student researching LLM cost in SaaS`
 
 **Body:**
 
 ```
 Hi [Name],
 
-I'm [Your name], an engineering student at [University]. I'm working
+I'm Ilay Lankin, an engineering student at Ariel University. I'm working
 on a final project researching how mid-stage SaaS companies are
 managing LLM API costs as their AI features scale.
 
@@ -91,12 +91,12 @@ just 4-5 questions on what your team is actually experiencing. I'm
 talking to 15 VP Engs over the next two weeks and happy to share what
 I find back with everyone I interview.
 
-If yes, here's a calendar link: [Calendly]
+If yes, let me know what day works for you.
 If now's not the right time, completely understand.
 
 Thanks,
-[Your name]
-[Your university email]
+Ilay Lankin
+ilay10lankin@gmail.com
 [LinkedIn URL]
 ```
 
@@ -129,7 +129,7 @@ volume grows. A few questions I'm digging into:
 I think there's a gap between what companies do today and what's
 possible — and I want to understand it from people who live it.
 
-15 minutes when convenient: [Calendly link]
+let me know if a quick 15-minute call works for you.
 ```
 
 ### Reply 4c — "Not interested" / "Wrong person"
@@ -162,7 +162,7 @@ Of course — here's a 1-pager on what I'm building and how the pilot
 works: [link to one_pager.pdf]
 
 If after reading it you think a 15-min chat would be useful, here's
-my calendar: [Calendly link]
+let me know if you would like to schedule a quick chat.
 No pressure either way — wouldn't be wasting your time if it doesn't
 fit.
 ```
@@ -186,7 +186,7 @@ Quick agenda so you know what to expect (15 min total):
 
 Nothing to prepare. Talk soon!
 
-[Your name]
+Ilay Lankin
 ```
 
 ---
@@ -212,13 +212,13 @@ walking through the gateway in action.
 
 If after looking those over you think it's worth a 30-min follow-up
 with one of your engineers to actually try this on a sample of your
-traffic, here's my calendar: [Calendly]
+traffic, let me know if you would like to schedule a quick chat.
 
 If the timing isn't right or it's not a fit, no worries — would still
 love to send you the final results when I'm done with the research.
 
 Thanks again,
-[Your name]
+Ilay Lankin
 ```
 
 If the call revealed they're not a fit (too small, regulated industry,
@@ -238,7 +238,7 @@ to reconnect. And if you know anyone at companies who might be feeling
 the LLM cost pain harder, an intro would mean a lot.
 
 Thanks again,
-[Your name]
+Ilay Lankin
 ```
 
 (Always ask for the referral. Even a polite "no" can produce a hot lead.)
@@ -253,7 +253,7 @@ follow-up only. Then drop them.**
 ```
 [Name] — quick bump in case the first message got buried. I'm wrapping
 up the research interviews by [date]; any chance of a 15-min chat in
-the next week? Calendar: [Calendly]
+the next week? Reply directly here if you would like to schedule.
 
 If now's not a fit, I'll stop bothering you — totally fine.
 ```
@@ -277,14 +277,14 @@ Hi [Referred Name] —
 about how SaaS teams handle LLM API cost. They thought you'd have
 strong opinions.
 
-I'm a [University] engineering student doing research on this for my
+I'm a Ariel University engineering student doing research on this for my
 final project. Talking to 15 VP Engs over the next two weeks. Would
 you be open to 15 minutes? No demo, no pitch.
 
-Calendar: [Calendly]
+Reply directly here if you would like to schedule.
 
 Thanks!
-[Your name]
+Ilay Lankin
 ```
 
 Warm intros convert at 5-10x the rate of cold. Always ask.
@@ -312,7 +312,7 @@ Three things to make it real:
 
 Looking forward to it.
 
-[Your name]
+Ilay Lankin
 ```
 
 ---
@@ -338,7 +338,7 @@ No action needed on your side. Pilot key still valid; mirror still
 flowing. Let me know if anything looks off.
 
 Best,
-[Your name]
+Ilay Lankin
 ```
 
 ---
@@ -363,12 +363,12 @@ reasoning, so your team can audit anything that looks interesting.
 
 I'd love to walk you through it on a 30-min call this week or next —
 both to answer questions and to talk about what happens after the pilot.
-[Calendly]
+replying directly here.
 
 If you'd rather just send feedback over email, that works too.
 
 Thanks for taking the bet,
-[Your name]
+Ilay Lankin
 ```
 
 ---
