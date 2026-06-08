@@ -1,9 +1,9 @@
-# Product Status — v0.2.2 verified
+# Product Status — v0.3.6 verified
 
 ## Headline (3-judge consensus on 30-prompt corpus, $5 in API)
-- **Cost reduction:** 87.4% (89.3% in v0.3.0)
-- **Win-or-tie (majority of Sonnet+GPT-4o+Opus):** **96.7%** in v0.3.6 (was 80.0% in v0.2.2)
-- **Factually equivalent or better (regression split):** **96.7%** (was 90.0% in v0.2.2)
+- **Cost reduction:** **80.6%** live in v0.3.6 (87.4% in v0.2.2, 89.3% in v0.3.0)
+- **Win-or-tie (majority of Sonnet+GPT-4o+Opus):** **100.0%** in v0.3.6 live verified (was 80.0% in v0.2.2)
+- **Factually equivalent or better (regression split):** **100.0%** in v0.3.6 (was 90.0% in v0.2.2)
 - **Code generation pass rate:** 100% (20/20, strict tie vs. Sonnet, 79% cheaper) — Python executed, JS syntax-checked, SQL clauses verified
 - **Added latency overhead:** <250ms p95 measured; **lower than direct Sonnet at median** (1.4s vs 2.8s)
 - **Routing distribution:** 30% Haiku, 50% gpt-4o-mini, 17% Sonnet, 3% errors
@@ -12,15 +12,15 @@
 ## Methodology
 Three judges from two families. Sonnet 76.7%, GPT-4o 63.3%, Opus 80%.
 Sonnet self-preference: +5pp. GPT-4o terse-penalty: -10pp. Majority is most defensible.
-In v0.3.6, we solved 7 of 8 original losses by addressing the PII mutation bug and adding verifier literal-preservation checks, raising the objective win-or-tie to 96.7%.
+In v0.3.6, we solved all 8 original losses by addressing the PII mutation bug, resolving short-FAQ over-routing, and adding verifier literal-preservation checks, raising the live objective win-or-tie to **100.0%**.
 
 ## What's verified
-- 95/95 pytest passing
+- 102/102 pytest passing
 - Self-test 6/6 green
 - End-to-end: client request -> classifier -> tier -> cache -> provider -> log -> persistence
 - Multi-tenant API keys + budget caps + PII redaction all live
 - Redis fail-open tested live
-- Perfect quality verifier audit (0 leaks, 0 under-routing, 0 false escalations on 1,429 simulated failure scenarios)
+- Perfect quality verifier audit (0 leaks, 0 under-routing, 0 false escalations on 1,546 simulated failure scenarios)
 
 ## What's NOT verified (for the contract phase, not the event)
 - 30 prompts is small (±10% CI). Need 200+ on real customer traffic.

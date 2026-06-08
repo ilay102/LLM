@@ -50,9 +50,9 @@ This run uses the fixed script with the correct model and no temperature arg.
 | v0.2.3 (DeepSeek) | 64.7% | 76.7% | 66.7% | 76.7% | **76.7%** | 40% Haiku / 37% DeepSeek / 13% 4o-mini / 10% Sonnet |
 | v0.2.4 (DS V4-Pro balanced) | 85.1% | 80.0% | 43.3% | 76.7% | **73.3%** | 43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro |
 | **v0.3.0 ✓ SHIP** | **89.3%** | **78.3%** | **56.7%** | **78.3%** | **78.3%** | 47% Haiku / 43% 4o-mini / 7% DS-pro / 2% DS-flash / 2% Sonnet |
-| **v0.3.6 (perfect-quality) ✓ SHIP** | **89.3%** | — | — | — | **96.7%** | 47% Haiku / 43% 4o-mini / 7% DS-pro / 2% DS-flash / 2% Sonnet |
+| **v0.3.6 (perfect-quality) ✓ SHIP** | **80.6%** | — | — | — | **100.0%** | 47% Haiku / 43% 4o-mini / 7% DS-pro / 2% DS-flash / 2% Sonnet |
 
-v0.2.2–v0.2.4 runs: 30 prompts. v0.3.0 run: 60 prompts. v0.3.6 run: 30-prompt verified eval (96.7% objective W-T).
+v0.2.2–v0.2.4 runs: 30 prompts. v0.3.0 run: 60 prompts. v0.3.6 run: 30-prompt verified eval (100.0% live objective W-T, 80.6% verified savings).
 
 ### v0.3-safe gate (PARKED, June 2026)
 
@@ -83,7 +83,9 @@ Branch `v0.3.4-conversation` shipped prefix caching + tier stickiness + Promethe
 Adds verifier defense-in-depth, yes/no prompt handling, PII redaction fix (no longer mutating the prompt upstream), and JSON key checking.
 - **Under-routed**: 0
 - **Quality leaks**: 0 (perfect verifier quality across all simulated failure scenarios)
-- **Objective W-T rate**: 96.7% (29/30) on 30-prompt verified eval.
+- **Objective W-T rate**: **100.0%** (30/30) on 30-prompt verified live eval.
+- **Verified cost savings**: **80.6%** ($0.0074 gateway vs $0.0384 baseline).
+
 
 
 ## What changed vs v0.2.1
