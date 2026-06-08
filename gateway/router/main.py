@@ -338,11 +338,14 @@ async def chat_completions(
         and body["response_format"].get("type") == "json_object"
     )
 
-    # ---- PII redaction (before anything reads the prompts) ---------------
+    # ---- PII detection (NEVER mutate the live prompt) --------------------
+    # We DETECT PII for telemetry and to gate the semantic cache, but the
+    # upstream model must see the literal values — otherwise asked to "draft
+    # an email to alice@x.com" it gets "<EMAIL_ADDRESS>" and hallucinates one.
+    # Redaction still runs at storage boundaries (cache writes, shadow log).
     pii_entities: list[dict] = []
     if ENABLE_PII and not x_no_pii_redact:
-        messages, pii_entities = pii.redact_messages(messages)
-        body["messages"] = messages
+        pii_entities = pii.detect_messages(messages)
 
     # ---- Budget guardrail ------------------------------------------------
     if tenant_obj is not None:
@@ -395,8 +398,12 @@ async def chat_completions(
     chosen_alias = f"tier-{decision.tier}"
 
     # ---- Cache lookup ----------------------------------------------------
+    # Prompts containing PII are not cacheable: two prompts that differ only
+    # in (say) an email address embed to near-identical vectors and would
+    # collide at the 0.95 threshold, leaking one user's email into another
+    # user's response. Safer to bypass the cache entirely for these.
     cache: SemanticCache | None = (
-        state["cache"] if (ENABLE_CACHE and not x_no_cache and not stream) else None
+        state["cache"] if (ENABLE_CACHE and not x_no_cache and not stream and not pii_entities) else None
     )
     cache_hit = None
     if cache is not None:

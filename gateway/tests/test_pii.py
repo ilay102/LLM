@@ -51,6 +51,63 @@ def test_redact_messages_preserves_structure():
     assert out[2]["content"] == "Sure, how can I help?"
 
 
+def test_detect_does_not_mutate_text():
+    """Regression: the live request path must not change the prompt.
+    Bug: in v0.2.2 we redacted on the live path, so the model received
+    `<EMAIL_ADDRESS>` and hallucinated a fake email back to the user."""
+    text = "Send a confirmation to alice@example.com and call +1-415-555-0199."
+    ents = pii.detect(text)
+    types = {e["entity_type"] for e in ents}
+    assert "EMAIL_ADDRESS" in types
+    assert any("PHONE" in t for t in types)
+
+
+def test_detect_messages_returns_entities_without_mutating():
+    msgs = [
+        {"role": "user", "content": "My email is bob@example.com, please reply."},
+        {"role": "user", "content": [
+            {"type": "text", "text": "Also call 415-555-0199."},
+        ]},
+    ]
+    original_first = msgs[0]["content"]
+    original_second = msgs[1]["content"][0]["text"]
+    ents = pii.detect_messages(msgs)
+    # Original messages untouched
+    assert msgs[0]["content"] == original_first
+    assert msgs[1]["content"][0]["text"] == original_second
+    assert "bob@example.com" in msgs[0]["content"]
+    # Entities aggregated
+    type_counts = {e["entity_type"]: e["count"] for e in ents}
+    assert type_counts.get("EMAIL_ADDRESS", 0) >= 1
+
+
+def test_phone_regex_does_not_match_version_strings():
+    """Regression: the old phone regex matched things like `1.2.345-6789`
+    (version strings, invoice IDs), forcing the model to hallucinate phones."""
+    for benign in [
+        "Version 1.2.345-6789 released.",
+        "Order 12345 shipped on 2026-06-08.",
+        "The number is 42.",
+        "ISBN 978-3-16-148410-0",
+    ]:
+        ents = pii.detect(benign)
+        types = {e["entity_type"] for e in ents}
+        assert not any("PHONE" in t for t in types), \
+            f"phone regex over-matched on: {benign!r} -> {ents}"
+
+
+def test_phone_regex_still_matches_real_phones():
+    for real in [
+        "Call me at 415-555-0199.",
+        "My number: +1 415 555 0199",
+        "Reach me on (415) 555-0199.",
+    ]:
+        ents = pii.detect(real)
+        types = {e["entity_type"] for e in ents}
+        assert any("PHONE" in t for t in types), \
+            f"phone regex missed real phone in: {real!r}"
+
+
 def test_redact_messages_handles_structured_content():
     msgs = [{"role": "user", "content": [
         {"type": "text", "text": "Email me at carol@example.com"},

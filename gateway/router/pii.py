@@ -25,7 +25,12 @@ LOG = logging.getLogger("gateway.pii")
 # --- Regex fallback (used if Presidio isn't installed) ---------------------
 _PATTERNS = [
     ("EMAIL_ADDRESS", re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")),
-    ("PHONE_NUMBER", re.compile(r"\+?\d{1,3}[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}")),
+    # Phones require explicit separators between the 3-3-4 (or country-code prefixed)
+    # groups so we don't sweep up version strings, order numbers, or invoice IDs.
+    # (?<!\d) / (?!\d) prevent matching mid-digit-run.
+    ("PHONE_NUMBER", re.compile(
+        r"(?<!\d)(?:\+\d{1,3}[-.\s]?)?(?:\(\d{2,4}\)|\d{2,4})[-.\s]\d{3}[-.\s]\d{3,4}(?!\d)"
+    )),
     ("CREDIT_CARD", re.compile(r"\b(?:\d[ -]?){13,19}\b")),
     ("US_SSN", re.compile(r"\b\d{3}-\d{2}-\d{4}\b")),
     ("IP_ADDRESS", re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")),
@@ -130,6 +135,40 @@ def redact(text: str) -> tuple[str, list[dict]]:
             return f"<{entity_type}>"
         out = pat.sub(_sub, out)
     return out, [{"entity_type": k, "count": v} for k, v in entities.items()]
+
+
+def detect(text: str) -> list[dict]:
+    """Return the entity types + counts found in `text` WITHOUT modifying it.
+
+    Use this on the live request path — the model needs the literal values
+    (emails, phones, etc.) to produce a correct answer. Only call `redact`
+    on text that's about to be persisted (cache writes, shadow log).
+    """
+    if not text or not isinstance(text, str):
+        return []
+    _, ents = redact(text)
+    return ents
+
+
+def detect_messages(messages: list[dict]) -> list[dict]:
+    """Same as `detect` but aggregates entity counts across a message list.
+    Does NOT mutate `messages`."""
+    if not messages:
+        return []
+    total: dict[str, int] = {}
+    for m in messages:
+        c = m.get("content")
+        texts: list[str] = []
+        if isinstance(c, str):
+            texts.append(c)
+        elif isinstance(c, list):
+            for block in c:
+                if isinstance(block, dict) and isinstance(block.get("text"), str):
+                    texts.append(block["text"])
+        for t in texts:
+            for e in detect(t):
+                total[e["entity_type"]] = total.get(e["entity_type"], 0) + e["count"]
+    return [{"entity_type": k, "count": v} for k, v in total.items()]
 
 
 def redact_messages(messages: list[dict]) -> tuple[list[dict], list[dict]]:
