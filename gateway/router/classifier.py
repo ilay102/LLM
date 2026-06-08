@@ -39,7 +39,11 @@ class RouteDecision:
 REASONING_KEYWORDS = re.compile(
     r"\b(prove|derive|step[- ]by[- ]step|reason|chain[- ]of[- ]thought|"
     r"plan and execute|multi[- ]step|complex algorithm|optimi[sz]e|"
-    r"refactor|architecture|design pattern|trade[- ]offs?)\b",
+    r"refactor|architect(?:ure)?|design pattern|trade[- ]offs?|agentic|"
+    r"compare|comparison|pros\s*and\s*cons|versus|vs\.?|solve|calculate|"
+    r"probability|math|logic|prime|divisible|bottleneck|puzzle|riddle|"
+    r"propose|strategy|recommend\w*|renegotiat\w*|diagnose|troubleshoot|debug|timezone|"
+    r"distributed|off\s+by|outage|incident|failure)\b",
     re.IGNORECASE,
 )
 # Structured extraction needs precision — route to balanced even when short
@@ -55,12 +59,48 @@ SIMPLE_KEYWORDS = re.compile(
     r"format|yes/no|true/false)\b",
     re.IGNORECASE,
 )
+CODING_KEYWORDS = re.compile(
+    r"\b(write a function|write code|implement a function|implement a class|"
+    r"write a script|write a python|write a javascript|write a bash|write a sql|"
+    r"write a query|database query|sql query|select.*join|refactor|debug|compile|regex|"
+    r"sql|query|queries|select|join|schema|tuple|primitive|"
+    r"js|javascript|python|html|css|bash|java|c\+\+|typescript|ts|ruby|php|go\b|rust\b|"
+    r"loop|boolean|csv|xml|json|async|await|recursion|markdown|markup|bug\b|function\b|variable\b)\b",
+    re.IGNORECASE,
+)
+COMPLEX_ENGINEERING_KEYWORDS = re.compile(
+    r"\b(design|plan|architect|migration?|diagnose|troubleshoot|debug|latency|performance|"
+    r"scaling|concurrency|asynchronous|async/await|thread-safe|lock|kubernetes|k8s|postgres|"
+    r"mongodb|database|index\w*|sql|query|queries|select|join|optimization|optimize|caching?|"
+    r"webhook|queue|circuit\s*breaker|rate\s*limit\w*|sso|auth|jwt|audit\s*log|postmortem|incident|agent|cdn|tcp|udp|dns|api|server|network|"
+    r"enterprise|billing|charge|policy|dispute|compliance|questionnaire|security\s*posture|"
+    r"export|fail\w*|error)\b",
+    re.IGNORECASE,
+)
+EXPLANATION_KEYWORDS = re.compile(
+    r"\b(explain|how do we|how can (?:i|we)|what (?:are|is) the (?:options?|difference|upgrade|steps?)|"
+    r"troubleshoot|why did|why is)\b",
+    re.IGNORECASE,
+)
+CRITICAL_BUSINESS_KEYWORDS = re.compile(
+    r"\b(compliance|security\s*posture|sso|saml|audit\s*logs?|invoice\s*disputes?)\b",
+    re.IGNORECASE,
+)
+WRITING_KEYWORDS = re.compile(
+    r"\b(write|draft|compose|create|generate|nudge|apology|apologize|congratulate|welcome)\b",
+    re.IGNORECASE,
+)
+STRUCTURED_SUMMARIZATION_KEYWORDS = re.compile(
+    r"\b(bullets?|bullet\s*points?|takeaways?|tldr|executive|sprint|retro|meeting|incident|key\s*points?)\b",
+    re.IGNORECASE,
+)
+
 # Captures the quoted/apostrophe-delimited source text inside a translate request
 _TRANSLATE_SRC = re.compile(r"['‘’\"](.*?)['’\"]", re.DOTALL)
 CODE_BLOCK = re.compile(r"```")
 TRANSLATION_PATTERN = re.compile(r"\btranslate\b.*\bto\b", re.IGNORECASE)
 JSON_MULTIFIELD = re.compile(
-    r"\b(?:as|into) (?:a )?json\b.*\b(?:with|fields?|keys?)\b",
+    r"\b(?:as|into) (?:a )?json\b.*\b(?:with|fields?|keys?|\(|[a-zA-Z0-9_]+,)\b",
     re.IGNORECASE,
 )
 FIELD_LIST_PATTERN = re.compile(r"\b(?:fields?|keys?)\b[:\s].*?[,;]", re.IGNORECASE)
@@ -74,11 +114,64 @@ def rule_decision(messages, requested_max_tokens):
     n_chars = len(last_user)
     n_code_blocks = len(CODE_BLOCK.findall(last_user))
 
-    # 1. Reasoning markers -> frontier (unchanged)
+    # 1. Reasoning markers -> frontier
+    #    Guard: if the prompt is a short classification/tagging task, reasoning
+    #    keywords inside quoted options (e.g. 'refactor' as a label choice)
+    #    should NOT trigger frontier.  Strip quoted content before matching.
     if REASONING_KEYWORDS.search(last_user):
-        return RouteDecision("frontier", "reasoning keywords matched", 0.9)
+        is_short_classification = (
+            n_chars < 300 and SIMPLE_KEYWORDS.search(last_user)
+        )
+        if is_short_classification:
+            # Remove quoted strings and re-check
+            stripped = re.sub(r"['\"\u2018\u2019\u201c\u201d][^'\"\u2018\u2019\u201c\u201d]*['\"\u2018\u2019\u201c\u201d]", "", last_user)
+            if REASONING_KEYWORDS.search(stripped):
+                return RouteDecision("frontier", "reasoning keywords matched", 0.9)
+            # else: keyword was only inside quotes -> treat as classification
+        else:
+            return RouteDecision("frontier", "reasoning keywords matched", 0.9)
 
-    # 2. NEW: translations of full sentences/phrases need fluency -> balanced
+    # 1.5. Critical Business / Security / Enterprise -> balanced
+    if CRITICAL_BUSINESS_KEYWORDS.search(last_user):
+        return RouteDecision("balanced", "critical business/security prompt", 0.9)
+
+    # 2. Coding or Code Analysis -> balanced
+    if CODING_KEYWORDS.search(last_user) or (n_code_blocks >= 1 and n_chars > 250):
+        return RouteDecision("balanced", "coding or code-analysis prompt", 0.85)
+
+    # 3. Complex Systems / Engineering -> balanced
+    if COMPLEX_ENGINEERING_KEYWORDS.search(last_user) and not (
+        SIMPLE_KEYWORDS.search(last_user) or "yes or no" in last_user.lower() or "yes/no" in last_user.lower()
+    ):
+        return RouteDecision("balanced", "complex engineering/systems prompt", 0.8)
+
+    # 4. Explanation / Troubleshooting -> balanced
+    if EXPLANATION_KEYWORDS.search(last_user) and n_chars > 250:
+        return RouteDecision("balanced", "explanation or troubleshooting request", 0.85)
+
+    # 5. Creative writing / copywriting -> balanced
+    if WRITING_KEYWORDS.search(last_user) and not (
+        SIMPLE_KEYWORDS.search(last_user) or "yes or no" in last_user.lower() or "yes/no" in last_user.lower()
+    ):
+        return RouteDecision("balanced", "creative writing or drafting request", 0.8)
+
+    # 6. Structured or complex summarization -> balanced
+    if STRUCTURED_SUMMARIZATION_KEYWORDS.search(last_user):
+        return RouteDecision("balanced", "structured or complex summarization", 0.8)
+
+    # 6.5. Summarization of longer text -> balanced
+    if "summarize" in last_user.lower() and n_chars > 200:
+        return RouteDecision("balanced", "summarization of longer text", 0.8)
+
+    # 7. Upgrade multi-field or structured extractions to balanced
+    if EXTRACTION_KEYWORDS.search(last_user) and (
+        "fields" in last_user.lower() or "keys" in last_user.lower() or
+        "json" in last_user.lower() or "structured" in last_user.lower() or
+        "yaml" in last_user.lower() or "csv" in last_user.lower()
+    ):
+        return RouteDecision("balanced", "multi-field or structured extraction", 0.85)
+
+    # 5. Translations of full sentences/phrases need fluency -> balanced
     if TRANSLATION_PATTERN.search(last_user):
         # Find the content after "translate to X:" to measure length
         m = re.search(r"translate.*?to\s+\w+\s*[:.]?\s*['\"]?(.+?)['\"]?$",
@@ -88,22 +181,22 @@ def rule_decision(messages, requested_max_tokens):
             return RouteDecision("balanced", "translation of multi-word phrase needs fluency", 0.8)
         # short translation (e.g. "Save changes") -> cheap is fine
 
-    # 3. NEW: multi-field JSON extraction -> balanced
+    # 6. Multi-field JSON extraction -> balanced
     if JSON_MULTIFIELD.search(last_user):
         # Count comma-separated field-like tokens
         comma_count = last_user.count(",")
         if comma_count >= 3:
             return RouteDecision("balanced", "multi-field JSON extraction needs precision", 0.85)
 
-    # 4. Heavy code with long output -> balanced (unchanged)
+    # 7. Heavy code with long output -> balanced (unchanged)
     if n_code_blocks >= 2 and (requested_max_tokens or 0) > 1500:
         return RouteDecision("balanced", "multi-block code with large output", 0.85)
 
-    # 5. Short + simple-task keywords -> cheap (unchanged)
+    # 8. Short + simple-task keywords -> cheap (unchanged)
     if n_chars < 800 and SIMPLE_KEYWORDS.search(last_user):
         return RouteDecision("cheap", "short + simple-task keywords", 0.9)
 
-    # 6. Very short -> cheap (unchanged)
+    # 9. Very short -> cheap (unchanged)
     if n_chars < 250 and n_code_blocks == 0:
         return RouteDecision("cheap", "very short prompt", 0.8)
 

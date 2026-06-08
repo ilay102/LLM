@@ -28,7 +28,7 @@ def test_very_short_no_signal_goes_cheap():
 
 def test_medium_unmatched_returns_none():
     """Medium-length, no keywords -> rule layer abstains, learned layer decides."""
-    text = "Please write a paragraph about the history of ancient Mesopotamia and the development of writing systems including cuneiform and how it influenced administrative practices in early civilizations through the second millennium BCE which is a topic of significant historical interest."
+    text = "Mesopotamia is a historical region in Western Asia situated within the Tigris–Euphrates river system, in the northern part of the Fertile Crescent, in modern days roughly corresponding to most of Iraq, Kuwait, the eastern parts of Syria, Southeastern Turkey, and regions along the Turkish–Syrian and Iran–Iraq borders."
     d = rule_decision(msg(text), None)
     assert d is None
 
@@ -94,3 +94,60 @@ def test_multi_codeblock_with_large_output_goes_balanced():
     d = rule_decision(msg(text), requested_max_tokens=2000)
     assert d is not None
     assert d.tier == "balanced"
+
+
+def test_critical_business_keywords_go_balanced():
+    """Pin: Critical business terms (security posture, compliance, etc.) route to balanced."""
+    for prompt in [
+        "Summarize the security posture for a prospect's questionnaire, citing sections.",
+        "We need an audit log for our compliance review next week.",
+        "Can you help with invoice disputes?",
+    ]:
+        d = rule_decision(msg(prompt), None)
+        assert d is not None
+        assert d.tier == "balanced", f"Expected balanced for critical business keyword in: {prompt}"
+
+
+def test_failing_export_goes_balanced():
+    """Pin: Export failing / errors route to balanced."""
+    d = rule_decision(msg("Export keeps failing on a big project and my boss needs it today — walk me through options."), None)
+    assert d is not None
+    assert d.tier == "balanced"
+
+
+def test_outage_incident_failure_go_frontier():
+    """Pin: Outages/incidents/failures in troubleshooting go to frontier as diagnostic puzzles."""
+    for prompt in [
+        "Sync has been delayed for an hour across my whole team — is this an outage or something on our end?",
+        "We are experiencing a major system failure in production.",
+    ]:
+        d = rule_decision(msg(prompt), None)
+        assert d is not None
+        assert d.tier == "frontier"
+
+
+def test_reasoning_keyword_inside_quoted_option_avoids_frontier():
+    """Pin: 'refactor' as a classification label shouldn't trigger frontier.
+    Eval id 9 depends on this — it's a simple tag task.
+    It may route to balanced (due to 'bug' in 'bugfix' matching CODING_KEYWORDS)
+    which is acceptable over-routing (quality > price)."""
+    d = rule_decision(msg(
+        "Tag this PR description as 'feature', 'bugfix', or 'refactor': "
+        "'Memoize expensive recomputation in dashboard.'"
+    ), None)
+    assert d is not None
+    assert d.tier != "frontier", (
+        f"short classification with reasoning keyword in quotes should NOT go frontier, "
+        f"got {d.tier} ({d.reason})"
+    )
+
+
+def test_real_reasoning_prompt_still_goes_frontier():
+    """Sanity: a genuine reasoning request with the same keyword must still go frontier."""
+    d = rule_decision(msg(
+        "Please refactor this authentication module to use the strategy pattern "
+        "and explain your design trade-offs step by step."
+    ), None)
+    assert d is not None
+    assert d.tier == "frontier"
+

@@ -179,3 +179,160 @@ async def test_llm_grader_failure_fails_open():
                               mode="llm", threshold=3)
     assert r.escalate is False
     assert r.score is None
+
+
+# ---- New Formatting & Quality Constraint Heuristics -----------------------
+
+def test_heuristic_yes_no_constraint():
+    prompt = "Is Postgres relational? Yes or no."
+    
+    # Valid answers starting with yes/no (possibly formatted)
+    for valid in ("Yes.", "no, it is not.", "**Yes**, it is.", "[Yes] it is"):
+        fail, reason = verifier.heuristic_fail(resp(valid), user_prompt=prompt)
+        assert not fail, f"should pass valid yes/no: {valid}"
+
+    # Invalid answers
+    for invalid in ("Postgres is relational.", "I am not sure.", "It depends."):
+        fail, reason = verifier.heuristic_fail(resp(invalid), user_prompt=prompt)
+        assert fail, f"should fail invalid yes/no: {invalid}"
+        assert "yes/no requested" in reason
+
+
+def test_heuristic_one_word_constraint():
+    prompt = "Give the sentiment in one word: 'good'"
+    
+    # Valid short answers
+    for valid in ("Positive", "negative", "**neutral**."):
+        fail, reason = verifier.heuristic_fail(resp(valid), user_prompt=prompt)
+        assert not fail, f"should pass one-word: {valid}"
+
+    # Invalid long answers
+    fail, reason = verifier.heuristic_fail(resp("The sentiment of the review is positive."), user_prompt=prompt)
+    assert fail
+    assert "one-word answer requested" in reason
+
+
+def test_heuristic_options_classification():
+    prompt = "Classify intent as: CHURN / SUPPORT / BILLING / OTHER."
+    
+    # Contains one of the choices
+    fail, _ = verifier.heuristic_fail(resp("This is for SUPPORT."), user_prompt=prompt)
+    assert not fail
+    
+    # Missing all choices
+    fail, reason = verifier.heuristic_fail(resp("Please help me reset my password."), user_prompt=prompt)
+    assert fail
+    assert "classification constraint violated" in reason
+
+
+def test_heuristic_options_classification_quotes():
+    prompt = "Tag sentiment as 'happy', 'frustrated', or 'neutral': 'broken'"
+    
+    # Contains one of the choices
+    fail, _ = verifier.heuristic_fail(resp("The tag is frustrated."), user_prompt=prompt)
+    assert not fail
+    
+    # Missing choices
+    fail, reason = verifier.heuristic_fail(resp("Customer had a bad experience."), user_prompt=prompt)
+    assert fail
+    assert "classification constraint violated" in reason
+
+
+def test_heuristic_options_classification_ignored_on_translations():
+    """Translations contain options like 'or' or '/' in terms, but translated words
+    differ from the prompt. We should ignore options checks on translations."""
+    prompt = "Translate to French: 'personal or business'"
+    
+    # Response is French, doesn't contain English 'personal' or 'business'
+    fail, _ = verifier.heuristic_fail(resp("personnel ou professionnel"), user_prompt=prompt)
+    assert not fail
+
+
+def test_heuristic_new_literals_preservation():
+    # URL
+    url_prompt = "Click here: https://example.com/verify"
+    fail, reason = verifier.heuristic_fail(resp("Go to the login page."), user_prompt=url_prompt)
+    assert fail and "url" in reason
+
+    # Version
+    version_prompt = "Upgraded to 3.14.2"
+    fail, reason = verifier.heuristic_fail(resp("Upgraded successfully to the latest version."), user_prompt=version_prompt)
+    assert fail and "version" in reason
+
+    # SKU
+    sku_prompt = "Extract SKU-A7-2231"
+    fail, reason = verifier.heuristic_fail(resp("Extracted SKU code."), user_prompt=sku_prompt)
+    assert fail and "sku" in reason
+
+
+def test_extract_options_from_prompt_logic():
+    assert verifier.extract_options_from_prompt("Classify intent as: CHURN / SUPPORT / BILLING / OTHER.") == ["CHURN", "SUPPORT", "BILLING", "OTHER"]
+    assert verifier.extract_options_from_prompt("Tag sentiment as 'happy', 'frustrated', or 'neutral'.") == ["happy", "frustrated", "neutral"]
+    assert verifier.extract_options_from_prompt("Is Stripe a payment provider, CRM, or hosting service?") == ["CRM", "hosting service"]
+    assert verifier.extract_options_from_prompt("Should this be auto-routed to BILLING or TECHNICAL?") == ["BILLING", "TECHNICAL"]
+    assert verifier.extract_options_from_prompt("personal or business") == ["personal", "business"]
+
+
+def test_extract_keys_from_prompt_logic():
+    assert verifier.extract_keys_from_prompt("Generate a JSON product card with fields: name, price, sku, in_stock, tags.") == ["name", "price", "sku", "in_stock", "tags"]
+    assert verifier.extract_keys_from_prompt("Parse this support ticket into a JSON object with priority, category, customer_tier, summary.") == ["priority", "category", "customer_tier", "summary"]
+    assert verifier.extract_keys_from_prompt("Generate JSON (name, version, license, key_dependencies).") == ["name", "version", "license", "key_dependencies"]
+    assert verifier.extract_keys_from_prompt("Return a JSON object with keys 'status' and 'timestamp'.") == ["status", "timestamp"]
+    assert verifier.extract_keys_from_prompt("personal or business") == []  # Not a JSON prompt
+
+
+def test_heuristic_json_keys_validation():
+    prompt = "Generate JSON with fields: name, price, sku"
+    
+    # Valid JSON with all fields
+    good_json = '{"name": "Mug", "price": 9.99, "sku": "MUG-123"}'
+    fail, _ = verifier.heuristic_fail(resp(good_json), user_prompt=prompt)
+    assert not fail
+    
+    # Missing field
+    bad_json = '{"name": "Mug", "price": 9.99}'
+    fail, reason = verifier.heuristic_fail(resp(bad_json), user_prompt=prompt)
+    assert fail
+    assert "missing requested keys/fields" in reason
+
+
+def test_json_contains_keys_nested():
+    data = {"items": [{"name": "Mug", "price": 9.99}]}
+    assert verifier._json_contains_keys(data, ["name", "price"])
+    assert not verifier._json_contains_keys(data, ["name", "sku"])
+
+
+def test_heuristic_accepts_short_yes_no_answers():
+    """Pin: 'yes' and 'no' are valid answers to yes/no prompts and must NOT
+    be rejected as 'empty or near-empty'."""
+    for answer, prompt in [
+        ("yes", "Is Lisbon the capital of Portugal? Answer yes or no."),
+        ("no", "Is the Eiffel Tower in Berlin? Yes or no."),
+        ("Yes.", "Is PostgreSQL open source? Yes or no."),
+        ("No", "Does Kubernetes require Docker? Yes or no."),
+    ]:
+        fail, reason = verifier.heuristic_fail(resp(answer), user_prompt=prompt)
+        assert not fail, (
+            f"Short answer '{answer}' should pass for yes/no prompt, "
+            f"but got fail=True reason='{reason}'"
+        )
+
+
+def test_heuristic_accepts_short_factual_answers():
+    """Pin: short factual answers like '600', '1st', '3' should not be
+    rejected as empty."""
+    for answer in ["600", "1st", "3", "no"]:
+        fail, reason = verifier.heuristic_fail(resp(answer))
+        assert not fail, (
+            f"Short factual answer '{answer}' should pass, "
+            f"but got fail=True reason='{reason}'"
+        )
+
+
+def test_heuristic_still_rejects_truly_empty():
+    """Sanity: truly empty and whitespace-only responses must still fail."""
+    for empty in ["", "   ", "\n\t"]:
+        fail, _ = verifier.heuristic_fail(resp(empty))
+        assert fail, f"Empty response '{empty!r}' should be rejected"
+
+

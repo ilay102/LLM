@@ -423,6 +423,20 @@ async def chat_completions(
             LOG.exception("cache lookup failed (non-fatal)")
 
     if cache_hit is not None:
+        # Verify cached response for cheap tier to ensure no regression or bad data
+        if decision.tier == "cheap":
+            try:
+                vr = await verifier.verify(
+                    state["router"], cache_hit.response, messages, expects_json=expects_json,
+                    mode=(tenant_obj.verifier_mode if tenant_obj and getattr(tenant_obj, "verifier_mode", None) else None),
+                )
+                if vr.escalate:
+                    LOG.warning("cached response for cheap-tier failed verification: %s. Bypassing cache.", vr.reason)
+                    cache_hit = None
+            except Exception:
+                LOG.exception("cache hit verification failed (non-fatal)")
+
+    if cache_hit is not None:
         resp = dict(cache_hit.response)
         resp["id"] = "cached-" + uuid.uuid4().hex[:12]
         await _post_hook(

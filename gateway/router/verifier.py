@@ -26,6 +26,7 @@ import logging
 import os
 import re
 from dataclasses import dataclass
+from typing import Any
 
 LOG = logging.getLogger("gateway.verifier")
 
@@ -38,7 +39,8 @@ VERIFIER_THRESHOLD = int(os.environ.get("VERIFIER_THRESHOLD", "3"))
 VERIFIER_MODEL = os.environ.get("VERIFIER_MODEL", "tier-cheap")
 
 _REFUSAL = re.compile(
-    r"^\s*(i (can'?t|cannot|am not able|don'?t know)|as an ai|i'?m sorry)",
+    r"^\s*(i (can'?t|cannot|am not able|don'?t know|am unable|apologize|apologise)|"
+    r"as an ai|as a large|i'?m sorry|i am sorry|sorry,? but|unfortunately)",
     re.IGNORECASE,
 )
 
@@ -58,6 +60,136 @@ _LEAKED_PLACEHOLDER = re.compile(
 _EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
 _PHONE_RE = re.compile(r"(?<!\d)(?:\+\d{1,3}[-.\s]?)?(?:\(\d{2,4}\)|\d{2,4})[-.\s]\d{3}[-.\s]\d{3,4}(?!\d)")
 _IPV4_RE  = re.compile(r"(?<!\d)(?:\d{1,3}\.){3}\d{1,3}(?!\d)")
+_URL_RE = re.compile(r"\bhttps?://[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
+_VERSION_RE = re.compile(r"\b\d+\.\d+\.\d+\b")
+_SKU_RE = re.compile(r"\b[A-Z0-9]{2,10}-[A-Z0-9]{2,10}(?:-[A-Z0-9]+)*\b", re.IGNORECASE)
+
+_YES_NO_PROMPT_RE = re.compile(
+    r"\b(yes\s*or\s*no|yes\s*/\s*no|true\s*or\s*false|true\s*/\s*false)\b",
+    re.IGNORECASE
+)
+_ONE_WORD_PROMPT_RE = re.compile(
+    r"\b(one\s*word|single\s*word|in\s*one\s*word|in\s*a\s*single\s*word|one-word)\b",
+    re.IGNORECASE
+)
+
+
+def _ci_contains(haystack: str, needle: str) -> bool:
+    return needle.lower() in haystack.lower()
+
+
+def extract_options_from_prompt(prompt: str) -> list[str]:
+    """Extract allowed options/choices from the prompt text."""
+    # 1. Quoted options: 'happy', 'frustrated', or 'neutral'
+    quoted = re.findall(r"['\"‘“]([a-zA-Z0-9\s_-]{2,20})['\"’”]", prompt)
+    if len(quoted) >= 2:
+        return [q.strip() for q in quoted]
+
+    # 2. Slash separated: comms / billing / analytics / storage
+    #    Require spaces around "/" to avoid matching protocol names like HTTP/3.
+    slash_match = re.search(r"\b[a-zA-Z0-9\s_-]+(?:\s+/\s+[a-zA-Z0-9\s_-]+){1,5}\b", prompt)
+    if slash_match:
+        parts = [p.strip() for p in slash_match.group(0).split("/")]
+        if len(parts) >= 2 and all(len(p) >= 2 for p in parts):
+            return parts
+
+    # 3. Uppercase options separated by comma/or: POSITIVE, NEGATIVE, or NEUTRAL
+    words = re.findall(r"\b[A-Z]{3,15}\b", prompt)
+    ignored = {
+        "JSON", "API", "URL", "IP", "CSV", "XML", "HTTP", "HTML", 
+        "URI", "SDK", "SSL", "TLS", "LITELLM", "SaaS", "SMB", "ARR",
+        "SSO", "JWT", "CRM", "CDN", "AWS", "TCP", "UDP", "S3", "CLI"
+    }
+    up_options = [w for w in words if w not in ignored]
+    if len(up_options) >= 2:
+        return up_options
+
+    # 4. Standard "X or Y" or "X, Y, or Z" pattern
+    or_match = re.search(r"\b([a-zA-Z0-9\s_-]{2,20})\s*,\s*or\s+([a-zA-Z0-9\s_-]{2,20})\b", prompt, re.IGNORECASE)
+    if or_match:
+        return [or_match.group(1).strip(), or_match.group(2).strip()]
+
+    or_simple = re.search(r"\b([a-zA-Z0-9_-]{2,20})\s+or\s+([a-zA-Z0-9_-]{2,20})\b", prompt, re.IGNORECASE)
+    if or_simple:
+        return [or_simple.group(1).strip(), or_simple.group(2).strip()]
+
+    return []
+
+
+def extract_keys_from_prompt(prompt: str) -> list[str]:
+    """Extract expected JSON keys/fields from the prompt text."""
+    if not re.search(r"\bjson\b", prompt, re.IGNORECASE):
+        return []
+        
+    quoted = re.findall(r"['\"‘“]([a-zA-Z0-9_-]{2,20})['\"’”]", prompt)
+    if len(quoted) >= 2 and re.search(r"\b(keys|fields|properties|attributes)\b", prompt, re.IGNORECASE):
+        return [q.strip() for q in quoted]
+
+    # Try matching specific fields/keys/properties/attributes first (most specific keywords)
+    match = re.search(r"\b(fields|keys|properties|attributes)\b\s*:?\s*\(?([a-zA-Z0-9\s_,-]{5,100})\)?", prompt, re.IGNORECASE)
+    if match:
+        val = match.group(2).strip()
+        parts = re.split(r",|\band\b|\bor\b", val)
+        clean_parts = []
+        for p in parts:
+            p_clean = p.strip().strip("'\"`()[]{}")
+            if p_clean and re.match(r"^[a-zA-Z0-9_-]+$", p_clean) and len(p_clean) >= 2:
+                clean_parts.append(p_clean)
+        if len(clean_parts) >= 2:
+            return clean_parts
+
+    # Fallback to matching after with/containing keywords
+    match_general = re.search(r"\b(with|containing)\b\s*:?\s*\(?([a-zA-Z0-9\s_,-]{5,100})\)?", prompt, re.IGNORECASE)
+    if match_general:
+        val = match_general.group(2).strip()
+        parts = re.split(r",|\band\b|\bor\b", val)
+        clean_parts = []
+        for p in parts:
+            p_clean = p.strip().strip("'\"`()[]{}")
+            if p_clean and re.match(r"^[a-zA-Z0-9_-]+$", p_clean) and len(p_clean) >= 2:
+                clean_parts.append(p_clean)
+        if len(clean_parts) >= 2:
+            return clean_parts
+
+    # Fallback to matching after 'json' keyword
+    paren_match = re.search(r"\bjson\b\s*\(?([a-zA-Z0-9\s_,-]{5,100})\)?", prompt, re.IGNORECASE)
+    if paren_match:
+        val = paren_match.group(1).strip()
+        parts = re.split(r",|\band\b|\bor\b", val)
+        clean_parts = []
+        for p in parts:
+            p_clean = p.strip().strip("'\"`()[]{}")
+            if p_clean and re.match(r"^[a-zA-Z0-9_-]+$", p_clean) and len(p_clean) >= 2:
+                clean_parts.append(p_clean)
+        if len(clean_parts) >= 2:
+            return clean_parts
+            
+    return []
+
+
+def _json_contains_keys(data: Any, keys: list[str]) -> bool:
+    """Check recursively if all keys exist somewhere in the JSON data."""
+    if not keys:
+        return True
+    if isinstance(data, dict):
+        found_keys = set()
+        for k, v in data.items():
+            if k in keys:
+                found_keys.add(k)
+            for key in keys:
+                if key not in found_keys:
+                    if isinstance(v, (dict, list)):
+                        if _json_contains_keys(v, [key]):
+                            found_keys.add(key)
+        return len(found_keys) == len(keys)
+    elif isinstance(data, list):
+        found_keys = set(keys)
+        for item in data:
+            for key in list(found_keys):
+                if _json_contains_keys(item, [key]):
+                    found_keys.remove(key)
+        return len(found_keys) == 0
+    return False
 
 
 @dataclass
@@ -95,8 +227,8 @@ def heuristic_fail(
 
     if finish == "length":
         return True, "truncated (finish_reason=length)"
-    if not isinstance(text, str) or len(text.strip()) < 4:
-        return True, "empty or near-empty response"
+    if not isinstance(text, str) or len(text.strip()) == 0:
+        return True, "empty response"
     if _REFUSAL.match(text.strip()):
         return True, "refusal pattern at start"
 
@@ -106,12 +238,22 @@ def heuristic_fail(
     if leak:
         return True, f"PII placeholder leaked into response: {leak.group(0)}"
 
-    # Literal preservation: if the user gave us an email/phone/IP, the
+    # Literal preservation: if the user gave us an email/phone/IP/URL/version/SKU, the
     # response should echo it back (or at least an equivalent literal).
     # We only check when the prompt CONTAINS the literal AND the prompt is
     # short (< 600 chars) — long contexts often quote-but-don't-repeat.
-    if user_prompt and len(user_prompt) < 600:
-        for label, rx in (("email", _EMAIL_RE), ("phone", _PHONE_RE), ("ip", _IPV4_RE)):
+    # SKIP for yes/no prompts: "Is this URL safe? Yes or no" expects "yes",
+    # not the URL repeated back. Literal preservation is for extraction tasks.
+    is_yes_no_prompt = bool(_YES_NO_PROMPT_RE.search(user_prompt)) if user_prompt else False
+    if user_prompt and len(user_prompt) < 600 and not is_yes_no_prompt:
+        for label, rx in (
+            ("email", _EMAIL_RE),
+            ("phone", _PHONE_RE),
+            ("ip", _IPV4_RE),
+            ("url", _URL_RE),
+            ("version", _VERSION_RE),
+            ("sku", _SKU_RE),
+        ):
             prompt_hits = set(rx.findall(user_prompt))
             if prompt_hits:
                 response_hits = set(rx.findall(text))
@@ -120,19 +262,67 @@ def heuristic_fail(
                 if not (prompt_hits & response_hits):
                     return True, f"literal {label} from prompt missing in response"
 
-    if expects_json:
-        stripped = text.strip()
-        if stripped.startswith("```"):
-            # strip code fences
-            inner = stripped.split("```", 2)
-            stripped = inner[1] if len(inner) > 1 else stripped
-            if stripped.startswith("json"):
-                stripped = stripped[4:]
-            stripped = stripped.strip().rstrip("`").strip()
+    # Formatting constraint checks (always run, independent of literal preservation)
+    if user_prompt and len(user_prompt) < 600:
+        # Yes/No formatting constraint check
+        if _YES_NO_PROMPT_RE.search(user_prompt):
+            clean_start = re.sub(r"^[*_`#\s\[({]+", "", text.strip().lower())
+            if not (clean_start.startswith("yes") or clean_start.startswith("no") or
+                    clean_start.startswith("true") or clean_start.startswith("false")):
+                return True, "yes/no requested but response did not start with yes/no/true/false"
+
+        # One-word formatting constraint check
+        if _ONE_WORD_PROMPT_RE.search(user_prompt):
+            clean_text = re.sub(r"[^\w\s]", " ", text)
+            words = clean_text.strip().split()
+            if len(words) > 3:
+                return True, f"one-word answer requested but response has {len(words)} words"
+
+        # Options classification constraint check (skipped for translations)
+        is_translation = bool(re.search(
+            r"\b(translate|translation|in french|in spanish|in german|in japanese|"
+            r"in italian|in portuguese|in hebrew|in dutch)\b",
+            user_prompt, re.IGNORECASE
+        ))
+        if not is_translation:
+            options = extract_options_from_prompt(user_prompt)
+            if options:
+                is_yes_no = any(opt.lower() in ("yes", "no", "true", "false") for opt in options)
+                if is_yes_no:
+                    clean_start = re.sub(r"^[*_`#\s\[({]+", "", text.strip().lower())
+                    if not any(clean_start.startswith(opt.lower()) for opt in options):
+                        return True, f"yes/no constraint violated: response does not start with any of {options}"
+                else:
+                    if not any(_ci_contains(text, opt) for opt in options):
+                        return True, f"classification constraint violated: response does not contain any of {options}"
+
+
+    is_json_response = False
+    parsed_json = None
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        # strip code fences
+        inner = stripped.split("```", 2)
+        stripped = inner[1] if len(inner) > 1 else stripped
+        if stripped.startswith("json"):
+            stripped = stripped[4:]
+        stripped = stripped.strip().rstrip("`").strip()
+        
+    if stripped.startswith("{") or stripped.startswith("["):
         try:
-            json.loads(stripped)
+            parsed_json = json.loads(stripped)
+            is_json_response = True
         except Exception:
-            return True, "JSON requested but response is not valid JSON"
+            pass
+
+    if expects_json and not is_json_response:
+        return True, "JSON requested but response is not valid JSON"
+        
+    if is_json_response and user_prompt:
+        expected_keys = extract_keys_from_prompt(user_prompt)
+        if expected_keys:
+            if not _json_contains_keys(parsed_json, expected_keys):
+                return True, f"JSON response is missing requested keys/fields: {expected_keys}"
     return False, ""
 
 
