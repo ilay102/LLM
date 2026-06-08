@@ -1,0 +1,30 @@
+{"id": 1,  "type": "sentiment", "accept": ["negative", "neutral"], "forbid_placeholders": true, "notes": "shipping fast (+) but broke (-) — mixed-to-negative; neutral acceptable"}
+{"id": 2,  "type": "sentiment", "accept": ["positive"], "forbid": ["negative"], "forbid_placeholders": true}
+{"id": 3,  "type": "regex", "patterns": ["\\b[12]\\b"], "forbid_placeholders": true, "notes": "should rate 1 or 2 — support never replied is strongly negative"}
+{"id": 4,  "type": "sentiment", "accept": ["frustrated"], "forbid_placeholders": true, "notes": "explicit ask: happy/frustrated/neutral — 'docs are terrible' = frustrated"}
+{"id": 5,  "type": "sentiment", "accept": ["negative"], "forbid_placeholders": true, "notes": "predatory pricing tilts negative — accept any answer that concludes negative; the word 'positive' can appear in analysis"}
+{"id": 6,  "type": "sentiment", "accept": ["positive"], "forbid_placeholders": true}
+{"id": 7,  "type": "contains_any", "accept": ["CHURN", "churn"], "forbid_placeholders": true}
+{"id": 8,  "type": "contains_any", "accept": ["frustrat", "anger", "angry", "impatien", "annoy"], "forbid_placeholders": true, "notes": "any frustration/anger/impatience word"}
+{"id": 9,  "type": "contains_any", "accept": ["refactor"], "forbid_placeholders": true}
+{"id": 10, "type": "sentiment", "accept": ["positive"], "forbid_placeholders": true}
+{"id": 11, "type": "contains_all", "accept": ["Acme Corp", "4.2"], "forbid_placeholders": true, "notes": "must preserve literal company + revenue"}
+{"id": 12, "type": "contains_all", "accept": ["sarah.k@example.org", "555-0142"], "forbid_placeholders": true}
+{"id": 13, "type": "contains_all", "accept": ["March 12", "2,499.50"], "forbid_placeholders": true}
+{"id": 14, "type": "contains_all", "accept": ["SKU-A7-2231"], "forbid_placeholders": true}
+{"id": 15, "type": "contains_all", "accept": ["Alice", "Bob", "Carlos"], "forbid_placeholders": true}
+{"id": 16, "type": "contains_all", "accept": ["Lisbon", "Portugal"], "forbid_placeholders": true}
+{"id": 17, "type": "contains_all", "accept": ["3.14.2"], "forbid_placeholders": true, "notes": "MUST preserve full version including the leading 3"}
+{"id": 18, "type": "contains_all", "accept": ["192.168.1.55"], "forbid_placeholders": true}
+{"id": 19, "type": "contains_any", "accept": ["Tuesday", "2pm", "2 pm", "14:00", "2:00 pm"], "forbid_placeholders": true}
+{"id": 20, "type": "contains_all", "accept": ["88172", "delivered"], "forbid_placeholders": true}
+{"id": 21, "type": "translation", "language": "french", "must_contain_any": ["Bienvenue", "bienvenue", "Bon retour", "Heureux de vous revoir", "Ravi de vous revoir"], "forbid": ["Welcome back"], "forbid_placeholders": true, "notes": "any natural French welcome-back rendering"}
+{"id": 22, "type": "translation", "language": "spanish", "must_contain_any": ["prueba", "expira", "Su ", "Tu ", "días"], "forbid_placeholders": true}
+{"id": 23, "type": "translation", "language": "german", "must_contain_any": ["Klicken", "klicken", "E-Mail", "Schaltfläche", "Button"], "forbid_placeholders": true}
+{"id": 24, "type": "translation", "language": "portuguese", "must_contain_any": ["Obrigado", "Obrigada", "obrigado", "compra"], "forbid_placeholders": true}
+{"id": 25, "type": "translation", "language": "italian", "must_contain_any": ["Password dimenticata", "password dimenticata", "Reimpostala", "Reimposta"], "forbid": ["Forgot password"], "forbid_placeholders": true}
+{"id": 26, "type": "translation", "language": "japanese", "must_contain_any": ["変更を保存", "保存", "セーブ"], "forbid_placeholders": true}
+{"id": 27, "type": "translation", "language": "hebrew", "must_contain_any": ["הגדרות"], "forbid_placeholders": true}
+{"id": 28, "type": "translation", "language": "dutch", "must_contain_any": ["Afmelden", "Uitloggen", "afmelden", "uitloggen"], "forbid_placeholders": true}
+{"id": 29, "type": "yes_no", "accept": "yes", "forbid_placeholders": true}
+{"id": 30, "type": "yes_no", "accept": "no", "forbid_placeholders": true, "notes": "JS has no native tuple type — primitives are number/string/etc, no tuple"}

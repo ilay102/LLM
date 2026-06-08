@@ -1,0 +1,163 @@
+<!doctype html><meta charset='utf-8'><title>VIREN — Objective Eval</title>
+<style>body{font-family:-apple-system,Inter,system-ui;max-width:1100px;margin:30px auto;padding:0 20px;color:#111}table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid #eee;padding:6px 8px;text-align:left;vertical-align:top}.pass{background:#e6f4ea;color:#137333}.fail{background:#fce8e6;color:#b3261e}.tie{background:#fff4d6;color:#7a5300}.pill{padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600}</style>
+<h1>Objective eval — 30 prompts</h1>
+<p>Deterministic scoring against <code>eval/expected_answers.jsonl</code>. No LLM judges.</p>
+<p><b>gateway</b> pass-rate: 76.7% (23/30, 0 skipped)</p>
+<p><b>baseline</b> pass-rate: 100.0% (30/30, 0 skipped)</p>
+<p><b>H2H</b>: W=0 T=23 L=7 both_fail=0 — <b>W-T% = 76.7</b></p>
+<table><tr><th>#</th><th>prompt</th>
+<th>gateway</th>
+<th>baseline</th>
+<th>H2H</th>
+</tr>
+<tr><td>15</td><td>Find all person names in: 'Alice and Bob met with Carlos to discuss the proposal.'</td>
+<td class='fail'>fail — placeholder leaked: <PERSON></td>
+<td class='pass'>pass — all literals present</td>
+<td class='fail'>loss</td>
+</tr>
+<tr><td>28</td><td>Translate to Dutch: 'Sign out'</td>
+<td class='pass'>pass — contains target-language token 'Afmelden'</td>
+<td class='pass'>pass — contains target-language token 'Afmelden'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>22</td><td>Translate to Spanish: 'Your free trial expires in 3 days.'</td>
+<td class='pass'>pass — contains target-language token 'prueba'</td>
+<td class='pass'>pass — contains target-language token 'prueba'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>29</td><td>Is Lisbon the capital of Portugal? Answer yes or no.</td>
+<td class='pass'>pass — starts with 'yes'</td>
+<td class='pass'>pass — starts with 'yes'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>8</td><td>Label the emotion in this message: 'I waited 3 weeks for a response.'</td>
+<td class='pass'>pass — matched 'frustrat'</td>
+<td class='pass'>pass — matched 'frustrat'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>16</td><td>Extract city and country: 'Our office is in Lisbon, Portugal.'</td>
+<td class='pass'>pass — all literals present</td>
+<td class='pass'>pass — all literals present</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>23</td><td>Translate to German: 'Click the button below to verify your email.'</td>
+<td class='pass'>pass — contains target-language token 'Klicken'</td>
+<td class='pass'>pass — contains target-language token 'Klicken'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>9</td><td>Tag this PR description as 'feature', 'bugfix', or 'refactor': 'Memoize expensive recomputation in dashboard.'</td>
+<td class='pass'>pass — matched 'refactor'</td>
+<td class='pass'>pass — matched 'refactor'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>24</td><td>Translate to Brazilian Portuguese: 'Thank you for your purchase.'</td>
+<td class='pass'>pass — contains target-language token 'Obrigado'</td>
+<td class='pass'>pass — contains target-language token 'Obrigado'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>30</td><td>Does JavaScript have built-in support for tuples? Yes or no.</td>
+<td class='pass'>pass — starts with 'no'</td>
+<td class='pass'>pass — starts with 'no'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>2</td><td>Is the following tweet positive or negative? 'Just renewed my subscription, love the new dashboard.'</td>
+<td class='pass'>pass — matched 'positive'</td>
+<td class='pass'>pass — matched 'positive'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>10</td><td>Sentiment of: 'works as advertised, no complaints.' Answer in one word.</td>
+<td class='pass'>pass — matched 'positive'</td>
+<td class='pass'>pass — matched 'positive'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>25</td><td>Translate to Italian: 'Forgot password? Reset it here.'</td>
+<td class='fail'>fail — placeholder leaked: <PERSON></td>
+<td class='pass'>pass — contains target-language token 'Password dimenticata'</td>
+<td class='fail'>loss</td>
+</tr>
+<tr><td>17</td><td>Pull the version number from: 'Upgraded to v3.14.2 last Tuesday.'</td>
+<td class='fail'>fail — missing literal(s): ['3.14.2']</td>
+<td class='pass'>pass — all literals present</td>
+<td class='fail'>loss</td>
+</tr>
+<tr><td>11</td><td>Extract the company name and revenue as JSON: 'Acme Corp reported Q3 revenue of $4.2B, beating estimates.'</td>
+<td class='fail'>fail — placeholder leaked: <US_DRIVER_LICENSE></td>
+<td class='pass'>pass — all literals present</td>
+<td class='fail'>loss</td>
+</tr>
+<tr><td>3</td><td>Rate the sentiment from 1 (very negative) to 5 (very positive): 'Support never replied to my ticket.'</td>
+<td class='pass'>pass — matched regex '\\b[12]\\b'</td>
+<td class='pass'>pass — matched regex '\\b[12]\\b'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>26</td><td>Translate this UI string to Japanese: 'Save changes'</td>
+<td class='pass'>pass — contains target-language token '変更を保存'</td>
+<td class='pass'>pass — contains target-language token '変更を保存'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>18</td><td>Get the IP address from: 'Login attempt from 192.168.1.55 at 03:42 UTC.'</td>
+<td class='fail'>fail — placeholder leaked: <PERSON></td>
+<td class='pass'>pass — all literals present</td>
+<td class='fail'>loss</td>
+</tr>
+<tr><td>4</td><td>Tag this customer feedback as 'happy', 'frustrated', or 'neutral': 'I figured it out eventually but the docs are terribl</td>
+<td class='pass'>pass — matched 'frustrated'</td>
+<td class='pass'>pass — matched 'frustrated'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>19</td><td>Extract the meeting time: 'Let us catch up Tuesday at 2pm PT.'</td>
+<td class='pass'>pass — matched 'Tuesday'</td>
+<td class='pass'>pass — matched 'Tuesday'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>12</td><td>Extract email and phone from: 'Reach me at sarah.k@example.org or 555-0142.'</td>
+<td class='fail'>fail — placeholder leaked: <EMAIL_ADDRESS></td>
+<td class='pass'>pass — all literals present</td>
+<td class='fail'>loss</td>
+</tr>
+<tr><td>27</td><td>Translate to Hebrew: 'Settings'</td>
+<td class='pass'>pass — contains target-language token 'הגדרות'</td>
+<td class='pass'>pass — contains target-language token 'הגדרות'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>5</td><td>Is this review more positive or more negative? 'Product is fine but pricing feels predatory.'</td>
+<td class='pass'>pass — matched 'negative'</td>
+<td class='pass'>pass — matched 'negative'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>20</td><td>Get the order number and status from: 'Order #88172 has been delivered.'</td>
+<td class='pass'>pass — all literals present</td>
+<td class='pass'>pass — all literals present</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>1</td><td>Classify the sentiment of this review as POSITIVE, NEGATIVE, or NEUTRAL: 'The shipping was fast but the product broke on</td>
+<td class='pass'>pass — matched 'negative'</td>
+<td class='pass'>pass — matched 'negative'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>13</td><td>Pull the date and total amount from: 'Invoice #4421, dated March 12, total $2,499.50.'</td>
+<td class='pass'>pass — all literals present</td>
+<td class='pass'>pass — all literals present</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>14</td><td>Extract product SKU from: 'Order shipped: SKU-A7-2231 (qty 3).'</td>
+<td class='fail'>fail — placeholder leaked: <US_DRIVER_LICENSE></td>
+<td class='pass'>pass — all literals present</td>
+<td class='fail'>loss</td>
+</tr>
+<tr><td>21</td><td>Translate to French: 'Welcome back, your dashboard is ready.'</td>
+<td class='pass'>pass — contains target-language token 'Bon retour'</td>
+<td class='pass'>pass — contains target-language token 'Bienvenue'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>6</td><td>Classify: 'Best onboarding flow I've ever used' → positive / negative / neutral?</td>
+<td class='pass'>pass — matched 'positive'</td>
+<td class='pass'>pass — matched 'positive'</td>
+<td class='tie'>tie</td>
+</tr>
+<tr><td>7</td><td>Customer email starts with 'I want to cancel'. Classify intent as: CHURN / SUPPORT / BILLING / OTHER.</td>
+<td class='pass'>pass — matched 'CHURN'</td>
+<td class='pass'>pass — matched 'CHURN'</td>
+<td class='tie'>tie</td>
+</tr>
+</table>
