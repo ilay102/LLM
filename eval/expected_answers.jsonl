@@ -28,3 +28,153 @@
 {"id": 28, "type": "translation", "language": "dutch", "must_contain_any": ["Afmelden", "Uitloggen", "afmelden", "uitloggen"], "forbid_placeholders": true}
 {"id": 29, "type": "yes_no", "accept": "yes", "forbid_placeholders": true}
 {"id": 30, "type": "yes_no", "accept": "no", "forbid_placeholders": true, "notes": "JS has no native tuple type — primitives are number/string/etc, no tuple"}
+{"id": 31, "type": "yes_no", "accept": "yes", "forbid_placeholders": true}
+{"id": 32, "type": "yes_no", "accept": "no", "forbid_placeholders": true, "notes": "HTTP/3 runs on QUIC over UDP, not TCP"}
+{"id": 33, "type": "yes_no", "accept": "yes", "forbid_placeholders": true}
+{"id": 34, "type": "yes_no", "accept": "no", "forbid_placeholders": true}
+{"id": 35, "type": "yes_no", "accept": "no", "forbid_placeholders": true, "notes": "K8s supports any CRI-compatible runtime (containerd, CRI-O); Docker not required"}
+{"id": 36, "type": "yes_no", "accept": "no", "forbid_placeholders": true}
+{"id": 37, "type": "contains_all", "accept": ["Alice", "30", "admin"], "forbid_placeholders": true, "notes": "JSON formatting — literal preservation"}
+{"id": 38, "type": "contains_all", "accept": ["Bob", "bob@x.com", "42"], "forbid_placeholders": true}
+{"id": 39, "type": "contains_all", "accept": ["status", "timestamp"], "forbid_placeholders": true}
+{"id": 40, "type": "contains_all", "accept": ["apple", "banana", "cherry"], "forbid_placeholders": true}
+{"id": 41, "type": "contains_all", "accept": ["message", "Hello world"], "forbid_placeholders": true}
+{"id": 42, "type": "regex", "patterns": ["\\[\\s*\\]"], "forbid_placeholders": true, "notes": "must contain an empty array literal"}
+{"id": 43, "type": "contains_any", "accept": ["404", "Not Found", "not found"], "forbid_placeholders": true}
+{"id": 44, "type": "contains_all", "accept": ["theme", "dark", "lang", "en", "beta"], "forbid_placeholders": true}
+{"id": 45, "type": "contains_any", "accept": ["[::-1]", "reversed("], "forbid_placeholders": true, "notes": "any valid Python reversal"}
+{"id": 46, "type": "contains_any", "accept": ["ls", "find ."], "forbid_placeholders": true}
+{"id": 47, "type": "contains_any", "accept": ["Set", "filter(", "new Set"], "forbid_placeholders": true}
+{"id": 48, "type": "contains_all", "accept": ["SELECT", "users", "active"], "forbid_placeholders": true}
+{"id": 49, "type": "contains_any", "accept": ["\\d{5}", "[0-9]{5}", "\\\\d{5}"], "forbid_placeholders": true}
+{"id": 50, "type": "contains_any", "accept": ["reduce", "math.prod", "*=", "factorial", "lambda"], "forbid_placeholders": true}
+{"id": 51, "type": "contains_all", "accept": ["He and I"], "forbid_placeholders": true, "notes": "corrected version must contain 'He and I' (replaces 'Me and him')"}
+{"id": 52, "type": "contains_all", "accept": ["receive"], "forbid": ["recieve"], "forbid_placeholders": true}
+{"id": 53, "type": "contains_all", "accept": ["John", "Google", "Mountain View"], "forbid_placeholders": true}
+{"id": 54, "type": "regex", "patterns": ["[!?]"], "forbid_placeholders": true, "notes": "must add at least one punctuation mark"}
+{"id": 55, "type": "contains_any", "accept": ["went", "was going"], "forbid_placeholders": true}
+{"id": 56, "type": "contains_all", "accept": ["The Lord of the Rings"], "forbid_placeholders": true}
+{"id": 57, "type": "contains_any", "accept": ["payment"], "forbid_placeholders": true}
+{"id": 58, "type": "contains_any", "accept": ["comms", "communication"], "forbid_placeholders": true}
+{"id": 59, "type": "contains_any", "accept": ["observability"], "forbid_placeholders": true}
+{"id": 60, "type": "contains_any", "accept": ["frontend", "front-end"], "forbid_placeholders": true}
+{"id": 61, "type": "contains_any", "accept": ["productivity"], "forbid_placeholders": true}
+{"id": 62, "type": "contains_any", "accept": ["relational"], "forbid": ["NoSQL"], "forbid_placeholders": true, "notes": "answer must conclude relational, not NoSQL"}
+{"id": 63, "type": "contains_any", "accept": ["compute"], "forbid_placeholders": true}
+{"id": 64, "type": "contains_any", "accept": ["design"], "forbid_placeholders": true}
+{"id": 65, "type": "contains_any", "accept": ["Fitzgerald", "F. Scott"], "forbid_placeholders": true}
+{"id": 66, "type": "contains_any", "accept": ["2015"], "forbid_placeholders": true}
+{"id": 67, "type": "contains_any", "accept": ["300,000", "300000", "3 × 10", "299,792", "299792"], "forbid_placeholders": true}
+{"id": 68, "type": "contains_any", "accept": ["HyperText", "Hypertext"], "forbid_placeholders": true}
+{"id": 69, "type": "contains_any", "accept": ["Russia"], "forbid_placeholders": true}
+{"id": 70, "type": "contains_any", "accept": ["Au"], "forbid_placeholders": true}
+{"id": 71, "type": "contains_any", "accept": ["100"], "forbid_placeholders": true}
+{"id": 72, "type": "contains_any", "accept": ["yen", "Yen", "JPY", "¥"], "forbid_placeholders": true}
+{"id": 73, "type": "yes_no", "accept": "yes", "forbid_placeholders": true}
+{"id": 74, "type": "yes_no", "accept": "yes", "forbid_placeholders": true, "notes": "example.com is the canonical safe demo domain"}
+{"id": 75, "type": "yes_no", "accept": "no", "forbid_placeholders": true, "notes": "README typo is not a security risk"}
+{"id": 76, "type": "contains_any", "accept": ["spam"], "forbid": ["not spam"], "forbid_placeholders": true}
+{"id": 77, "type": "yes_no", "accept": "no", "forbid_placeholders": true, "notes": "12 >= 10 so NOT eligible for <10 threshold"}
+{"id": 78, "type": "yes_no", "accept": "no", "forbid_placeholders": true, "notes": "foo@bar lacks the TLD"}
+{"id": 79, "type": "contains_any", "accept": ["BILLING", "billing"], "forbid_placeholders": true}
+{"id": 80, "type": "contains_any", "accept": ["business"], "forbid_placeholders": true}
+{"id": 81, "type": "contains_any", "accept": ["integration", "dropoff", "onboarding"], "forbid_placeholders": true, "notes": "any of these key terms must appear in a summary"}
+{"id": 82, "type": "contains_any", "accept": ["4.2M", "22%", "108%", "115%", "retention"], "forbid_placeholders": true, "notes": "any retention/revenue key fact"}
+{"id": 83, "type": "contains_any", "accept": ["AI search", "launch", "beta"], "forbid_placeholders": true}
+{"id": 84, "type": "contains_any", "accept": ["auth", "blocked", "shipped"], "forbid_placeholders": true}
+{"id": 85, "type": "contains_any", "accept": ["Postgres", "MongoDB", "relational", "tooling"], "forbid_placeholders": true}
+{"id": 86, "type": "contains_any", "accept": ["churn", "4.2%", "SMB", "7.8"], "forbid_placeholders": true}
+{"id": 87, "type": "contains_any", "accept": ["38", "22", "platform", "AI/ML"], "forbid_placeholders": true}
+{"id": 88, "type": "contains_any", "accept": ["deploy", "rollback", "migration", "500"], "forbid_placeholders": true}
+{"id": 89, "type": "contains_any", "accept": ["v1", "API", "deprecat", "migration"], "forbid_placeholders": true}
+{"id": 90, "type": "contains_any", "accept": ["11 days", "ticket", "44192", "follow"], "forbid_placeholders": true}
+{"id": 91, "type": "contains_any", "accept": ["thank", "future", "appreciate", "regret"], "forbid_placeholders": true, "notes": "vendor rejection — polite tokens"}
+{"id": 92, "type": "contains_any", "accept": ["apolog", "outage", "sorry", "responsibility"], "forbid_placeholders": true}
+{"id": 93, "type": "contains_any", "accept": ["demo", "follow", "still", "wonder"], "forbid_placeholders": true}
+{"id": 94, "type": "contains_any", "accept": ["pilot", "kickoff", "welcome", "introduction"], "forbid_placeholders": true}
+{"id": 95, "type": "contains_any", "accept": ["status", "contract", "update", "wonder"], "forbid_placeholders": true}
+{"id": 96, "type": "contains_any", "accept": ["intro", "15", "conference", "connect"], "forbid_placeholders": true}
+{"id": 97, "type": "contains_any", "accept": ["deadline", "miss", "tomorrow", "responsib"], "forbid_placeholders": true}
+{"id": 98, "type": "contains_any", "accept": ["resign", "thank", "appreciate", "notice"], "forbid_placeholders": true}
+{"id": 99, "type": "regex", "patterns": ["\\[\\s*x\\s*\\*\\s*2\\s+for\\s+x"], "forbid_placeholders": true, "notes": "Python list comprehension"}
+{"id": 100, "type": "contains_all", "accept": ["async", "await"], "forbid_placeholders": true}
+{"id": 101, "type": "contains_any", "accept": [".filter(", ".map("], "forbid_placeholders": true, "notes": "must use filter or map"}
+{"id": 102, "type": "contains_any", "accept": ["{", "dict", "Dict", "lookup"], "forbid_placeholders": true, "notes": "lookup table form"}
+{"id": 103, "type": "contains_any", "accept": ["def ", "function"], "forbid_placeholders": true, "notes": "must define a function"}
+{"id": 104, "type": "contains_any", "accept": ["query(", "session.", "User.", "filter_by", "filter("], "forbid_placeholders": true, "notes": "SQLAlchemy idioms"}
+{"id": 105, "type": "contains_all", "accept": ["async", "await"], "forbid_placeholders": true}
+{"id": 106, "type": "contains_any", "accept": ["!y", "y === false", "y == false", "y ∈", "(x || z) && !y", "x || z"], "forbid_placeholders": true, "notes": "simplified boolean form"}
+{"id": 107, "type": "contains_all", "accept": ["Alice", "Bob", "Carol", "admin", "user"], "forbid_placeholders": true}
+{"id": 108, "type": "contains_all", "accept": ["Alice", "Bob", "Carol", "Pro", "Free", "Enterprise"], "forbid_placeholders": true}
+{"id": 109, "type": "contains_all", "accept": ["web", "8080"], "forbid_placeholders": true}
+{"id": 110, "type": "contains_all", "accept": ["42", "99.50"], "forbid_placeholders": true}
+{"id": 111, "type": "regex", "patterns": ["1\\.\\s*apples?", "1\\)\\s*apples?"], "forbid_placeholders": true, "notes": "numbered markdown list starts with 1. apples"}
+{"id": 112, "type": "contains_all", "accept": ["API_KEY", "DEBUG", "PORT", "DATABASE_URL"], "forbid_placeholders": true}
+{"id": 113, "type": "contains_all", "accept": ["name", "price", "sku", "in_stock", "tags"], "forbid_placeholders": true}
+{"id": 114, "type": "contains_all", "accept": ["id", "email", "role", "created_at"], "forbid_placeholders": true}
+{"id": 115, "type": "contains_all", "accept": ["plan", "status", "current_period_end", "cancel_at_period_end", "trial_end"], "forbid_placeholders": true}
+{"id": 116, "type": "contains_all", "accept": ["CREATE TABLE", "comments"], "forbid_placeholders": true}
+{"id": 117, "type": "contains_all", "accept": ["/users/{id}", "200", "404"], "forbid_placeholders": true}
+{"id": 118, "type": "contains_all", "accept": ["dataclass", "method", "path", "status", "latency_ms", "user_id"], "forbid_placeholders": true}
+{"id": 119, "type": "contains_all", "accept": ["name", "email", "company", "plan", "signup_date"], "forbid_placeholders": true}
+{"id": 120, "type": "contains_all", "accept": ["pytest", "pull_request", "main"], "forbid_placeholders": true, "notes": "GH Actions yaml — must reference pytest, PR trigger, main branch"}
+{"id": 121, "type": "contains_all", "accept": ["items", "tax", "shipping"], "forbid_placeholders": true}
+{"id": 122, "type": "contains_all", "accept": ["login redirect", "csv export", "dark mode", "CSV bulk import"], "forbid_placeholders": true, "notes": "all 3 bug fixes + 1 feature must appear"}
+{"id": 123, "type": "regex", "patterns": ["1[.\\)]", "(?i)option\\s*1"], "forbid_placeholders": true, "notes": "3 headlines — numbered or labeled"}
+{"id": 124, "type": "contains_any", "accept": ["AI", "search", "document"], "forbid_placeholders": true}
+{"id": 125, "type": "contains_all", "accept": ["Google Calendar"], "forbid_placeholders": true}
+{"id": 126, "type": "regex", "patterns": ["1[.\\)]"], "forbid_placeholders": true, "notes": "3 subject lines — numbered"}
+{"id": 127, "type": "regex", "patterns": ["1[.\\)]", "(?i)variant\\s*1"], "forbid_placeholders": true, "notes": "5 CTA variants"}
+{"id": 128, "type": "contains_any", "accept": ["Series A", "$5M", "5M", "raise"], "forbid_placeholders": true}
+{"id": 129, "type": "contains_all", "accept": ["{name", "{company", "{role"], "forbid_placeholders": true, "notes": "placeholder syntax — accept either braces or brackets"}
+{"id": 130, "type": "contains_any", "accept": ["B2B", "SaaS", "company"], "forbid_placeholders": true}
+{"id": 131, "type": "contains_all", "accept": ["SELECT", "users", "signed up", "INTERVAL"], "forbid_placeholders": false, "notes": "SQL with date interval"}
+{"id": 132, "type": "contains_all", "accept": ["SELECT", "TOP", "ORDER BY", "DESC", "LIMIT"], "forbid_placeholders": false, "notes": "any ordering keyword — TOP / LIMIT / ORDER BY DESC"}
+{"id": 133, "type": "contains_all", "accept": ["SELECT", "email", "GROUP BY", "COUNT"], "forbid_placeholders": false}
+{"id": 134, "type": "contains_any", "accept": ["DATE_TRUNC", "date_trunc", "month", "TO_CHAR", "GROUP BY"], "forbid_placeholders": false}
+{"id": 135, "type": "contains_all", "accept": ["SELECT", "WHERE", "orders"], "forbid_placeholders": false}
+{"id": 136, "type": "contains_all", "accept": ["AVG", "support", "agent"], "forbid_placeholders": false}
+{"id": 137, "type": "contains_any", "accept": ["ROW_NUMBER()", "RANK()", "OVER ", "PARTITION BY"], "forbid_placeholders": false, "notes": "window function syntax"}
+{"id": 138, "type": "contains_all", "accept": ["SUM", "line_items"], "forbid_placeholders": false}
+{"id": 139, "type": "contains_any", "accept": ["index", "lookup", "fast", "search"], "forbid_placeholders": true}
+{"id": 140, "type": "contains_any", "accept": ["JWT", "token", "signed", "stateless", "claims"], "forbid_placeholders": true}
+{"id": 141, "type": "contains_any", "accept": ["reliab", "connection", "acknowledg", "ordering", "UDP", "TCP"], "forbid_placeholders": true}
+{"id": 142, "type": "contains_any", "accept": ["schema", "relational", "document", "scale", "flexible"], "forbid_placeholders": true}
+{"id": 143, "type": "contains_any", "accept": ["CDN", "cache", "edge", "latency", "static"], "forbid_placeholders": true}
+{"id": 144, "type": "contains_any", "accept": ["cach", "fast", "memory", "store", "retrieve"], "forbid_placeholders": true}
+{"id": 145, "type": "contains_any", "accept": ["webhook", "POST", "event", "callback", "push"], "forbid_placeholders": true}
+{"id": 146, "type": "contains_any", "accept": ["rate limit", "abuse", "throttl", "fair", "DDoS"], "forbid_placeholders": true}
+{"id": 147, "type": "contains_any", "accept": ["dict", "{", "O(1)", "lookup", "hash"], "forbid_placeholders": true, "notes": "should suggest dict/hash lookup"}
+{"id": 148, "type": "contains_any", "accept": ["<=", "off by one", "arr.length", "<"], "forbid_placeholders": false, "notes": "must identify the off-by-one"}
+{"id": 149, "type": "contains_any", "accept": ["JOIN", "IN", "subquery", "performance", "EXPLAIN"], "forbid_placeholders": false}
+{"id": 150, "type": "contains_any", "accept": ["zero", "ZeroDivisionError", "b == 0", "b=0", "division by zero"], "forbid_placeholders": true}
+{"id": 151, "type": "contains_any", "accept": ["activeRecent", "recentlyActive", "activeUsers", "engaged"], "forbid_placeholders": true, "notes": "any meaningful rename suggestion"}
+{"id": 152, "type": "contains_any", "accept": ["===", "type coercion", "loose equality", "''"], "forbid_placeholders": false, "notes": "must mention === or type coercion"}
+{"id": 153, "type": "contains_all", "accept": ["Sarah", "Acme", "12", "Pro", "Enterprise"], "forbid_placeholders": true}
+{"id": 154, "type": "contains_all", "accept": ["Globex", "SSO"], "forbid_placeholders": true}
+{"id": 155, "type": "contains_all", "accept": ["fastapi", "0.115", "MIT", "Starlette", "Pydantic"], "forbid_placeholders": true}
+{"id": 156, "type": "contains_all", "accept": ["Q4", "Nov", "alice@co.com", "10:00"], "forbid_placeholders": true}
+{"id": 157, "type": "contains_all", "accept": ["4421", "2,400", "99.50", "2,499.50", "ACH"], "forbid_placeholders": true}
+{"id": 158, "type": "contains_all", "accept": ["Globex", "Remote", "160", "200", "Python"], "forbid_placeholders": true}
+{"id": 159, "type": "contains_all", "accept": ["Sarah Kim", "Acme", "Globex", "Stanford"], "forbid_placeholders": true}
+{"id": 160, "type": "contains_all", "accept": ["ABC123", "UA456", "SFO", "JFK", "14C"], "forbid_placeholders": true}
+{"id": 169, "type": "contains_all", "accept": ["24"], "forbid_placeholders": true, "notes": "the proof must reference divisibility by 24"}
+{"id": 170, "type": "contains_any", "accept": ["packaging", "bottleneck", "queue", "wait", "backlog"], "forbid_placeholders": true}
+{"id": 171, "type": "contains_any", "accept": ["runway", "burn", "hire", "month 6", "deal"], "forbid_placeholders": true}
+{"id": 172, "type": "contains_any", "accept": ["0.02", "2%", "0.0008", "(0.02)^3", "0.000008", "independen"], "forbid_placeholders": true, "notes": "must do the probability math (0.02^3 = 0.000008)"}
+{"id": 173, "type": "contains_any", "accept": ["monolith", "microservices", "team topology", "18", "premature"], "forbid_placeholders": true}
+{"id": 174, "type": "contains_any", "accept": ["tail", "GC", "garbage collect", "lock", "I/O", "noisy neighbor"], "forbid_placeholders": true}
+{"id": 175, "type": "contains_any", "accept": ["breakeven", "50M", "$5,000", "$500", "$4500", "$4,500", "savings"], "forbid_placeholders": true, "notes": "CDN savings math — $0.0001 - $0.00001 = $0.00009 per req × 50M = $4500"}
+{"id": 176, "type": "contains_any", "accept": ["uniform", "hash", "load factor", "expected", "amortized"], "forbid_placeholders": true}
+{"id": 177, "type": "contains_all", "accept": ["LRU", "TTL"], "forbid_placeholders": true}
+{"id": 178, "type": "contains_all", "accept": ["429", "Retry-After"], "forbid_placeholders": true}
+{"id": 179, "type": "contains_any", "accept": ["S3", "boto3", "stream", "chunk", "batch"], "forbid_placeholders": true}
+{"id": 180, "type": "contains_any", "accept": ["tokio", "rayon", "channel", "Ctrl+C", "graceful", "shutdown"], "forbid_placeholders": true}
+{"id": 181, "type": "contains_any", "accept": ["dispatch", "subscribe", "middleware", "reducer", "state"], "forbid_placeholders": true}
+{"id": 182, "type": "contains_any", "accept": ["HyperLogLog", "register", "leading zero", "bias correction", "log"], "forbid_placeholders": true}
+{"id": 195, "type": "contains_any", "accept": ["load balancer", "ingress", "downstream", "serializ", "200", "empty"], "forbid_placeholders": true}
+{"id": 196, "type": "contains_any", "accept": ["cron", "scheduled", "vacuum", "autovacuum", "Tuesday", "03:14", "pg_stat"], "forbid_placeholders": true}
+{"id": 197, "type": "contains_any", "accept": ["idempot", "at-least-once", "dedup", "ack", "visibility timeout"], "forbid_placeholders": true}
+{"id": 198, "type": "contains_any", "accept": ["bisect", "rollback", "revert", "kubectl", "Helm", "image", "config"], "forbid_placeholders": true}
+{"id": 199, "type": "contains_any", "accept": ["heap", "leak", "snapshot", "GC", "Node", "--inspect"], "forbid_placeholders": true}
+{"id": 200, "type": "contains_any", "accept": ["timezone", "UTC", "12 hours", "cache", "DST"], "forbid_placeholders": true}
