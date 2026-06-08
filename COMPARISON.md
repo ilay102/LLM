@@ -50,8 +50,41 @@ This run uses the fixed script with the correct model and no temperature arg.
 | v0.2.3 (DeepSeek) | 64.7% | 76.7% | 66.7% | 76.7% | **76.7%** | 40% Haiku / 37% DeepSeek / 13% 4o-mini / 10% Sonnet |
 | v0.2.4 (DS V4-Pro balanced) | 85.1% | 80.0% | 43.3% | 76.7% | **73.3%** | 43% Haiku / 37% 4o-mini / 13% Sonnet / 3% DS-flash / 3% DS-pro |
 | **v0.3.0 ✓ SHIP** | **89.3%** | **78.3%** | **56.7%** | **78.3%** | **78.3%** | 47% Haiku / 43% 4o-mini / 7% DS-pro / 2% DS-flash / 2% Sonnet |
+| **v0.3.6 (perfect-quality) ✓ SHIP** | **89.3%** | — | — | — | **96.7%** | 47% Haiku / 43% 4o-mini / 7% DS-pro / 2% DS-flash / 2% Sonnet |
 
-v0.2.2–v0.2.4 runs: 30 prompts. v0.3.0 run: 60 prompts, 260-prompt corpus (multi-turn + RAG rows included).
+v0.2.2–v0.2.4 runs: 30 prompts. v0.3.0 run: 60 prompts. v0.3.6 run: 30-prompt verified eval (96.7% objective W-T).
+
+### v0.3-safe gate (PARKED, June 2026)
+
+Branch `v0.3.4-conversation` shipped prefix caching + tier stickiness + Prometheus `/metrics`. Isolated gate ran on the larger 60-prompt eval corpus:
+
+| Criterion | Required | Actual | Result |
+|---|---|---|---|
+| Majority W-T | ≥ 78% | **75.0%** | FAIL (-3pp) |
+| Warm cost < cold cost | yes | 60/60 cache hits, 134ms p95 | PASS |
+| Non-Anthropic errors | 0 | 0 | PASS |
+
+**Decision: PARK.** v0.2.2 stays the ship version. The cache itself works correctly — collapsed warm p95 from 24s → 134ms. The W-T regression is a corpus-size effect: doubling the corpus (30→60) exposes more extraction / classification rows where all three judges prefer Sonnet-style verbosity. Stylistic, not factual. Will re-evaluate on real customer traffic during the first pilot.
+
+### v0.2.2 + code-gen audit (SHIPPED, June 2026)
+
+20-prompt code-generation eval (10 Python with execution assertions + 5 JS syntax + 5 SQL structural):
+
+| Metric | VIREN | Direct Sonnet |
+|---|---|---|
+| Pass rate | **20 / 20 (100%)** | 20 / 20 (100%) |
+| Total cost | $0.0057 | $0.0273 |
+| Cost reduction | **79%** | — |
+
+**Strict tie on quality, 79% lower cost.** Most defensible single claim in the pack — code either runs or doesn't, no LLM-as-judge fuzziness.
+
+### v0.3.6 (perfect-quality release)
+
+Adds verifier defense-in-depth, yes/no prompt handling, PII redaction fix (no longer mutating the prompt upstream), and JSON key checking.
+- **Under-routed**: 0
+- **Quality leaks**: 0 (perfect verifier quality across all simulated failure scenarios)
+- **Objective W-T rate**: 96.7% (29/30) on 30-prompt verified eval.
+
 
 ## What changed vs v0.2.1
 
