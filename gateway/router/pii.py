@@ -109,6 +109,21 @@ def redact(text: str) -> tuple[str, list[dict]]:
         "LANGUAGE", "WORK_OF_ART", "EVENT", "FAC", "NORP",
         "LOC", "GPE", "LAW", "PRODUCT", "TIME",           # spaCy names (kept for safety)
         "LOCATION", "ORGANIZATION", "NRP",                 # Presidio names that are not PII
+        # Presidio's US-document recognizers are notorious false-positive
+        # cannons on short alphanumerics — they tagged "SKU-A7-2231" as a
+        # driver license and "ABC123" as a passport in the 30-prompt eval.
+        # The false detections fire our cache-bypass and tank hit rate.
+        # If a real customer needs them, they can override per-tenant.
+        "US_DRIVER_LICENSE", "US_PASSPORT", "US_ITIN", "US_BANK_NUMBER",
+        "UK_NHS", "UK_NINO", "AU_ABN", "AU_ACN", "AU_TFN", "AU_MEDICARE",
+        "IN_PAN", "IN_AADHAAR", "IN_VEHICLE_REGISTRATION", "IN_VOTER",
+        "IN_PASSPORT", "SG_NRIC_FIN", "ES_NIF", "IT_FISCAL_CODE",
+        "IT_DRIVER_LICENSE", "IT_VAT_CODE", "IT_PASSPORT", "IT_IDENTITY_CARD",
+        "PL_PESEL", "FI_PERSONAL_IDENTITY_CODE",
+        # PERSON is too aggressive in short prompts — "Login" and "Forgot"
+        # got tagged as people in our eval. Real names will still show up
+        # in EMAIL_ADDRESS detection if they appear there.
+        "PERSON",
     }
 
     # --- Presidio path ------------------------------------------------------

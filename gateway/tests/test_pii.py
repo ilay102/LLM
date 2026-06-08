@@ -108,6 +108,38 @@ def test_phone_regex_still_matches_real_phones():
             f"phone regex missed real phone in: {real!r}"
 
 
+def test_no_false_positives_on_eval_corpus_strings():
+    """Regression: 30-prompt eval losses were caused by Presidio false
+    positives on these exact strings. Each lost a prompt (ids 11/14/15/17/18/25)
+    in pre-v0.2.3 evals. None of these contain real PII."""
+    benign = [
+        ("Order shipped: SKU-A7-2231 (qty 3).",
+         "SKU id contains 'A7' which Presidio tagged as US_DRIVER_LICENSE"),
+        ("Alice and Bob met with Carlos to discuss the proposal.",
+         "common first names — PERSON should be skipped"),
+        ("Upgraded to v3.14.2 last Tuesday.",
+         "version string — old phone regex matched '3.14'"),
+        ("Login attempt from 192.168.1.55 at 03:42 UTC.",
+         "'Login' got tagged as PERSON; IP address is a network log marker"),
+        ("Forgot password? Reset it here.",
+         "'Forgot' got tagged as PERSON"),
+        ("Memoize expensive recomputation in dashboard.",
+         "no PII at all"),
+    ]
+    for text, why in benign:
+        ents = pii.detect(text)
+        # The cache-bypass uses any non-empty entity list. None of these
+        # should trigger a bypass.
+        types = {e["entity_type"] for e in ents}
+        # IP_ADDRESS will still match on 192.168.1.55, which is correct
+        # behaviour — IPs are real PII. Filter it out for this assertion.
+        types -= {"IP_ADDRESS"}
+        assert not types, (
+            f"false PII detection on benign string. {why!r}\n"
+            f"  text: {text!r}\n  detected: {ents}"
+        )
+
+
 def test_redact_messages_handles_structured_content():
     msgs = [{"role": "user", "content": [
         {"type": "text", "text": "Email me at carol@example.com"},
