@@ -95,6 +95,31 @@ STRUCTURED_SUMMARIZATION_KEYWORDS = re.compile(
     re.IGNORECASE,
 )
 
+# Short customer-support FAQ questions. These match common ENG/CRITICAL_BUSINESS
+# keywords (api, policy, plan, export, csv, billing) but are NOT genuinely
+# complex — they're lookups against a knowledge base. Without this guard the
+# classifier would route them to balanced and quietly hurt cost savings.
+# Deep-audit flagged ids 231/233/240/246 as expected=cheap but got=balanced
+# precisely because of this over-match.
+SHORT_FAQ_RE = re.compile(
+    # "What's the X" / "What is the X" — require an article so bare concept
+    # questions like "What is a webhook?" route to balanced instead.
+    r"^(what'?s\s+(the|your|my|our)|what\s+is\s+(the|your|my|our)|"
+    r"where'?s|where\s+is|how\s+(many|much|do|long|often)|"
+    r"is\s+(there|the|this|that|it)|are\s+(there|the|these)|does\s+(the|it|this)|"
+    r"do\s+(you|i|we|they)|can\s+(i|we|you)|when\s+(does|is|do))\b",
+    re.IGNORECASE,
+)
+
+# Anti-match: even short questions starting with FAQ stems can be CONCEPT
+# explanation requests that need balanced ("What's the difference between
+# SQL and NoSQL?"). If any of these phrases appears, the FAQ rule abstains.
+SHORT_FAQ_CONCEPT_EXCLUDE_RE = re.compile(
+    r"\b(difference|differences|compare|comparison|pros\s+and\s+cons|"
+    r"meaning|explain|explanation|how\s+does|why\s+(is|does|do))\b",
+    re.IGNORECASE,
+)
+
 # Captures the quoted/apostrophe-delimited source text inside a translate request
 _TRANSLATE_SRC = re.compile(r"['‘’\"](.*?)['’\"]", re.DOTALL)
 CODE_BLOCK = re.compile(r"```")
@@ -131,9 +156,26 @@ def rule_decision(messages, requested_max_tokens):
         else:
             return RouteDecision("frontier", "reasoning keywords matched", 0.9)
 
-    # 1.5. Critical Business / Security / Enterprise -> balanced
+    # 1.5. Critical Business / Security / Enterprise -> balanced.
+    # MUST come before SHORT_FAQ so casually-phrased critical topics
+    # (e.g. "Can you help with invoice disputes?") aren't downgraded.
     if CRITICAL_BUSINESS_KEYWORDS.search(last_user):
         return RouteDecision("balanced", "critical business/security prompt", 0.9)
+
+    # 1.6. Short FAQ questions -> cheap.
+    # Must come BEFORE CODING / COMPLEX_ENGINEERING because those have
+    # aggressive keyword sets that match common FAQ words (api, policy, plan,
+    # export). Length-gated to < 100 chars + ends-in-? so it only catches
+    # genuine short lookups, never long support tickets.
+    # Deep-audit ids 231/233/240/246 are the canonical regressions this fixes.
+    if (
+        n_chars < 100
+        and "?" in last_user[:80]   # `?` near the front, allows trailing "Answer from context."
+        and SHORT_FAQ_RE.match(last_user.strip())
+        and not SHORT_FAQ_CONCEPT_EXCLUDE_RE.search(last_user)
+        and n_code_blocks == 0
+    ):
+        return RouteDecision("cheap", "short FAQ-style lookup", 0.85)
 
     # 2. Coding or Code Analysis -> balanced
     if CODING_KEYWORDS.search(last_user) or (n_code_blocks >= 1 and n_chars > 250):

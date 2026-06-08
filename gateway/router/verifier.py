@@ -254,9 +254,12 @@ def heuristic_fail(
             ("version", _VERSION_RE),
             ("sku", _SKU_RE),
         ):
-            prompt_hits = set(rx.findall(user_prompt))
+            # Case-normalize for email/url/sku so 'john@x.com' and 'JOHN@X.COM'
+            # are considered the same literal. Phones/IPs/versions are digit-
+            # only or already case-insensitive, but lowercasing is harmless.
+            prompt_hits = {h.lower() for h in rx.findall(user_prompt)}
             if prompt_hits:
-                response_hits = set(rx.findall(text))
+                response_hits = {h.lower() for h in rx.findall(text)}
                 # If response contains ANY matching literal, fine.
                 # If response contains NONE of them, the literal was dropped.
                 if not (prompt_hits & response_hits):

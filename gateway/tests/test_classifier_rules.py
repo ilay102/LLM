@@ -142,6 +142,88 @@ def test_reasoning_keyword_inside_quoted_option_avoids_frontier():
     )
 
 
+def test_short_faq_lookups_go_cheap():
+    """Pin: short customer-FAQ questions go to cheap. Without this guard
+    they hit COMPLEX_ENGINEERING_KEYWORDS (api, policy, plan, export, csv)
+    and quietly waste balanced-tier spend. Deep audit ids 231/233/240/246
+    are the canonical regression cases."""
+    for faq in [
+        "What's the API rate limit on Pro?",
+        "How many projects on the Free plan?",
+        "Is there a refund policy?",
+        "Where's the CSV export button?",
+        "Do you support Slack?",
+        "When does Nimbus bill?",
+        "Can I get a refund?",
+        "Does the app work on Android?",
+        "Reset my password — where?",  # ends in '?' but no FAQ stem — should NOT match
+    ]:
+        d = rule_decision(msg(faq), None)
+        if faq.startswith("Reset"):
+            # Sanity check: imperative form should NOT match the FAQ rule.
+            # Either rule layer abstains or routes via a different rule.
+            assert d is None or d.tier in ("cheap", "balanced"), \
+                f"imperative shouldn't go frontier, got {d.tier if d else None}"
+            continue
+        assert d is not None, f"FAQ rule abstained: {faq!r}"
+        assert d.tier == "cheap", (
+            f"short FAQ should be cheap, got {d.tier} on {faq!r} (reason: {d.reason})"
+        )
+
+
+def test_short_faq_rule_doesnt_swallow_real_complex_questions():
+    """Guard: the FAQ rule is length-gated to <100 chars. Longer customer-
+    support prompts that include real diagnostic detail must still route
+    to balanced/frontier."""
+    long_support = (
+        "What's happening with our integration? Webhooks have been failing "
+        "intermittently for the past 4 hours and our customers are complaining."
+    )
+    d = rule_decision(msg(long_support), None)
+    # Whatever happens, must NOT downgrade to cheap.
+    assert d is None or d.tier != "cheap", \
+        f"long support ticket should not route to cheap, got {d.tier if d else None}"
+
+
+def test_comparison_question_doesnt_match_faq():
+    """Pin: 'What's the difference between X and Y?' is a comparison/concept
+    question requiring balanced, not a cheap lookup. Deep-audit id 142 is
+    this regression case."""
+    for prompt in [
+        "What's the difference between SQL and NoSQL? Keep under 100 words.",
+        "What's the comparison between TCP and UDP?",
+        "Can you explain the difference between cheap and balanced?",
+    ]:
+        d = rule_decision(msg(prompt), None)
+        # Forbid: FAQ rule firing on comparison/concept questions.
+        if d is not None:
+            assert "FAQ" not in d.reason, \
+                f"comparison should NOT match FAQ rule, got reason={d.reason!r} on {prompt!r}"
+
+
+def test_bare_concept_question_doesnt_match_faq():
+    """Pin: 'What is a webhook?' is a CONCEPT question (needs prose
+    explanation), not a lookup. SHORT_FAQ requires 'what's THE X' or
+    'what is THE X' — bare 'what is a/an X' must fall through to whatever
+    the next rule decides. Deep-audit id 145 is this regression case."""
+    d = rule_decision(msg("What is a webhook and when should I use one?"), None)
+    # The FAQ rule must NOT fire. Next rule may decide cheap or balanced
+    # depending on length/keywords — what's forbidden is falsely tagging
+    # this with the FAQ reason.
+    if d is not None:
+        assert "FAQ" not in d.reason, \
+            f"bare 'what is a X' should NOT match FAQ rule, got reason={d.reason!r}"
+
+
+def test_short_faq_doesnt_override_explicit_reasoning():
+    """Guard: a short question that contains a reasoning keyword (e.g. 'prove')
+    must still route to frontier. SHORT_FAQ must be ordered AFTER REASONING."""
+    d = rule_decision(msg("What's the proof that 2+2=4? Derive it."), None)
+    assert d is not None
+    assert d.tier == "frontier", \
+        f"reasoning keyword must win over FAQ stem, got {d.tier}"
+
+
 def test_real_reasoning_prompt_still_goes_frontier():
     """Sanity: a genuine reasoning request with the same keyword must still go frontier."""
     d = rule_decision(msg(

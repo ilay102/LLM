@@ -103,6 +103,24 @@ def test_heuristic_escalates_when_ip_literal_dropped():
     assert fail and "ip" in reason.lower()
 
 
+def test_literal_preservation_is_case_insensitive():
+    """Regression: previously prompt 'john@x.com' vs response 'JOHN@X.COM'
+    triggered a false 'literal email missing' escalation because the set
+    intersection compared the strings case-sensitively. The address is the
+    same — only normalisation differs. Fix: lowercase both sides."""
+    prompt = "Extract the contact email from: 'reach out to john@x.com please.'"
+    response = "**Email:** JOHN@X.COM"
+    fail, reason = verifier.heuristic_fail(resp(response), user_prompt=prompt)
+    assert not fail, f"case-normalised email match should pass; got escalation: {reason}"
+
+
+def test_literal_preservation_url_case_insensitive():
+    prompt = "Open this link: https://Example.COM/path?"
+    response = "Sure — opening https://example.com/path now."
+    fail, _ = verifier.heuristic_fail(resp(response), user_prompt=prompt)
+    assert not fail
+
+
 def test_heuristic_passes_when_long_prompt_skips_literal_check():
     """Literal-preservation is only enforced for short prompts (< 600 chars).
     Long contexts often reference but don't echo literals — a verbatim
