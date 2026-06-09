@@ -179,6 +179,47 @@ def _resolve_tenant(authorization: str | None) -> tuple[str, tenants.Tenant | No
     raise HTTPException(401, "invalid api key")
 
 
+# --- Defensive content recovery (v0.3.7) ---------------------------------
+# Fields some providers use when `message.content` ends up empty. Order matters:
+# `reasoning_content` is the most common (DeepSeek thinking-mode + V4 family).
+_CONTENT_FALLBACK_FIELDS = ("reasoning_content", "reasoning", "text", "answer")
+
+
+def _recover_empty_content(response_dict: dict, tier: str) -> None:
+    """Mutates response_dict in place. If a choice's message.content is empty
+    but the message carries a non-empty value in any known fallback field,
+    copy that value into `content` so downstream consumers see a normal
+    OpenAI shape. Logs once per recovery for observability."""
+    if not isinstance(response_dict, dict):
+        return
+    choices = response_dict.get("choices") or []
+    for idx, choice in enumerate(choices):
+        if not isinstance(choice, dict):
+            continue
+        msg = choice.get("message")
+        if not isinstance(msg, dict):
+            continue
+        cur = msg.get("content")
+        # treat None / "" / whitespace-only as empty
+        if isinstance(cur, str) and cur.strip():
+            continue
+        if cur is not None and not isinstance(cur, str):
+            # multimodal content list — leave alone
+            continue
+        recovered_from = None
+        for f in _CONTENT_FALLBACK_FIELDS:
+            v = msg.get(f)
+            if isinstance(v, str) and v.strip():
+                msg["content"] = v
+                recovered_from = f
+                break
+        if recovered_from:
+            LOG.info(
+                "empty-content recovery: tier=%s choice=%d source=%s len=%d",
+                tier, idx, recovered_from, len(msg["content"]),
+            )
+
+
 # --- Prompt-cache injection (unchanged) -----------------------------------
 
 def inject_prompt_cache(messages: list[dict]) -> list[dict]:
@@ -473,6 +514,17 @@ async def chat_completions(
 
     response_dict = response.model_dump() if hasattr(response, "model_dump") else dict(response)
 
+    # Defensive content recovery — some providers (notably DeepSeek-V4-Pro
+    # and V4-Flash via LiteLLM 1.52.x) return responses where message.content
+    # is empty but the actual answer lives in a non-OpenAI-standard field
+    # like `reasoning_content`. The v0.3.7 200-prompt eval surfaced 37 such
+    # empties — 100% from DeepSeek paths, 0 from Claude/GPT — with the model
+    # billed for the full max_tokens worth of output.
+    # We try a list of known fallback fields; first non-empty wins. The
+    # recovered text is moved into `content` so downstream (verifier, cache,
+    # client response) sees a normal OpenAI shape.
+    _recover_empty_content(response_dict, decision.tier)
+
     # ---- Cascade if cheap response looks weak ----------------------------
     # v0.3.1: LLM cascade verifier replaces the old heuristic-only check.
     # Heuristic pre-filter runs first (free); LLM grader only on responses
@@ -491,6 +543,7 @@ async def chat_completions(
                 body_for_call["model"] = "tier-balanced"
                 response = await router.acompletion(**body_for_call)
                 response_dict = response.model_dump() if hasattr(response, "model_dump") else dict(response)
+                _recover_empty_content(response_dict, "balanced")  # cascade re-call
                 decision = RouteDecision("balanced", f"cascade from cheap ({vr.reason})", 0.7)
                 cascade_used = True
         except Exception:

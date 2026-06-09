@@ -47,6 +47,7 @@ REPO = HERE.parent
 CORPUS = REPO / "eval" / "corpus_v1.jsonl"
 RESULTS = HERE / "eval_results.jsonl"
 REPORT = HERE / "eval_report.html"
+DEBUG_DUMPS = HERE / "debug_empty_dumps.jsonl"  # diagnostic for empty responses
 
 SONNET_IN  = 3.0 / 1_000_000
 SONNET_OUT = 15.0 / 1_000_000
@@ -101,7 +102,8 @@ def _split_baseline_messages(messages: list[dict]):
     return system or None, convo
 
 
-async def call_gateway(oai: AsyncOpenAI, messages, max_tokens: int = 500) -> dict:
+async def call_gateway(oai: AsyncOpenAI, messages, max_tokens: int = 500,
+                        prompt_id: int | None = None) -> dict:
     msgs = _to_messages(messages)
     t0 = time.perf_counter()
     try:
@@ -119,6 +121,24 @@ async def call_gateway(oai: AsyncOpenAI, messages, max_tokens: int = 500) -> dic
         choice = r.choices[0] if r.choices else None
         finish = getattr(choice, "finish_reason", None) if choice else None
         content = (choice.message.content if choice and choice.message else None) or ""
+        # Diagnostic: if content is empty (the v0.3.7 bug shape) save the
+        # full raw response to a side file so we can inspect the actual
+        # message dict and identify which non-standard field the answer
+        # landed in. Free, only fires on empties.
+        if not content.strip():
+            try:
+                dump = r.model_dump() if hasattr(r, "model_dump") else dict(r)
+            except Exception as dump_err:
+                dump = {"_dump_error": str(dump_err), "_repr": str(r)[:2000]}
+            try:
+                with open(DEBUG_DUMPS, "a", encoding="utf-8") as df:
+                    df.write(json.dumps({
+                        "side": "gateway", "prompt_id": prompt_id,
+                        "model": r.model, "finish_reason": finish,
+                        "out_tokens": out_t, "raw": dump,
+                    }, default=str) + "\n")
+            except Exception:
+                pass
         return {
             "model": r.model, "in_tokens": in_t, "out_tokens": out_t,
             "cost_usd": cost, "latency_ms": latency,
@@ -164,7 +184,7 @@ async def eval_one(sem, oai, anth, prompt_id, prompt_text, max_tokens: int = 500
     async with sem:
         # Fire both concurrently. prompt_text may be a string OR a messages array.
         g, b = await asyncio.gather(
-            call_gateway(oai, prompt_text, max_tokens=max_tokens),
+            call_gateway(oai, prompt_text, max_tokens=max_tokens, prompt_id=prompt_id),
             call_baseline(anth, prompt_text, max_tokens=max_tokens),
         )
         return {"id": prompt_id, "prompt": _excerpt(prompt_text),
