@@ -464,8 +464,28 @@ async def chat_completions(
             LOG.exception("cache lookup failed (non-fatal)")
 
     if cache_hit is not None:
-        # Verify cached response for cheap tier to ensure no regression or bad data
-        if decision.tier == "cheap":
+        # v0.3.8: BEFORE running tier-specific verification, do a content-recovery
+        # pass on the cached response and check for the empty-content shape.
+        # The v0.3.7 200-prompt eval found 26 cached empty responses being
+        # served back to users (all from deepseek-v4 balanced-tier paths,
+        # stored before the recovery patch shipped). We run recovery here so
+        # those entries are healed on the way out of cache; if still empty
+        # afterward, we bust the cache entry entirely.
+        _recover_empty_content(cache_hit.response, decision.tier)
+        cached_text = ""
+        try:
+            cached_choice = (cache_hit.response.get("choices") or [{}])[0]
+            cached_text = ((cached_choice.get("message") or {}).get("content") or "")
+        except Exception:
+            pass
+        if not (isinstance(cached_text, str) and cached_text.strip()):
+            LOG.warning("cached response is empty after recovery; bypassing cache (poisoned entry).")
+            cache_hit = None
+
+        # Tier-specific cascade verification (still cheap-only — balanced/frontier
+        # already passed the empty check above and the verifier doesn't gain us
+        # much on non-cheap responses).
+        if cache_hit is not None and decision.tier == "cheap":
             try:
                 vr = await verifier.verify(
                     state["router"], cache_hit.response, messages, expects_json=expects_json,

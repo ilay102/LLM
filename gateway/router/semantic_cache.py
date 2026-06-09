@@ -154,6 +154,23 @@ class SemanticCache:
         choice = (response.get("choices") or [{}])[0]
         if (choice.get("message") or {}).get("tool_calls"):
             return
+        # NEW (v0.3.8): refuse to store empty or whitespace-only content.
+        # The v0.3.7 200-prompt eval exposed cache poisoning: deepseek-v4-pro
+        # was returning empty content (separate bug), the empties got stored,
+        # and every subsequent eval served the empty back from cache with
+        # cached=true, masking whether the upstream fix worked. Treating
+        # empty as un-cacheable means a future broken-upstream response can't
+        # contaminate the cache for the TTL window.
+        msg = choice.get("message") or {}
+        content = msg.get("content")
+        if not isinstance(content, str) or not content.strip():
+            # Also try the fallback fields main.py knows about, so we don't
+            # over-reject responses that legitimately landed in reasoning_content.
+            if not any(
+                isinstance(msg.get(f), str) and msg.get(f, "").strip()
+                for f in ("reasoning_content", "reasoning", "text", "answer")
+            ):
+                return
 
         ns = _ns_key(tenant, model_class, system_hash, tool_hash, _temperature_bucket(temperature))
         ttl = ttl_override if ttl_override is not None else self.ttl
