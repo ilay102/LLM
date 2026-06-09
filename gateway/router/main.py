@@ -185,6 +185,43 @@ def _resolve_tenant(authorization: str | None) -> tuple[str, tenants.Tenant | No
 _CONTENT_FALLBACK_FIELDS = ("reasoning_content", "reasoning", "text", "answer")
 
 
+def _content_consumed_by_reasoning(response_dict: dict) -> bool:
+    """Detect the v0.3.7/0.3.8 DeepSeek failure shape: the model burned the
+    entire max_tokens budget on internal reasoning_tokens and produced
+    nothing visible. Signature:
+        message.content == "" (after _recover_empty_content has run)
+        choice.finish_reason == "length"
+        usage.completion_tokens_details.reasoning_tokens >= ~95% of
+            usage.completion_tokens (essentially all budget was reasoning)
+
+    When this fires we should NOT serve the empty response — re-fire on a
+    model without a separate reasoning budget (Sonnet)."""
+    if not isinstance(response_dict, dict):
+        return False
+    try:
+        choices = response_dict.get("choices") or []
+        if not choices:
+            return False
+        choice = choices[0]
+        if not isinstance(choice, dict):
+            return False
+        msg_content = ((choice.get("message") or {}).get("content") or "")
+        if isinstance(msg_content, str) and msg_content.strip():
+            return False
+        if choice.get("finish_reason") != "length":
+            return False
+        usage = response_dict.get("usage") or {}
+        details = usage.get("completion_tokens_details") or {}
+        reasoning_tokens = int(details.get("reasoning_tokens") or 0)
+        completion_tokens = int(usage.get("completion_tokens") or 0)
+        if reasoning_tokens <= 0 or completion_tokens <= 0:
+            return False
+        # >=95% of the output budget went to internal reasoning
+        return reasoning_tokens >= completion_tokens * 0.95
+    except Exception:
+        return False
+
+
 def _recover_empty_content(response_dict: dict, tier: str) -> None:
     """Mutates response_dict in place. If a choice's message.content is empty
     but the message carries a non-empty value in any known fallback field,
@@ -544,6 +581,33 @@ async def chat_completions(
     # recovered text is moved into `content` so downstream (verifier, cache,
     # client response) sees a normal OpenAI shape.
     _recover_empty_content(response_dict, decision.tier)
+
+    # v0.3.8: DeepSeek-V4 reasoning-budget cascade. The post-cache-flush
+    # v0.3.8 retry showed 10/30 fails on hard prompts where DeepSeek burned
+    # the entire max_tokens on internal reasoning_tokens (finish_reason=length,
+    # content="" even after recovery). Re-fire on Sonnet, which doesn't have
+    # a separate reasoning budget consuming the output allowance.
+    reasoning_burned_cascade = False
+    if _content_consumed_by_reasoning(response_dict):
+        LOG.warning("reasoning-budget exhaustion on %s — re-firing on tier-balanced-fallback (Sonnet)",
+                    response_dict.get("model"))
+        try:
+            body_fallback = dict(body_for_call)
+            body_fallback["model"] = "tier-balanced-fallback"
+            # Bump max_tokens if client requested a small value; Sonnet needs
+            # room for the full answer on these hard prompts.
+            current_max = body_fallback.get("max_tokens") or 0
+            if current_max < 2000:
+                body_fallback["max_tokens"] = 2000
+            response = await router.acompletion(**body_fallback)
+            response_dict = response.model_dump() if hasattr(response, "model_dump") else dict(response)
+            _recover_empty_content(response_dict, "balanced")
+            decision = RouteDecision("balanced",
+                                     f"reasoning-budget cascade from {decision.tier} (DeepSeek burned all tokens on reasoning)",
+                                     0.9)  # type: ignore[arg-type]
+            reasoning_burned_cascade = True
+        except Exception:
+            LOG.exception("reasoning-budget cascade failed; serving original empty response")
 
     # ---- Cascade if cheap response looks weak ----------------------------
     # v0.3.1: LLM cascade verifier replaces the old heuristic-only check.

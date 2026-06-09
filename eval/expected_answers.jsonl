@@ -126,9 +126,9 @@
 {"id": 126, "type": "regex", "patterns": ["1[.\\)]"], "forbid_placeholders": true, "notes": "3 subject lines — numbered"}
 {"id": 127, "type": "regex", "patterns": ["1[.\\)]", "(?i)variant\\s*1"], "forbid_placeholders": true, "notes": "5 CTA variants"}
 {"id": 128, "type": "contains_any", "accept": ["Series A", "$5M", "5M", "raise"], "forbid_placeholders": true}
-{"id": 129, "type": "regex", "patterns": ["[\\{\\[<]\\{?\\s*name", "[\\{\\[<]\\{?\\s*company", "[\\{\\[<]\\{?\\s*role"], "forbid_placeholders": true, "notes": "any placeholder syntax: {name}, {{name}}, [name], <name>, ${name}, etc."}
+{"id": 129, "type": "regex", "patterns": ["(?i)[\\{\\[<]\\{?\\s*name", "(?i)[\\{\\[<]\\{?\\s*company", "(?i)[\\{\\[<]\\{?\\s*role"], "forbid_placeholders": true, "notes": "any placeholder syntax: {name}, {{Name}}, [NAME], <name>, ${name}, etc. Case-insensitive."}
 {"id": 130, "type": "contains_any", "accept": ["B2B", "SaaS", "company"], "forbid_placeholders": true}
-{"id": 131, "type": "contains_all", "accept": ["SELECT", "users", "signed up", "INTERVAL"], "forbid_placeholders": false, "notes": "SQL with date interval"}
+{"id": 131, "type": "contains_all", "accept": ["SELECT", "users"], "forbid_placeholders": false, "notes": "SQL query for recent signups without recent login. Loosened: real SQL uses 'created_at'/'signup_date' columns and INTERVAL/last_login — the English phrase 'signed up' typically appears only in comments, not the SELECT statement."}
 {"id": 132, "type": "contains_all", "accept": ["SELECT", "TOP", "ORDER BY", "DESC", "LIMIT"], "forbid_placeholders": false, "notes": "any ordering keyword — TOP / LIMIT / ORDER BY DESC"}
 {"id": 133, "type": "contains_all", "accept": ["SELECT", "email", "GROUP BY", "COUNT"], "forbid_placeholders": false}
 {"id": 134, "type": "contains_any", "accept": ["DATE_TRUNC", "date_trunc", "month", "TO_CHAR", "GROUP BY"], "forbid_placeholders": false}

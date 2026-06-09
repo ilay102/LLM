@@ -67,6 +67,23 @@ model_list:
       data_residency: china
       strengths: "code, JSON, structured tasks, technical writing"
 
+  # v0.3.8: explicit Sonnet-only fallback used by main.py when a balanced-tier
+  # response from DeepSeek-V4 exhausts its token budget on reasoning_tokens
+  # (finish_reason=length, content=""). Sonnet doesn't have a separate
+  # reasoning budget so the entire max_tokens is available for the visible
+  # answer. Bigger cap because we only land here on hard prompts.
+  - model_name: tier-balanced-fallback
+    litellm_params:
+      model: anthropic/claude-sonnet-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+      max_tokens: 3000
+    model_info:
+      input_cost_per_token: 0.000003
+      output_cost_per_token: 0.000015
+    gateway_info:
+      tier: balanced
+      strengths: "fallback for reasoning-budget exhaustion on DeepSeek-V4"
+
   # ---------- TIER: frontier (reasoning, agents, complex code) ----------
   - model_name: tier-frontier
     litellm_params:
