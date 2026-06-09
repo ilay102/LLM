@@ -101,14 +101,14 @@ def _split_baseline_messages(messages: list[dict]):
     return system or None, convo
 
 
-async def call_gateway(oai: AsyncOpenAI, messages) -> dict:
+async def call_gateway(oai: AsyncOpenAI, messages, max_tokens: int = 500) -> dict:
     msgs = _to_messages(messages)
     t0 = time.perf_counter()
     try:
         r = await oai.chat.completions.create(
             model="auto",
             messages=msgs,
-            max_tokens=500,
+            max_tokens=max_tokens,
             temperature=0.2,
         )
         latency = (time.perf_counter() - t0) * 1000
@@ -116,22 +116,26 @@ async def call_gateway(oai: AsyncOpenAI, messages) -> dict:
         in_t = r.usage.prompt_tokens or 0
         out_t = r.usage.completion_tokens or 0
         cost = in_t * in_p + out_t * out_p
+        choice = r.choices[0] if r.choices else None
+        finish = getattr(choice, "finish_reason", None) if choice else None
+        content = (choice.message.content if choice and choice.message else None) or ""
         return {
             "model": r.model, "in_tokens": in_t, "out_tokens": out_t,
             "cost_usd": cost, "latency_ms": latency,
-            "answer": r.choices[0].message.content or "",
+            "answer": content,
+            "finish_reason": finish,
             "cached": (r.id or "").startswith("cached-"),
         }
     except Exception as e:
         return {"error": str(e), "latency_ms": (time.perf_counter() - t0) * 1000}
 
 
-async def call_baseline(anth: AsyncAnthropic, messages) -> dict:
+async def call_baseline(anth: AsyncAnthropic, messages, max_tokens: int = 500) -> dict:
     msgs = _to_messages(messages)
     system, convo = _split_baseline_messages(msgs)
     t0 = time.perf_counter()
     try:
-        kwargs = dict(model="claude-sonnet-4-6", max_tokens=500,
+        kwargs = dict(model="claude-sonnet-4-6", max_tokens=max_tokens,
                       temperature=0.2, messages=convo)
         if system:
             kwargs["system"] = system
@@ -142,7 +146,8 @@ async def call_baseline(anth: AsyncAnthropic, messages) -> dict:
         cost = in_t * SONNET_IN + out_t * SONNET_OUT
         text = "".join(b.text for b in r.content if hasattr(b, "text"))
         return {"model": r.model, "in_tokens": in_t, "out_tokens": out_t,
-                "cost_usd": cost, "latency_ms": latency, "answer": text}
+                "cost_usd": cost, "latency_ms": latency, "answer": text,
+                "finish_reason": getattr(r, "stop_reason", None)}
     except Exception as e:
         return {"error": str(e), "latency_ms": (time.perf_counter() - t0) * 1000}
 
@@ -155,12 +160,12 @@ def _excerpt(prompt_or_msgs) -> str:
     return str(prompt_or_msgs)[:200]
 
 
-async def eval_one(sem, oai, anth, prompt_id, prompt_text):
+async def eval_one(sem, oai, anth, prompt_id, prompt_text, max_tokens: int = 500):
     async with sem:
         # Fire both concurrently. prompt_text may be a string OR a messages array.
         g, b = await asyncio.gather(
-            call_gateway(oai, prompt_text),
-            call_baseline(anth, prompt_text),
+            call_gateway(oai, prompt_text, max_tokens=max_tokens),
+            call_baseline(anth, prompt_text, max_tokens=max_tokens),
         )
         return {"id": prompt_id, "prompt": _excerpt(prompt_text),
                 "messages": prompt_text if isinstance(prompt_text, list) else None,
@@ -174,6 +179,14 @@ async def amain():
     p.add_argument("--concurrency", type=int, default=4)
     p.add_argument("--corpus", default=str(CORPUS))
     p.add_argument("--results", default=str(RESULTS))
+    p.add_argument("--ids", default="",
+                   help="Comma-separated prompt IDs to re-run (e.g. '50,105,131,134'). "
+                        "Overrides --limit. Useful for targeted re-runs of failures.")
+    p.add_argument("--max-tokens", type=int, default=500,
+                   help="max_tokens for both gateway and baseline calls. Bump to "
+                        "1500-2000 for long-form code/reasoning prompts.")
+    p.add_argument("--append", action="store_true",
+                   help="Append to --results instead of overwriting (for partial re-runs).")
     args = p.parse_args()
 
     gw_url = os.environ.get("GATEWAY_URL", "http://localhost:8000/v1")
@@ -191,7 +204,12 @@ async def amain():
             # v0.3 corpus uses "messages"; legacy corpus uses "prompt".
             payload = r.get("messages") if r.get("messages") else r.get("prompt", "")
             prompts.append((r["id"], payload))
-    if args.limit:
+
+    if args.ids:
+        wanted = {int(x.strip()) for x in args.ids.split(",") if x.strip()}
+        prompts = [p for p in prompts if p[0] in wanted]
+        print(f"--ids filter: re-running {len(prompts)} of {len(wanted)} requested prompts")
+    elif args.limit:
         prompts = prompts[: args.limit]
 
     print(f"Evaluating {len(prompts)} prompts against {gw_url}")
@@ -202,10 +220,12 @@ async def amain():
     oai = AsyncOpenAI(base_url=gw_url, api_key=gw_key)
     anth = AsyncAnthropic(api_key=anth_key)
     sem = asyncio.Semaphore(args.concurrency)
-    tasks = [eval_one(sem, oai, anth, pid, ptext) for pid, ptext in prompts]
+    tasks = [eval_one(sem, oai, anth, pid, ptext, max_tokens=args.max_tokens)
+             for pid, ptext in prompts]
 
     results = []
-    with open(args.results, "w") as f:
+    open_mode = "a" if args.append else "w"
+    with open(args.results, open_mode) as f:
         for fut in asyncio.as_completed(tasks):
             r = await fut
             f.write(json.dumps(r) + "\n"); f.flush()

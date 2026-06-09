@@ -59,7 +59,7 @@
 {"id": 59, "type": "contains_any", "accept": ["observability"], "forbid_placeholders": true}
 {"id": 60, "type": "contains_any", "accept": ["frontend", "front-end"], "forbid_placeholders": true}
 {"id": 61, "type": "contains_any", "accept": ["productivity"], "forbid_placeholders": true}
-{"id": 62, "type": "contains_any", "accept": ["relational"], "forbid": ["NoSQL"], "forbid_placeholders": true, "notes": "answer must conclude relational, not NoSQL"}
+{"id": 62, "type": "contains_any", "accept": ["relational"], "forbid_placeholders": true, "notes": "must say relational; the word 'NoSQL' is fine to appear in 'PostgreSQL is relational, not NoSQL' phrasing"}
 {"id": 63, "type": "contains_any", "accept": ["compute"], "forbid_placeholders": true}
 {"id": 64, "type": "contains_any", "accept": ["design"], "forbid_placeholders": true}
 {"id": 65, "type": "contains_any", "accept": ["Fitzgerald", "F. Scott"], "forbid_placeholders": true}
@@ -126,7 +126,7 @@
 {"id": 126, "type": "regex", "patterns": ["1[.\\)]"], "forbid_placeholders": true, "notes": "3 subject lines — numbered"}
 {"id": 127, "type": "regex", "patterns": ["1[.\\)]", "(?i)variant\\s*1"], "forbid_placeholders": true, "notes": "5 CTA variants"}
 {"id": 128, "type": "contains_any", "accept": ["Series A", "$5M", "5M", "raise"], "forbid_placeholders": true}
-{"id": 129, "type": "contains_all", "accept": ["{name", "{company", "{role"], "forbid_placeholders": true, "notes": "placeholder syntax — accept either braces or brackets"}
+{"id": 129, "type": "regex", "patterns": ["[\\{\\[<]\\{?\\s*name", "[\\{\\[<]\\{?\\s*company", "[\\{\\[<]\\{?\\s*role"], "forbid_placeholders": true, "notes": "any placeholder syntax: {name}, {{name}}, [name], <name>, ${name}, etc."}
 {"id": 130, "type": "contains_any", "accept": ["B2B", "SaaS", "company"], "forbid_placeholders": true}
 {"id": 131, "type": "contains_all", "accept": ["SELECT", "users", "signed up", "INTERVAL"], "forbid_placeholders": false, "notes": "SQL with date interval"}
 {"id": 132, "type": "contains_all", "accept": ["SELECT", "TOP", "ORDER BY", "DESC", "LIMIT"], "forbid_placeholders": false, "notes": "any ordering keyword — TOP / LIMIT / ORDER BY DESC"}
